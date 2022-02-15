@@ -3,7 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\CallBackController;
+use App\Http\Controllers\{
+    CallBackController,
+    ProductController
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +24,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/callback/send', [CallBackController::class, 'callback']);
+
+Route::get('/subcategory/{subcategory}', [ProductController::class, 'subcategory']);
+Route::get('/category/{category}', [ProductController::class, 'category']);
