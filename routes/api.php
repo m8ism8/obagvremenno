@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     CallBackController,
     ProductController,
-    AuthController
+    AuthController,
+    PageController
 };
 
 /*
@@ -39,3 +40,5 @@ Route::post('/callback/send', [CallBackController::class, 'callback']);
 Route::get('/index', [ProductController::class, 'index']);
 Route::get('/subcategory/{subcategory}', [ProductController::class, 'subcategory']);
 Route::get('/category/{category}', [ProductController::class, 'category']);
+
+Route::get('/page/history', [PageController::class, 'history']);
