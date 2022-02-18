@@ -30,7 +30,7 @@ class ProductController extends Controller
             'image' => setting('main-banner.image'),
             'link' => setting('main-banner.link')
         ];
-        $mainSale = Sale::orderBy('created_at', 'desc')->take(1)->with('products')->get();
+        $mainSale = Sale::orderBy('created_at', 'desc')->take(1)->with('products')->first();
         $sales = Sale::where('is_main', 1)->take(2)->get();
         $news = Sale::orderBy('created_at', 'desc')->take(4)->get();
         return response()->json([
