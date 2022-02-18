@@ -31,4 +31,15 @@ class PageController extends Controller
             'news' => $news
         ]);
     }
+    public function brandInfo(){
+        $content = [
+            'title' => setting('brand-info.title'),
+            'text' => setting('brand-info.text')
+        ];
+        $news = Sale::orderBy('created_at', 'desc')->take(4)->get();
+        return response()->json([
+            'content' => $content,
+            'news' => $news
+        ]);
+    }
 }

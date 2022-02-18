@@ -44,3 +44,4 @@ Route::get('/products/search/{string}', [ProductController::class, 'search']);
 
 Route::get('/page/history', [PageController::class, 'history']);
 Route::get('/page/mission', [PageController::class, 'history']);
+Route::get('/page/brand-info', [PageController::class, 'history']);
