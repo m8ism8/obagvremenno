@@ -43,3 +43,4 @@ Route::get('/category/{category}', [ProductController::class, 'category']);
 Route::get('/products/search/{string}', [ProductController::class, 'search']);
 
 Route::get('/page/history', [PageController::class, 'history']);
+Route::get('/page/mission', [PageController::class, 'history']);
