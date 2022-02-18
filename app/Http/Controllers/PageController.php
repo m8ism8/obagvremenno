@@ -14,7 +14,7 @@ class PageController extends Controller
             'text' => setting('history.text')
         ];
         return response()->json([
-            'content' => $content,
+            'content' => $content
         ]);
     }
 }
