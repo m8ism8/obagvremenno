@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSaleProductsTable extends Migration
+class AddCategoryIdToConstructorTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class CreateSaleProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sale_products', function (Blueprint $table) {
-            $table->foreignId('sale_id')->constrained();
-            $table->foreignId('product_id')->constrained();
-            $table->timestamps();
+        Schema::table('constructors', function (Blueprint $table) {
+            $table->foreignId('category_id')->constrained();
         });
     }
 
@@ -27,6 +25,8 @@ class CreateSaleProductsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sale_products');
+        Schema::table('constructors', function (Blueprint $table) {
+            $table->dropColumn('category_id');
+        });
     }
 }

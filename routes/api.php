@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\{
     CallBackController,
-    ProductController
+    ProductController,
+    AuthController
 };
 
 /*
@@ -19,12 +20,20 @@ use App\Http\Controllers\{
 |
 */
 
+Route::group(['middleware' => ['auth:sanctum']], function() {
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
 Route::post('/callback/send', [CallBackController::class, 'callback']);
 
-Route::get('/', [ProductController::class, 'index']);
+Route::get('/index', [ProductController::class, 'index']);
 Route::get('/subcategory/{subcategory}', [ProductController::class, 'subcategory']);
 Route::get('/category/{category}', [ProductController::class, 'category']);

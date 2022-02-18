@@ -24,19 +24,13 @@ class ProductController extends Controller
         return $recomendedProducts;
     }
     public function index(){
-        $sales = Sale::where('is_main', 1)->get();
-        $recomendedProducts = $this->getRecomended();
+        $mainSale = Sale::orderBy('created_at', 'desc')->take(1)->with('products')->get();
+        $sales = Sale::where('is_main', 1)->take(2)->get();
+        $news = Sale::orderBy('created_at', 'desc')->take(4)->get();
         return response()->json([
+            'mainSale' => $mainSale,
             'sales' => $sales,
-            'recomendedProducts' => $recomendedProducts,
-        ]);
-    }
-    public function subcategory(Subcategory $subcategory){
-        $sales = Sale::all();
-        return response()->json([
-            'sales' => $sales,
-            'subcategory' => $subcategory, 
-            'products' => $subcategory->products
+            'recomendedProducts' => $this->getRecomended(),
         ]);
     }
     public function category(Category $category){
@@ -45,6 +39,14 @@ class ProductController extends Controller
             'sales' => $sales,
             'category' => $category, 
             'subcategories' => $category->subcategories
+        ]);
+    }
+    public function subcategory(Subcategory $subcategory){
+        $sales = Sale::all();
+        return response()->json([
+            'sales' => $sales,
+            'subcategory' => $subcategory, 
+            'products' => $subcategory->products
         ]);
     }
 }
