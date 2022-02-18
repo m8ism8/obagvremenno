@@ -5,7 +5,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\User;
+use App\Models\{
+    User,
+    Favourite,
+};
 
 class AuthController extends Controller
 {
@@ -57,6 +60,11 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'logged out'
+        ]);
+    }
+    public function favourites(){
+        return response()->json([
+            'favourites' => Auth()->user()->favourites,
         ]);
     }
 }

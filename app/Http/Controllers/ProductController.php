@@ -7,7 +7,8 @@ use App\Models\{
     Product,
     Category,
     Subcategory,
-    Sale
+    Sale,
+    Favourite
 };
 
 class ProductController extends Controller
@@ -23,6 +24,7 @@ class ProductController extends Controller
         $recomendedProducts = collect([$randomProducts1, $randomProducts2, $newestProducts, $popularProducts]);
         return $recomendedProducts;
     }
+
     public function index(){
         $mainSale = Sale::orderBy('created_at', 'desc')->take(1)->with('products')->get();
         $sales = Sale::where('is_main', 1)->take(2)->get();
@@ -33,20 +35,33 @@ class ProductController extends Controller
             'recomendedProducts' => $this->getRecomended(),
         ]);
     }
+    
     public function category(Category $category){
+        $category->subcategories;
+        $category->constructor;
         $sales = Sale::all();
         return response()->json([
-            'sales' => $sales,
             'category' => $category, 
-            'subcategories' => $category->subcategories
+            'sales' => $sales,
         ]);
     }
+
     public function subcategory(Subcategory $subcategory){
         $sales = Sale::all();
+        $subcategory->products;
         return response()->json([
             'sales' => $sales,
             'subcategory' => $subcategory, 
-            'products' => $subcategory->products
+        ]);
+    }
+
+    public function favourite($id){
+        $favourite = Favourite::where('user_id', Auth()->id())->where('product_id', $id)->firstOrCreate([
+            'user_id' => Auth()->id(),
+            'product_id' => $id
+        ]);
+        return response()->json([
+            'favourite' => $favourite,
         ]);
     }
 }

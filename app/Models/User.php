@@ -43,4 +43,8 @@ class User extends \TCG\Voyager\Models\User
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function favourites(){
+        return $this->hasMany(Favourite::class)->orderBy('created_at', 'desc');
+    }
 }

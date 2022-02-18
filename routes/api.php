@@ -21,6 +21,8 @@ use App\Http\Controllers\{
 */
 
 Route::group(['middleware' => ['auth:sanctum']], function() {
+    Route::post('/product/{id}/favourite', [ProductController::class, 'favourite']);
+    Route::get('/user/favourites', [AuthController::class, 'favourites']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
