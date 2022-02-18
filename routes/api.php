@@ -40,5 +40,6 @@ Route::post('/callback/send', [CallBackController::class, 'callback']);
 Route::get('/index', [ProductController::class, 'index']);
 Route::get('/subcategory/{subcategory}', [ProductController::class, 'subcategory']);
 Route::get('/category/{category}', [ProductController::class, 'category']);
+Route::get('/products/search/{string}', [ProductController::class, 'search']);
 
 Route::get('/page/history', [PageController::class, 'history']);

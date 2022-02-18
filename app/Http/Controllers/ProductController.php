@@ -69,4 +69,11 @@ class ProductController extends Controller
             'favourite' => $favourite,
         ]);
     }
+
+    public function search($string){
+        $products = Product::where('title', 'LIKE', '%'.$string.'%')->get();
+        return response()->json([
+            'products' => $products,
+        ]);
+    }
 }
