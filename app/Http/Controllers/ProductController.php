@@ -11,6 +11,14 @@ use App\Models\{
     Favourite
 };
 
+use App\Http\Resources\{
+    ProductResource,
+    SaleResource,
+    RecomendedResource,
+    CategoryResource,
+    SubcategoryResource,
+};
+
 class ProductController extends Controller
 {
     public function getRecomended(){
@@ -21,33 +29,48 @@ class ProductController extends Controller
         $randomProducts2 = Product::whereIn('id', $randomProductsIds2)->get();
         $newestProducts = Product::orderBy('created_at', 'desc')->take(4)->get();
         $popularProducts = Product::inRandomOrder()->take(4)->get();
-        $recomendedProducts = collect([$randomProducts1, $randomProducts2, $newestProducts, $popularProducts]);
+        $recomendedProducts = collect([
+            [
+                'title' => $randomCategories[0]->title,
+                'products' => $randomProducts1
+            ], 
+            [
+                'title' => $randomCategories[1]->title,
+                'products' => $randomProducts2
+            ], 
+            [
+                'title' => 'Новинки',
+                'products' => $newestProducts
+            ], 
+            [
+                'title' => 'Популярное',
+                'products' => $popularProducts
+            ]
+        ]);
         return $recomendedProducts;
     }
 
     public function index(){
         $banner = [
             'image' => setting('main-banner.image'),
-            'link' => setting('main-banner.link')
+            'link' => env('APP_URL').'/storage/'.setting('main-banner.link')
         ];
         $mainSale = Sale::orderBy('created_at', 'desc')->take(1)->with('products')->first();
         $sales = Sale::where('is_main', 1)->take(2)->get();
         $news = Sale::orderBy('created_at', 'desc')->take(4)->get();
         return response()->json([
             'banner' => $banner,
-            'mainSale' => $mainSale,
-            'sales' => $sales,
+            'mainSale' => new SaleResource($mainSale),
+            'sales' => SaleResource::collection($sales),
             'recomendedProducts' => $this->getRecomended(),
         ]);
     }
     
     public function category(Category $category){
-        $category->subcategories;
-        $category->constructor;
         $sales = Sale::all();
         return response()->json([
-            'category' => $category, 
-            'sales' => $sales,
+            'category' => new CategoryResource($category), 
+            'sales' => SaleResource::collection($sales),
         ]);
     }
 
@@ -55,8 +78,8 @@ class ProductController extends Controller
         $sales = Sale::all();
         $subcategory->products;
         return response()->json([
-            'sales' => $sales,
             'subcategory' => $subcategory, 
+            'sales' => SaleResource::collection($sales)
         ]);
     }
 
@@ -73,7 +96,7 @@ class ProductController extends Controller
     public function search($string){
         $products = Product::where('title', 'LIKE', '%'.$string.'%')->get();
         return response()->json([
-            'products' => $products,
+            'products' => ProductResource::collection($products),
         ]);
     }
 }
