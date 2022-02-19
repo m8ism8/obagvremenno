@@ -32,28 +32,37 @@ class ProductController extends Controller
         $recomendedProducts = collect([
             [
                 'title' => $randomCategories[0]->title,
-                'products' => $randomProducts1
+                'products' => $this->addImageLink($randomProducts1)
             ], 
             [
                 'title' => $randomCategories[1]->title,
-                'products' => $randomProducts2
+                'products' => $this->addImageLink($randomProducts2)
             ], 
             [
                 'title' => 'Новинки',
-                'products' => $newestProducts
+                'products' => $this->addImageLink($newestProducts)
             ], 
             [
                 'title' => 'Популярное',
-                'products' => $popularProducts
+                'products' => $this->addImageLink($popularProducts)
             ]
         ]);
         return $recomendedProducts;
     }
 
+    public function addImageLink($collection){
+        foreach($collection as $item){
+            if($item->image && str_split($item->image, 4)[0] != 'http' ) {
+                $image = env('APP_URL').'/storage/'.$this->image;
+            }
+        }
+        return $collection;
+    }
+
     public function index(){
         $banner = [
-            'image' => setting('main-banner.image'),
-            'link' => env('APP_URL').'/storage/'.setting('main-banner.link')
+            'image' => env('APP_URL').'/storage/'.setting('main-banner.image'),
+            'link' => setting('main-banner.link')
         ];
         $mainSale = Sale::orderBy('created_at', 'desc')->take(1)->with('products')->first();
         $sales = Sale::where('is_main', 1)->take(2)->get();
