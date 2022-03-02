@@ -13,4 +13,9 @@ class Product extends Model
     {
         return $this->belongsToMany(Sale::class);
     }
+
+    public function filterElements()
+    {
+        return $this->belongsToMany(FilterElement::class, 'element_products', 'product_id', 'element_id');
+    }
 }

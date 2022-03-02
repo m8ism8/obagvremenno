@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
 
 use App\Models\{
     Product,
     Category,
     Subcategory,
     Sale,
-    Favourite
+    Favourite,
+    FilterCategory,
+    FilterElement
 };
 
 use App\Http\Resources\{
@@ -47,7 +50,7 @@ class ProductController extends Controller
                 'products' => $this->addImageLink($popularProducts)
             ]
         ]);
-        return $recomendedProducts;
+        return response()->json(['recomendedProducts' => $recomendedProducts]);
     }
 
     public function addImageLink($collection){
@@ -71,7 +74,6 @@ class ProductController extends Controller
             'banner' => $banner,
             'mainSale' => new SaleResource($mainSale),
             'sales' => SaleResource::collection($sales),
-            'recomendedProducts' => $this->getRecomended(),
         ]);
     }
     
@@ -86,9 +88,46 @@ class ProductController extends Controller
     public function subcategory(Subcategory $subcategory){
         $sales = Sale::all();
         $subcategory->products;
+        $filterElements = [];
+        foreach($subcategory->products as $product){
+            $product->filterElements;
+            if($product->filterElements) {
+                foreach($product->filterElements as $element) {
+                    array_push($filterElements, $element->id);
+                }
+            }
+        }
+        $filters = FilterElement::whereIn('id', $filterElements)->get()->groupBy(function ($item, $key) {
+            $category = FilterCategory::find($item->id);
+            return $category->title;
+        });
         return response()->json([
-            'subcategory' => $subcategory, 
+            'subcategory' => $subcategory,
+            'filters' => $filters,
             'sales' => SaleResource::collection($sales)
+        ]);
+    }
+
+    public function subcategoryFiltered(Subcategory $subcategory, Request $request){
+        $ids = $request->ids;
+        $products = Product::where('subcategory_id', $subcategory->id)->get();
+        $productIds = [];
+        foreach($products as $product){
+            $product->filterElements;
+            foreach($product->filterElements as $element){
+                if (in_array($element->id, $ids)) array_push($productIds, $product->id);
+            }
+        }
+        $products = Product::whereIn('id', $productIds)->get();
+        return response()->json([
+            'products' => $products,
+        ]);
+    }
+
+    public function product(Product $product){
+        $product->filterElements;
+        return response()->json([
+            'product' => $product,
         ]);
     }
 

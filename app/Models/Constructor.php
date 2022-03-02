@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Constructor extends Model
 {
     use HasFactory;
+
+    public function categories(){
+        return $this->hasMany(ConstructorCategory::class);
+    }
+
+    public function types(){
+        return $this->hasMany(ConstructorType::class);
+    }
 }

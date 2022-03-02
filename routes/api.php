@@ -7,7 +7,8 @@ use App\Http\Controllers\{
     CallBackController,
     ProductController,
     AuthController,
-    PageController
+    PageController,
+    ConstructorController
 };
 
 /*
@@ -24,6 +25,7 @@ use App\Http\Controllers\{
 Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/product/{id}/favourite', [ProductController::class, 'favourite']);
     Route::get('/user/favourites', [AuthController::class, 'favourites']);
+    Route::post('/user/edit', [AuthController::class, 'edit']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
@@ -38,9 +40,15 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/callback/send', [CallBackController::class, 'callback']);
 
 Route::get('/index', [ProductController::class, 'index']);
-Route::get('/subcategory/{subcategory}', [ProductController::class, 'subcategory']);
+Route::get('/recomendedProducts', [ProductController::class, 'getRecomended']);
 Route::get('/category/{category}', [ProductController::class, 'category']);
+Route::get('/subcategory/{subcategory}', [ProductController::class, 'subcategory']);
+Route::get('/subcategory/{subcategory}/filtered', [ProductController::class, 'subcategoryFiltered']);
+Route::get('/product/{product}', [ProductController::class, 'product']);
 Route::get('/products/search/{string}', [ProductController::class, 'search']);
+
+Route::get('/constructor/{slug}', [ConstructorController::class, 'constructor']);
+Route::get('/constructor/category/{category}', [ConstructorController::class, 'category']);
 
 Route::get('/page/history', [PageController::class, 'history']);
 Route::get('/page/mission', [PageController::class, 'history']);

@@ -67,4 +67,19 @@ class AuthController extends Controller
             'favourites' => Auth()->user()->favourites,
         ]);
     }
+    public function edit(Request $request){
+        $user = User::find(auth()->id());
+        $userEmail = User::where('id', $user->id)->first();
+        if($userEmail && $user != $userEmail) $message = 'Пользователь с данной почтой уже существует';
+        else {
+            $user->update([
+                'name' => $request->name ?? $user->name,
+                'email' => $request->email ?? $user->email,
+            ]);
+            $message = 'Данные изменены';
+        }
+        return response()->json([
+            'message' => $message,
+        ]);
+    }
 }
