@@ -11,9 +11,8 @@ use App\Models\{
 class CartController extends Controller
 {
     public function store(Request $request){
-        if(auth()->check()){
+        if(Auth::check()){
             $user = auth()->user();
-            dd(auth()->id());
             $user_id = $user->id;
             $name = $user->name;
             $phone = $user->phone;
