@@ -12,7 +12,7 @@ use App\Models\{
 class CartController extends Controller
 {
     public function store(Request $request){
-        if(Auth::check()){
+        if(auth()->id()){
             $user = auth()->user();
             $user_id = $user->id;
             $name = $user->name;
