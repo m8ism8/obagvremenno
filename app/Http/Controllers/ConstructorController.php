@@ -8,19 +8,24 @@ use App\Models\{
     ConstructorCategory,
 };
 
+use App\Http\Resources\{
+    ConstructorResource,
+    ConstructorCategoryResource
+};
+
 class ConstructorController extends Controller
 {
     public function constructor($slug){
-        $constructor = constructor::with('categories', 'types')->where('slug', $slug)->firstOrFail();
+        $constructor = constructor::where('slug', $slug)->firstOrFail();
         return response()->json([
-            'constructor' => $constructor,
+            'constructor' => new ConstructorResource($constructor),
         ]);
     }
 
     public function category(ConstructorCategory $category){
         $category->constructorElements;
         return response()->json([
-            'category' => $category,
+            'category' => ConstructorCategoryResource::collection($category),
         ]);
     }
 }
