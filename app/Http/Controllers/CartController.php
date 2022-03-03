@@ -12,6 +12,7 @@ use App\Models\{
 class CartController extends Controller
 {
     public function store(Request $request){
+        dd(auth()->id());
         if(auth()->id()){
             $user = auth()->user();
             $user_id = $user->id;
