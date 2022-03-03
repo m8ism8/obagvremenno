@@ -11,7 +11,8 @@ use App\Models\{
     Sale,
     Favourite,
     FilterCategory,
-    FilterElement
+    FilterElement,
+    Certificate
 };
 
 use App\Http\Resources\{
@@ -145,6 +146,13 @@ class ProductController extends Controller
         $products = Product::where('title', 'LIKE', '%'.$string.'%')->get();
         return response()->json([
             'products' => ProductResource::collection($products),
+        ]);
+    }
+
+    public function certificates(){
+        $certificates = Certificate::all();
+        return response()->json([
+            'certificates' => $certificates
         ]);
     }
 }

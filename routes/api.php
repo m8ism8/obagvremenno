@@ -48,6 +48,7 @@ Route::get('/subcategory/{subcategory}', [ProductController::class, 'subcategory
 Route::get('/subcategory/{subcategory}/filtered', [ProductController::class, 'subcategoryFiltered']);
 Route::get('/product/{product}', [ProductController::class, 'product']);
 Route::get('/products/search/{string}', [ProductController::class, 'search']);
+Route::get('/certificates', [ProductController::class, 'certificates']);
 
 Route::get('/constructor/{slug}', [ConstructorController::class, 'constructor']);
 Route::get('/constructor/category/{category}', [ConstructorController::class, 'category']);
