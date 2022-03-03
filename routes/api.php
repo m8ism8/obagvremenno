@@ -27,6 +27,8 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/product/{id}/favourite', [ProductController::class, 'favourite']);
     Route::get('/user/favourites', [AuthController::class, 'favourites']);
     Route::post('/user/edit', [AuthController::class, 'edit']);
+    Route::post('/user', [AuthController::class, 'user']);
+    Route::post('/user/history', [AuthController::class, 'history']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 

@@ -14,7 +14,7 @@ class CartController extends Controller
 {
     public function store(Request $request){
         if($request->user_id){
-            $user = User::find($request->id);
+            $user = User::find($request->user_id);
             $name = $user->name;
             $phone = $user->phone;
             $email = $user->email;

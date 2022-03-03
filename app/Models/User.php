@@ -47,4 +47,8 @@ class User extends \TCG\Voyager\Models\User
     public function favourites(){
         return $this->hasMany(Favourite::class)->orderBy('created_at', 'desc');
     }
+
+    public function carts(){
+        return $this->hasMany(Cart::class)->orderBy('created_at', 'desc');
+    }
 }

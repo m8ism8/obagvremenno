@@ -82,4 +82,19 @@ class AuthController extends Controller
             'message' => $message,
         ]);
     }
+    public function user(){
+        return response()->json([
+            'user' => auth()->user()
+        ]);
+    }
+    public function history(){
+        $user = auth()->user();
+        $carts = $user->carts;
+        foreach($carts as $cart){
+            $cart->elements;
+        }
+        return response()->json([
+            'carts' => $carts,
+        ]);
+    }
 }
