@@ -20,13 +20,12 @@ class CartController extends Controller
             $email = $user->email;
         }
         else {
-            $user_id = null;
             $name = $request->name;
             $phone = $request->phone;
             $email = $request->email;
         }
         $cart = Cart::create([
-            'user_id' => $user_id,
+            'user_id' => $user_id ?? null,
             'price' => $request->price,
             'bonus_waste' => $request->bonus_waste,
             'name' => $name,
