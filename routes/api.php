@@ -8,7 +8,8 @@ use App\Http\Controllers\{
     ProductController,
     AuthController,
     PageController,
-    ConstructorController
+    ConstructorController,
+    CartController
 };
 
 /*
@@ -33,7 +34,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -50,6 +50,8 @@ Route::get('/products/search/{string}', [ProductController::class, 'search']);
 Route::get('/constructor/{slug}', [ConstructorController::class, 'constructor']);
 Route::get('/constructor/category/{category}', [ConstructorController::class, 'category']);
 
+Route::post('/cart/store', [CartController::class, 'store']);
+
 Route::get('/page/history', [PageController::class, 'history']);
-Route::get('/page/mission', [PageController::class, 'history']);
-Route::get('/page/brand-info', [PageController::class, 'history']);
+Route::get('/page/mission', [PageController::class, 'mission']);
+Route::get('/page/brand-info', [PageController::class, 'brandInfo']);
