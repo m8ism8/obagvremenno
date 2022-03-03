@@ -21,6 +21,7 @@ use App\Http\Resources\{
     RecomendedResource,
     CategoryResource,
     SubcategoryResource,
+    CertificateResource,
 };
 
 class ProductController extends Controller
@@ -152,7 +153,7 @@ class ProductController extends Controller
     public function certificates(){
         $certificates = Certificate::all();
         return response()->json([
-            'certificates' => $certificates
+            'certificates' => CertificateResource::collection($certificates)
         ]);
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\{
     User,
     Favourite,
+    Product,
 };
 
 class AuthController extends Controller
@@ -44,7 +45,7 @@ class AuthController extends Controller
 
         if(!$user || !Hash::check($fields['password'], $user->password)) {
             return response()->json([
-                'message' => 'Bad creds'
+                'message' => 'Пользователяс таким номером телефона нет, или пароль не подходит'
             ]);
         }
 
@@ -63,8 +64,11 @@ class AuthController extends Controller
         ]);
     }
     public function favourites(){
+        $ids = Auth()->user()->favourites->pluck('product_id');
+        $ids_ordered = implode(',', $ids);
+        $products = Product::wherein('id', $ids)->orderByRaw("FIELD(id, $ids_ordered)")->get();
         return response()->json([
-            'favourites' => Auth()->user()->favourites,
+            'products' => $products,
         ]);
     }
     public function edit(Request $request){
