@@ -11,6 +11,10 @@ use App\Models\{
     Product,
 };
 
+use App\Http\Resources\{
+    ProductResource,
+};
+
 class AuthController extends Controller
 {
     public function register(Request $request){
@@ -68,7 +72,7 @@ class AuthController extends Controller
         $ids_ordered = $ids->join(',');
         $products = Product::wherein('id', $ids)->orderByRaw("FIELD(id, $ids_ordered)")->get();
         return response()->json([
-            'products' => $products,
+            'products' => ProductResource::collection($products),
         ]);
     }
     public function edit(Request $request){
