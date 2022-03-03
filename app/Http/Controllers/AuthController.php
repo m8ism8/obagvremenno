@@ -65,6 +65,7 @@ class AuthController extends Controller
     }
     public function favourites(){
         $ids = Auth()->user()->favourites->pluck('product_id');
+        dd($ids);
         $ids_ordered = implode(',', $ids);
         $products = Product::wherein('id', $ids)->orderByRaw("FIELD(id, $ids_ordered)")->get();
         return response()->json([
