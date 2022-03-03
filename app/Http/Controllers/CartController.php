@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use Mail;
+use App\Mail\DeliveryMail;
+
 use App\Models\{
     Cart,
     CartElement,
@@ -46,6 +49,7 @@ class CartController extends Controller
             ]);
         }
         $cart->elements;
+        \Mail::to($email)->send(new DeliveryMail($cart));
         return response()->json([
             'cart' => $cart,
         ]);
