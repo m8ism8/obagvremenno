@@ -7,15 +7,14 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\{
     Cart,
     CartElement,
+    User
 };
 
 class CartController extends Controller
 {
     public function store(Request $request){
-        dd(auth()->id());
-        if(auth()->id()){
-            $user = auth()->user();
-            $user_id = $user->id;
+        if($request->user_id){
+            $user = User::find($request->id);
             $name = $user->name;
             $phone = $user->phone;
             $email = $user->email;
@@ -26,7 +25,7 @@ class CartController extends Controller
             $email = $request->email;
         }
         $cart = Cart::create([
-            'user_id' => $user_id ?? null,
+            'user_id' => $request->user_id ?? null,
             'price' => $request->price,
             'bonus_waste' => $request->bonus_waste,
             'name' => $name,
