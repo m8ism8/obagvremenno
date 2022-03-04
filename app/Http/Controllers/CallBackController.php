@@ -22,7 +22,4 @@ class CallBackController extends Controller
         CallBack::create($fields);
         return response()->json(['message' => 'done.']);
     }
-    public function newMail(Request $request){
-        
-    }
 }

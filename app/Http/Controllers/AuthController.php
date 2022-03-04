@@ -10,6 +10,7 @@ use App\Models\{
     Favourite,
     Product,
     Review,
+    Mail,
 };
 
 use App\Http\Resources\{
@@ -122,9 +123,23 @@ class AuthController extends Controller
     public function getProducts(){
         $user = User::find(auth()->id());
         $user->cartElements;
-        $product_ids = $user->cartElements->pluck('product_id');
+        $product_ids = $user->cartElements->pluck('product_id')->unique()->diff([null]);
         return response()->json([
             'product_ids' => $product_ids
+        ]);
+    }
+    public function subscribe(){
+        $user = User::find(auth()->id());
+        $mail = Mail::where('mail', $user->email)->first();
+        if($mail) $message = 'Вы уже подписаны на рассылку новостей';
+        else {
+        Mail::create([
+            'mail' => $user->email
+        ]);
+        $message = 'Успешно подписались на рассылку';
+        }
+        return response()->json([
+            'message' => $message,
         ]);
     }
 }
