@@ -21,12 +21,13 @@ class CartController extends Controller
             $name = $user->name;
             $phone = $user->phone;
             $email = $user->email;
+            $address = $user->address;
         }
-        else {
-            $name = $request->name;
-            $phone = $request->phone;
-            $email = $request->email;
-        }
+        $name = $request->name ?? $name;
+        $phone = $request->phone ?? $phone;
+        $email = $request->email ?? $email;
+        $address = $request->address ?? $address;
+
         $cart = Cart::create([
             'user_id' => $request->user_id ?? null,
             'price' => $request->price,
@@ -35,7 +36,8 @@ class CartController extends Controller
             'phone' => $phone,
             'email' => $email,
             'delivery_type' => $request->delivery_type,
-            'payment_type' => $request->payment_type
+            'payment_type' => $request->payment_type,
+            'address' => $address
         ]);
         foreach($request->cart_elements as $element) {
             CartElement::create([

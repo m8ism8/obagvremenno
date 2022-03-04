@@ -22,7 +22,9 @@ class User extends \TCG\Voyager\Models\User
         'email',
         'password',
         'bonus',
-        'phone'
+        'phone',
+        'address',
+        'date_of_birth'
     ];
 
     /**

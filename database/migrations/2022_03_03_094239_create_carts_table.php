@@ -23,6 +23,7 @@ class CreateCartsTable extends Migration
             $table->string('email');
             $table->string('delivery_type');
             $table->string('payment_type');
+            $table->string('address');
             $table->timestamps();
         });
     }

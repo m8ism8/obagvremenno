@@ -83,6 +83,8 @@ class AuthController extends Controller
             $user->update([
                 'name' => $request->name ?? $user->name,
                 'email' => $request->email ?? $user->email,
+                'address' => $request->address ?? $user->address,
+                'date_of_birth' => $request->date_of_birth ?? $user->date_of_birth
             ]);
             $message = 'Данные изменены';
         }

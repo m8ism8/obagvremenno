@@ -22,7 +22,7 @@ class ConsrtuctorResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'image' => env('APP_URL').'/storage/'.$this->image,
-            // 'slug' => $this->slug,
+            'slug' => $this->slug,
             'categories' => ConstructorCategoryResource::collection($this->categories),
             'types' => ConstructorTypeResource::collection($this->types)
         ];
