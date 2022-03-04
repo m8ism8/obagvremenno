@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Sale;
+use App\Models\City;
 
 class PageController extends Controller
 {
@@ -43,6 +44,12 @@ class PageController extends Controller
         }
         return response()->json([
             'news' => $news_items
+        ]);
+    }
+    public function getCities(){
+        $cities = City::with('fillials')->get();
+        return response()->json([
+            'cities' => $cities
         ]);
     }
 }

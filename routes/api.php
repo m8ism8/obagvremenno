@@ -56,6 +56,7 @@ Route::get('/constructor/category/{category}', [ConstructorController::class, 'c
 
 Route::post('/cart/store', [CartController::class, 'store']);
 
+Route::get('/get-cities', [PageController::class, 'getCities']);
 Route::get('/page/history', [PageController::class, 'history']);
 Route::get('/page/mission', [PageController::class, 'mission']);
 Route::get('/page/brand-info', [PageController::class, 'brandInfo']);
