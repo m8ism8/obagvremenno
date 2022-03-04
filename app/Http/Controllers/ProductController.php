@@ -136,7 +136,7 @@ class ProductController extends Controller
     public function product(Product $product){
         $product->filterElements;
         return response()->json([
-            'product' => $product,
+            'product' => new ProductResource($product),
         ]);
     }
 
