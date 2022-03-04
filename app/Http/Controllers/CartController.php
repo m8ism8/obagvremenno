@@ -51,7 +51,10 @@ class CartController extends Controller
             ]);
         }
         $cart->elements;
-        \Mail::to($email)->send(new DeliveryMail($cart));
+        try {
+            \Mail::to($email)->send(new DeliveryMail($cart));
+        }
+        catch{}
         return response()->json([
             'cart' => $cart,
         ]);
