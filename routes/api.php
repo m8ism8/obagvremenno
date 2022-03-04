@@ -30,6 +30,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/user', [AuthController::class, 'user']);
     Route::post('/user/history', [AuthController::class, 'history']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/product/{id}/review', [AuthController::class, 'review']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

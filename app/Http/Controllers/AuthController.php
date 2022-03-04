@@ -9,6 +9,7 @@ use App\Models\{
     User,
     Favourite,
     Product,
+    Review,
 };
 
 use App\Http\Resources\{
@@ -105,6 +106,17 @@ class AuthController extends Controller
         }
         return response()->json([
             'carts' => $carts,
+        ]);
+    }
+    public function review($id, Request $request){
+        Review::create([
+            'user_id' => auth()->id(),
+            'product_id' => $id,
+            'rating' => $request->rating,
+            'text' => $request->text ?? null,
+        ]);
+        return response()->json([
+            'message' => 'Отзыв отправлен на модерацию'
         ]);
     }
 }
