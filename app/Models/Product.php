@@ -18,4 +18,8 @@ class Product extends Model
     {
         return $this->belongsToMany(FilterElement::class, 'element_products', 'product_id', 'element_id');
     }
+
+    public function reviews(){
+        return $this->hasMany(Review::class)->where('is_approved', '1')->orderBy('created_at', 'desc');
+    }
 }

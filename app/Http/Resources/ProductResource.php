@@ -30,6 +30,7 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'image' => $image,
             'video' => $this->video ?? null,
+            'reviews' => $this->reviews
         ];
     }
 }
