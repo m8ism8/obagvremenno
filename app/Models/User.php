@@ -53,4 +53,8 @@ class User extends \TCG\Voyager\Models\User
     public function carts(){
         return $this->hasMany(Cart::class)->orderBy('created_at', 'desc');
     }
+    
+    public function cartElements(){
+        return $this->hasManyThrough(CartElement::class, Cart::class);
+    }
 }

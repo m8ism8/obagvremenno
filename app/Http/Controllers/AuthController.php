@@ -119,4 +119,12 @@ class AuthController extends Controller
             'message' => 'Отзыв отправлен на модерацию'
         ]);
     }
+    public function getProducts(){
+        $user = User::find(auth()->id());
+        $user->cartElements;
+        $product_ids = $user->cartElements->pluck('product_id')
+        return response()->json([
+            'product_ids' => $product_ids
+        ]);
+    }
 }
