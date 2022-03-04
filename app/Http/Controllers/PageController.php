@@ -13,10 +13,8 @@ class PageController extends Controller
             'image' => env('APP_URL') . '/storage/'.setting('history.image'),
             'text' => setting('history.text')
         ];
-        $news = Sale::orderBy('created_at', 'desc')->take(4)->get();
         return response()->json([
             'content' => $content,
-            'news' => $news
         ]);
     }
     public function mission(){
@@ -25,10 +23,8 @@ class PageController extends Controller
             'image' => env('APP_URL') . '/storage/'.setting('mission.image'),
             'text' => setting('mission.text')
         ];
-        $news = Sale::orderBy('created_at', 'desc')->take(4)->get();
         return response()->json([
             'content' => $content,
-            'news' => $news
         ]);
     }
     public function brandInfo(){
@@ -36,10 +32,17 @@ class PageController extends Controller
             'title' => setting('brand-info.title'),
             'text' => setting('brand-info.text')
         ];
-        $news = Sale::orderBy('created_at', 'desc')->take(4)->get();
         return response()->json([
             'content' => $content,
-            'news' => $news
+        ]);
+    }
+    public function getNews(){
+        $news_items = Sale::orderBy('created_at', 'desc')->take(4)->get();
+        foreach($news_items as $news){
+            $news->image = env('APP_URL').'/storage/'.$news->image;
+        }
+        return response()->json([
+            'news' => $news_items
         ]);
     }
 }

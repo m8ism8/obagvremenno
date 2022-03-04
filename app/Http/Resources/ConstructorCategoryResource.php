@@ -3,12 +3,9 @@
 namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-use App\Http\Resources\{
-    ConstructorElementResource,
-};
+use App\Http\Resources\ConsrtuctorElementResource;
 
-
-class ConsrtuctorCategoryResource extends JsonResource
+class ConstructorCategoryResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -20,7 +17,7 @@ class ConsrtuctorCategoryResource extends JsonResource
     {
         return [
             'title' => $this->title,
-            'elements' => ConstructorElementResource::collection($this->constructorElements),
+            'elements' => ConsrtuctorElementResource::collection($this->constructorElements),
         ];
     }
 }

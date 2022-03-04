@@ -42,6 +42,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/callback/send', [CallBackController::class, 'callback']);
 
 Route::get('/index', [ProductController::class, 'index']);
+Route::get('/get-categories', [ProductController::class, 'getCategories']);
 Route::get('/recomendedProducts', [ProductController::class, 'getRecomended']);
 Route::get('/category/{category}', [ProductController::class, 'category']);
 Route::get('/subcategory/{subcategory}', [ProductController::class, 'subcategory']);
@@ -58,3 +59,4 @@ Route::post('/cart/store', [CartController::class, 'store']);
 Route::get('/page/history', [PageController::class, 'history']);
 Route::get('/page/mission', [PageController::class, 'mission']);
 Route::get('/page/brand-info', [PageController::class, 'brandInfo']);
+Route::get('/page/get-news', [PageController::class, 'getNews']);

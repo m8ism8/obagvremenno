@@ -24,7 +24,7 @@ class CategoryResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'text' => $this->text,
-            'image' => $this->image,
+            'image' => $image,
             'subcategories' => SubcategoriesResource::collection($this->subcategories),
             'constructor' => new ConstructorResource($this->constructor)
         ];

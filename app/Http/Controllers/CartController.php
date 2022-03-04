@@ -54,7 +54,8 @@ class CartController extends Controller
         try {
             \Mail::to($email)->send(new DeliveryMail($cart));
         }
-        catch{}
+        catch (Throwable $e){
+        }
         return response()->json([
             'cart' => $cart,
         ]);

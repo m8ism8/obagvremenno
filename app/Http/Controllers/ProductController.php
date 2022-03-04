@@ -79,6 +79,13 @@ class ProductController extends Controller
         ]);
     }
     
+    public function getcategories(){
+        $categories = category::with('subcategories')->get();
+        return response()->json([
+            'categories' => CategoryResource::collection($categories)
+        ]);
+    }
+
     public function category(Category $category){
         $sales = Sale::all();
         return response()->json([
