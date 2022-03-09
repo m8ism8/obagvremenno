@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\ImportController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,4 +22,6 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
+    Route::get('/excel-import', [ImportController::class, 'index']);
+    Route::post('/excel-import/send', [ImportController::class, 'import']);
 });
