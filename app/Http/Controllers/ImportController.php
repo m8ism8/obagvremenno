@@ -15,6 +15,9 @@ class ImportController extends Controller
 
     public function import(){
         Excel::import(new ProductsImport, 'o-bag-products.xlsx');
-        return redirect('/admin')->with('success', 'All good!');
+        return redirect('/admin')->with([
+            'message'    => 'Продукты были добавлены на сайт!',
+            'alert-type' => 'success',
+        ]);
     }
 }
