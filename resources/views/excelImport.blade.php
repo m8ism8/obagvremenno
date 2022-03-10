@@ -2,10 +2,11 @@
 @section('content')
   
   <div class="container" style="margin-top: 10%">
-    <p>Имортироуйте товары из excel файла!</p>
-    <form action="/admin/excel-import/send" method="post">
+    <h3>Имортируйте товары из excel файла!</h3>
+    <form action="/admin/excel-import/send" method="post" enctype="multipart/form-data">
       @csrf
-      <button type="submit" class="btn btn-primary save">Save</button>
+      <input type="file" name="file" style="margin-top: 15px">
+      <button type="submit" class="btn btn-primary save" style="margin-top: 15px">Импортировать</button>
     </form>
   </div> 
 
