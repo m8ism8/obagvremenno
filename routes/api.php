@@ -49,7 +49,7 @@ Route::get('/get-categories', [ProductController::class, 'getCategories']);
 Route::get('/recomendedProducts', [ProductController::class, 'getRecomended']);
 Route::get('/category/{category}', [ProductController::class, 'category']);
 Route::get('/subcategory/{subcategory}', [ProductController::class, 'subcategory']);
-Route::get('/subcategory/{subcategory}/filtered', [ProductController::class, 'subcategoryFiltered']);
+Route::post('/subcategory/{subcategory}/filtered', [ProductController::class, 'subcategoryFiltered']);
 Route::get('/product/{product}', [ProductController::class, 'product']);
 Route::get('/products/search/{string}', [ProductController::class, 'search']);
 Route::get('/certificates', [ProductController::class, 'certificates']);

@@ -124,7 +124,7 @@ class ProductController extends Controller
         foreach($products as $product){
             $product->filterElements;
             foreach($product->filterElements as $element){
-                if (in_array($element->id, $ids)) array_push($productIds, $product->id);
+                if (in_array($element->id, $ids) && !in_array($product->id, $productIds)) array_push($productIds, $product->id);
             }
         }
         $products = Product::whereIn('id', $productIds)->get();
