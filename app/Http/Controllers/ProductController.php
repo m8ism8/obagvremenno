@@ -20,6 +20,7 @@ use App\Http\Resources\{
     SaleResource,
     RecomendedResource,
     CategoryResource,
+    CategoriesResource,
     SubcategoryResource,
     CertificateResource,
 };
@@ -82,7 +83,7 @@ class ProductController extends Controller
     public function getcategories(){
         $categories = category::with('subcategories')->get();
         return response()->json([
-            'categories' => CategoryResource::collection($categories)
+            'categories' => CategoriesResource::collection($categories)
         ]);
     }
 
