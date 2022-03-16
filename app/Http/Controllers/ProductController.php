@@ -89,7 +89,21 @@ class ProductController extends Controller
 
     public function category(Category $category){
         $sales = Sale::all();
+        $filterElements = [];
+        foreach($category->products as $product){
+            $product->filterElements;
+            if($product->filterElements) {
+                foreach($product->filterElements as $element) {
+                    array_push($filterElements, $element->id);
+                }
+            }
+        }
+        $filters = FilterElement::whereIn('id', $filterElements)->get()->groupBy(function ($item, $key) {
+            $category = FilterCategory::find($item->id);
+            return $category->title;
+        });
         return response()->json([
+            'filters' => $filters,
             'category' => new CategoryResource($category), 
             'sales' => SaleResource::collection($sales),
         ]);
