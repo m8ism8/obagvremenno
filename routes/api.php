@@ -10,7 +10,8 @@ use App\Http\Controllers\{
     PageController,
     ConstructorController,
     CartController,
-    InformationPageController
+    InformationPageController,
+    ContactController
 };
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +67,10 @@ Route::get('/page/history', [PageController::class, 'history']);
 Route::get('/page/mission', [PageController::class, 'mission']);
 Route::get('/page/brand-info', [PageController::class, 'brandInfo']);
 Route::get('/page/get-news', [PageController::class, 'getNews']);
+
+//Контакты
+Route::get('contact',[ContactController::class, 'index']);
+Route::post('contact',[ContactController::class, 'create']);
 
 
 //Information Pages
