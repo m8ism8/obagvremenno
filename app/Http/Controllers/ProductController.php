@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 
+use Illuminate\Support\Facades\Auth;
 use App\Models\{
     Product,
     Category,
@@ -35,29 +36,39 @@ class ProductController extends Controller
         $randomProducts2 = Product::whereIn('id', $randomProductsIds2)->get();
         $newestProducts = Product::orderBy('created_at', 'desc')->take(4)->get();
         $popularProducts = Product::inRandomOrder()->take(4)->get();
+
+
+
+
         $recomendedProducts = collect([
             [
                 'title' => $randomCategories[0]->title,
                 'products' => $this->addImageLink($randomProducts1)
-            ], 
+            ],
             [
                 'title' => $randomCategories[1]->title,
                 'products' => $this->addImageLink($randomProducts2)
-            ], 
+            ],
             [
                 'title' => 'Новинки',
                 'products' => $this->addImageLink($newestProducts)
-            ], 
+            ],
             [
                 'title' => 'Популярное',
                 'products' => $this->addImageLink($popularProducts)
             ]
         ]);
+
+
         return response()->json(['recomendedProducts' => $recomendedProducts]);
     }
 
     public function addImageLink($collection){
         foreach($collection as $item){
+            $item->isFavorite = Favourite::query()
+                ->where('product_id',$item->id)
+                ->where('user_id', Auth::guard('sanctum')->id())
+                ->exists();
             if($item->image && str_split($item->image, 4)[0] != 'http' ) {
                 $image = env('APP_URL').'/storage/'.$item->image;
             }
@@ -105,7 +116,7 @@ class ProductController extends Controller
             'sales' => SaleResource::collection($sales),
         ]);
     }
-    
+
     public function getcategories(){
         $categories = category::with('subcategories')->get();
         return response()->json([
@@ -116,9 +127,12 @@ class ProductController extends Controller
     public function category(Category $category){
         $sales = Sale::all();
         $filters = $this->getFilters($category->products);
+
+
+
         return response()->json([
             'filters' => $filters,
-            'category' => new CategoryResource($category), 
+            'category' => new CategoryResource($category),
             'sales' => SaleResource::collection($sales),
         ]);
     }
@@ -145,6 +159,15 @@ class ProductController extends Controller
             $productIds = $products->pluck('id');
         }
         $products = Product::whereIn('id', $productIds)->get();
+
+
+        foreach ($products as $product) {
+            $product->isFavorite = Favourite::query()
+                ->where('product_id',$product->id)
+                ->where('user_id', Auth::guard('sanctum')->id())
+                ->exists();
+        }
+
         return response()->json([
             'products' => $products,
         ]);
@@ -152,8 +175,15 @@ class ProductController extends Controller
 
     public function subcategory(Subcategory $subcategory){
         $sales = Sale::all();
-        $subcategory->products;
         $filters = $this->getFilters($subcategory->products);
+
+        foreach ($subcategory->products as $product) {
+            $product->isFavorite = Favourite::query()
+                ->where('product_id',$product->id)
+                ->where('user_id', Auth::guard('sanctum')->id())
+                ->exists();
+        }
+
         return response()->json([
             'subcategory' => $subcategory,
             'filters' => $filters,
@@ -162,7 +192,7 @@ class ProductController extends Controller
     }
 
     public function subcategoryFiltered(Subcategory $subcategory, Request $request){
-        
+
         $products = Product::where('subcategory_id', $subcategory->id)->get();
         foreach($products as $product) {
             $product->actualPrice = $product->new_price ?? $product->price;
@@ -184,6 +214,14 @@ class ProductController extends Controller
             $productIds = $products->pluck('id');
         }
         $products = Product::whereIn('id', $productIds)->get();
+
+        foreach ($products as $product) {
+            $product->isFavorite = Favourite::query()
+                ->where('product_id',$product->id)
+                ->where('user_id', Auth::guard('sanctum')->id())
+                ->exists();
+        }
+
         return response()->json([
             'products' => $products,
         ]);
@@ -192,6 +230,11 @@ class ProductController extends Controller
     public function product(Product $product){
         $product->filterElements;
         $product->reviews;
+
+        $product->isFavorite = Favourite::query()
+                                         ->where('product_id',$product->id)
+                                         ->where('user_id', Auth::guard('sanctum')->id())
+                                         ->exists();
         return response()->json([
             'product' => new ProductResource($product),
         ]);
@@ -209,6 +252,14 @@ class ProductController extends Controller
 
     public function search($string){
         $products = Product::where('title', 'LIKE', '%'.$string.'%')->get();
+
+        foreach ($products as $product) {
+            $product->isFavorite = Favourite::query()
+                ->where('product_id',$product->id)
+                ->where('user_id', Auth::guard('sanctum')->id())
+                ->exists();
+        }
+
         return response()->json([
             'products' => ProductResource::collection($products),
         ]);

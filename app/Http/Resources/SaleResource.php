@@ -29,4 +29,6 @@ class SaleResource extends JsonResource
             'products' => ProductResource::collection($this->products)
         ];
     }
+
+
 }

@@ -2,7 +2,9 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Favourite;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class ProductResource extends JsonResource
 {
@@ -30,7 +32,16 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'image' => $image,
             'video' => $this->video ?? null,
-            'reviews' => $this->reviews
+            'reviews' => $this->reviews,
+            'isFavorite' => $this->isFavorite ?? self::isFavorite($this->id)
         ];
+    }
+
+    public static function isFavorite($id): bool
+    {
+        return Favourite::query()
+            ->where('product_id', $id)
+            ->where('user_id', Auth::guard('sanctum')->id())
+            ->exists();
     }
 }

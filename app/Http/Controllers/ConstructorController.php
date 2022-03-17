@@ -17,7 +17,7 @@ class ConstructorController extends Controller
 {
     public function constructor($slug){
 
-        $constructor = Constructor::with('categories', 'types')->where('slug', 'watch')->firstOrFail();
+        $constructor = Constructor::with('categories', $slug)->where('slug', 'watch')->firstOrFail();
         $constructor->square_image = env('APP_URL').'/storage/'.$constructor->square_image;
         $constructor->wide_image = env('APP_URL').'/storage/'.$constructor->wide_image;
         $constructor->template_image = env('APP_URL').'/storage/'.$constructor->template_image;
@@ -32,6 +32,7 @@ class ConstructorController extends Controller
                     $images[] = $item;
                 }
                 $element->images = $images;
+                $images = [];
             }
         }
 
