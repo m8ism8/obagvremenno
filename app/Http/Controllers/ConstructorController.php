@@ -16,10 +16,16 @@ use App\Http\Resources\{
 class ConstructorController extends Controller
 {
     public function constructor($slug){
-        $constructor = constructor::with('categories', 'types')->where('slug', 'watch')->firstOrFail();
+        $constructor = Constructor::with('categories', 'types')->where('slug', 'watch')->firstOrFail();
         $constructor->square_image = env('APP_URL').'/storage/'.$constructor->square_image;
         $constructor->wide_image = env('APP_URL').'/storage/'.$constructor->wide_image;
         $constructor->template_image = env('APP_URL').'/storage/'.$constructor->template_image;
+        foreach($constructor->categories as $category) {
+            $category->constructorElements;
+            foreach($category->constructorElements as $element){
+                $element->image = env('APP_URL').'/storage/'.$element->image;
+            }
+        }
         return response()->json([
             'constructor' => $constructor,
         ]);

@@ -16,4 +16,8 @@ class Constructor extends Model
     public function types(){
         return $this->hasMany(ConstructorType::class);
     }
+
+    public function elements(){
+        return $this->hasManyThrough(ConstructorElement::class, ConstructorCategory::class, 'element_id', 'category_id');
+    }
 }
