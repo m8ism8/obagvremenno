@@ -19,6 +19,11 @@ class ConstructorController extends Controller
     public function index(): JsonResponse
     {
         $constructors = Constructor::all();
+        foreach ($constructors as $constructor) {
+            $constructor->template_image = env('APP_URL').'/storage/'.$constructor->square_image;
+            $constructor->wide_image     = env('APP_URL').'/storage/'.$constructor->square_image;
+            $constructor->square_image   = env('APP_URL').'/storage/'.$constructor->square_image;
+        }
         return response()->json($constructors);
     }
 
