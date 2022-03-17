@@ -65,6 +65,32 @@ class ProductController extends Controller
         return $collection;
     }
 
+    public function getFilters($products){
+        $filterElementsIds = [];
+        foreach($products as $product){
+            $product->filterElements;
+            if($product->filterElements) {
+                foreach($product->filterElements as $element) {
+                    if(!in_array($element->id, $filterElementsIds)) $filterElementsIds[]=$element->id;
+                }
+            }
+        }
+        $filters = FilterElement::whereIn('id', $filterElementsIds)->get();
+        $filterFinal = [];
+        $filterCategoriesUsed = [];
+        foreach($filters as $filter) {
+            $category = FilterCategory::find($filter->category_id);
+            if(!in_array($filter->category_id, $filterCategoriesUsed)){
+                $filterCategoriesUsed[]=$filter->category_id;
+                $filterFinal[$category->title] = [$filter];
+            }
+            else {
+                array_push($filterFinal[$category->title], $filter);
+            }
+        }
+        return $filterFinal;
+    }
+
     public function index(){
         $banner = [
             'image' => env('APP_URL').'/storage/'.setting('main-banner.image'),
@@ -89,19 +115,7 @@ class ProductController extends Controller
 
     public function category(Category $category){
         $sales = Sale::all();
-        $filterElements = [];
-        foreach($category->products as $product){
-            $product->filterElements;
-            if($product->filterElements) {
-                foreach($product->filterElements as $element) {
-                    array_push($filterElements, $element->id);
-                }
-            }
-        }
-        $filters = FilterElement::whereIn('id', $filterElements)->get()->groupBy(function ($item, $key) {
-            $category = FilterCategory::find($item->id);
-            return $category->title;
-        });
+        $filters = $this->getFilters($category->products);
         return response()->json([
             'filters' => $filters,
             'category' => new CategoryResource($category), 
@@ -112,19 +126,7 @@ class ProductController extends Controller
     public function subcategory(Subcategory $subcategory){
         $sales = Sale::all();
         $subcategory->products;
-        $filterElements = [];
-        foreach($subcategory->products as $product){
-            $product->filterElements;
-            if($product->filterElements) {
-                foreach($product->filterElements as $element) {
-                    array_push($filterElements, $element->id);
-                }
-            }
-        }
-        $filters = FilterElement::whereIn('id', $filterElements)->get()->groupBy(function ($item, $key) {
-            $category = FilterCategory::find($item->id);
-            return $category->title;
-        });
+        $filters = $this->getFilters($subcategory->products);
         return response()->json([
             'subcategory' => $subcategory,
             'filters' => $filters,
@@ -133,14 +135,26 @@ class ProductController extends Controller
     }
 
     public function subcategoryFiltered(Subcategory $subcategory, Request $request){
-        $ids = $request->ids;
+        
         $products = Product::where('subcategory_id', $subcategory->id)->get();
-        $productIds = [];
-        foreach($products as $product){
-            $product->filterElements;
-            foreach($product->filterElements as $element){
-                if (in_array($element->id, $ids) && !in_array($product->id, $productIds)) array_push($productIds, $product->id);
+        foreach($products as $product) {
+            $product->actualPrice = $product->new_price ?? $product->price;
+        }
+        if($request->price_from) $products = $products->where('actualPrice', '>', $request->price_from);
+        if($request->price_to) $products = $products->where('actualPrice', '<', $request->price_to);
+
+        if($request->ids) {
+            $ids = $request->ids;
+            $productIds = [];
+            foreach($products as $product){
+                $product->filterElements;
+                foreach($product->filterElements as $element){
+                    if (in_array($element->id, $ids) && !in_array($product->id, $productIds)) array_push($productIds, $product->id);
+                }
             }
+        }
+        else {
+            $productIds = $products->pluck('id');
         }
         $products = Product::whereIn('id', $productIds)->get();
         return response()->json([

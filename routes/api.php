@@ -46,8 +46,9 @@ Route::post('/callback/send', [CallBackController::class, 'callback']);
 
 Route::get('/index', [ProductController::class, 'index']);
 Route::get('/get-categories', [ProductController::class, 'getCategories']);
-Route::get('/recomendedProducts', [ProductController::class, 'getRecomended']);
+Route::post('/recomended-products', [ProductController::class, 'getRecomended']);
 Route::get('/category/{category}', [ProductController::class, 'category']);
+Route::get('/category/{category}/filtered', [ProductController::class, 'categoryFiltered']);
 Route::get('/subcategory/{subcategory}', [ProductController::class, 'subcategory']);
 Route::post('/subcategory/{subcategory}/filtered', [ProductController::class, 'subcategoryFiltered']);
 Route::get('/product/{product}', [ProductController::class, 'product']);
