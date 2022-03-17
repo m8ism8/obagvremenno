@@ -13,6 +13,7 @@ use App\Http\Resources\{
     ConstructorResource,
     ConstructorCategoryResource
 };
+use function PHPUnit\Framework\isJson;
 
 class ConstructorController extends Controller
 {
@@ -20,9 +21,9 @@ class ConstructorController extends Controller
     {
         $constructors = Constructor::all();
         foreach ($constructors as $constructor) {
-            $constructor->template_image = env('APP_URL').'/storage/'.$constructor->square_image;
-            $constructor->wide_image     = env('APP_URL').'/storage/'.$constructor->square_image;
-            $constructor->square_image   = env('APP_URL').'/storage/'.$constructor->square_image;
+            $constructor->template_image = $this->parseImage($constructor->template_image);
+            $constructor->wide_image     = $this->parseImage($constructor->square_image);
+            $constructor->square_image   = $this->parseImage($constructor->square_image);
         }
         return response()->json($constructors);
     }
@@ -30,9 +31,9 @@ class ConstructorController extends Controller
     public function constructor($slug){
 
         $constructor = Constructor::with('categories', 'types')->where('slug', $slug)->firstOrFail();
-        $constructor->square_image = env('APP_URL').'/storage/'.$constructor->square_image;
-        $constructor->wide_image = env('APP_URL').'/storage/'.$constructor->wide_image;
-        $constructor->template_image = env('APP_URL').'/storage/'.$constructor->template_image;
+        $constructor->square_image = $this->parseImage($constructor->square_image);
+        $constructor->wide_image = $this->parseImage($constructor->wide_image);
+        $constructor->template_image = $this->parseImage($constructor->template_image);
         $images = [];
         foreach($constructor->categories as $category) {
             $category->constructorElements;
@@ -61,5 +62,17 @@ class ConstructorController extends Controller
         return response()->json([
             'category' => $category,
         ]);
+    }
+
+    protected function parseImage($image)
+    {
+        $check = json_decode($image, true);
+
+        if ($check) {
+            $image = json_decode($image, true);
+            return env('APP_URL').'/storage/'.$image[0]['download_link'];
+        }
+
+        return env('APP_URL').'/storage/'.$image;
     }
 }
