@@ -66,3 +66,6 @@ Route::get('/page/history', [PageController::class, 'history']);
 Route::get('/page/mission', [PageController::class, 'mission']);
 Route::get('/page/brand-info', [PageController::class, 'brandInfo']);
 Route::get('/page/get-news', [PageController::class, 'getNews']);
+
+
+//Information Pages
