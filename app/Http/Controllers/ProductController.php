@@ -126,9 +126,8 @@ class ProductController extends Controller
 
     public function category(Category $category){
         $sales = Sale::all();
+
         $filters = $this->getFilters($category->products);
-
-
 
         return response()->json([
             'filters' => $filters,
@@ -168,12 +167,29 @@ class ProductController extends Controller
                 ->exists();
         }
 
+        if ($request->sort_price) {
+            $products = $products->sortBy([
+                [
+                    'price', $request->sort_price
+                ]
+            ]);
+        }
+
+
         return response()->json([
             'products' => $products,
         ]);
     }
 
     public function subcategory(Subcategory $subcategory){
+
+        if (request()->has('sort_price')) {
+            $subcategory->product = $subcategory->products->sortBy([
+                [
+                    'price', request()->input('sort_price')
+                ]
+            ]);
+        }
         $sales = Sale::all();
         $filters = $this->getFilters($subcategory->products);
 
@@ -183,6 +199,7 @@ class ProductController extends Controller
                 ->where('user_id', Auth::guard('sanctum')->id())
                 ->exists();
         }
+
 
         return response()->json([
             'subcategory' => $subcategory,
@@ -220,6 +237,14 @@ class ProductController extends Controller
                 ->where('product_id',$product->id)
                 ->where('user_id', Auth::guard('sanctum')->id())
                 ->exists();
+        }
+
+        if ($request->sort_price) {
+            $products = $products->sortBy([
+                [
+                    'price', $request->sort_price
+                ]
+            ]);
         }
 
         return response()->json([
