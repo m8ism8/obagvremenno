@@ -250,6 +250,28 @@ class ProductController extends Controller
         ]);
     }
 
+    public function favouriteDelete($id)
+    {
+
+        $favorite = Favourite::query()
+                                ->where('user_id', Auth::id())
+                                ->where('product_id', $id)
+                                ->first();
+        if (!isset($favorite)) {
+            return response()->json(
+                [
+                    'message' => 'Товара нет в корзине',
+                ], 422
+            );
+        }
+
+        $favorite->delete();
+
+        return response()->json([
+                'message' => 'Товар успешно удален'
+        ],200);
+    }
+
     public function search($string){
         $products = Product::where('title', 'LIKE', '%'.$string.'%')->get();
 

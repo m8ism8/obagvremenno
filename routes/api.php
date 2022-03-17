@@ -25,6 +25,7 @@ use App\Http\Controllers\{
 
 Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/product/{id}/favourite', [ProductController::class, 'favourite']);
+    Route::delete('/product/{id}/favourite', [ProductController::class, 'favouriteDelete']);
     Route::get('/user/favourites', [AuthController::class, 'favourites']);
     Route::post('/user/edit', [AuthController::class, 'edit']);
     Route::post('/user', [AuthController::class, 'user']);
