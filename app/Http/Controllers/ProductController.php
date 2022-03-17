@@ -123,6 +123,33 @@ class ProductController extends Controller
         ]);
     }
 
+    public function categoryFiltered(category $category, Request $request){
+        $products = $category->products;
+        foreach($products as $product) {
+            $product->actualPrice = $product->new_price ?? $product->price;
+        }
+        if($request->price_from) $products = $products->where('actualPrice', '>=', $request->price_from);
+        if($request->price_to) $products = $products->where('actualPrice', '<=', $request->price_to);
+
+        if($request->ids) {
+            $ids = $request->ids;
+            $productIds = [];
+            foreach($products as $product){
+                $product->filterElements;
+                foreach($product->filterElements as $element){
+                    if (in_array($element->id, $ids) && !in_array($product->id, $productIds)) array_push($productIds, $product->id);
+                }
+            }
+        }
+        else {
+            $productIds = $products->pluck('id');
+        }
+        $products = Product::whereIn('id', $productIds)->get();
+        return response()->json([
+            'products' => $products,
+        ]);
+    }
+
     public function subcategory(Subcategory $subcategory){
         $sales = Sale::all();
         $subcategory->products;
