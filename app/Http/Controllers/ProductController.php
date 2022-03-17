@@ -140,8 +140,8 @@ class ProductController extends Controller
         foreach($products as $product) {
             $product->actualPrice = $product->new_price ?? $product->price;
         }
-        if($request->price_from) $products = $products->where('actualPrice', '>', $request->price_from);
-        if($request->price_to) $products = $products->where('actualPrice', '<', $request->price_to);
+        if($request->price_from) $products = $products->where('actualPrice', '>=', $request->price_from);
+        if($request->price_to) $products = $products->where('actualPrice', '<=', $request->price_to);
 
         if($request->ids) {
             $ids = $request->ids;
