@@ -22,7 +22,7 @@ class ConstructorController extends Controller
         $constructors = Constructor::all();
         foreach ($constructors as $constructor) {
             $constructor->template_image = $this->parseImage($constructor->template_image);
-            $constructor->wide_image     = $this->parseImage($constructor->square_image);
+            $constructor->wide_image     = $this->parseImage($constructor->wide_image);
             $constructor->square_image   = $this->parseImage($constructor->square_image);
         }
         return response()->json($constructors);
