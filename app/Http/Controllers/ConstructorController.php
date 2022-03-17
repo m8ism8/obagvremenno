@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 use App\Models\{
@@ -15,6 +16,12 @@ use App\Http\Resources\{
 
 class ConstructorController extends Controller
 {
+    public function index(): JsonResponse
+    {
+        $constructors = Constructor::all();
+        return response()->json($constructors);
+    }
+
     public function constructor($slug){
 
         $constructor = Constructor::with('categories', 'types')->where('slug', $slug)->firstOrFail();

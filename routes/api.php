@@ -57,6 +57,7 @@ Route::get('/product/{product}', [ProductController::class, 'product']);
 Route::get('/products/search/{string}', [ProductController::class, 'search']);
 Route::get('/certificates', [ProductController::class, 'certificates']);
 
+Route::get('constructor', [ConstructorController::class, 'index']);
 Route::get('/constructor/{slug}', [ConstructorController::class, 'constructor']);
 Route::get('/constructor/category/{category}', [ConstructorController::class, 'category']);
 
