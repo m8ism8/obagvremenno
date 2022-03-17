@@ -59,7 +59,7 @@ class ProductController extends Controller
     public function addImageLink($collection){
         foreach($collection as $item){
             if($item->image && str_split($item->image, 4)[0] != 'http' ) {
-                $image = env('APP_URL').'/storage/'.$this->image;
+                $image = env('APP_URL').'/storage/'.$item->image;
             }
         }
         return $collection;
