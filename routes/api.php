@@ -9,9 +9,9 @@ use App\Http\Controllers\{
     AuthController,
     PageController,
     ConstructorController,
-    CartController
+    CartController,
+    InformationPageController
 };
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -69,3 +69,17 @@ Route::get('/page/get-news', [PageController::class, 'getNews']);
 
 
 //Information Pages
+Route::get('history-and-mission',[InformationPageController::class, 'historyMission']);
+Route::get('social-mission',[InformationPageController::class, 'socialMission']);
+Route::get('brand-information',[InformationPageController::class, 'brandInformation']);
+Route::get('product-information',[InformationPageController::class, 'productInformation']);
+Route::get('all-about-products',[InformationPageController::class, 'allAboutProducts']);
+Route::get('research-and-innovation',[InformationPageController::class, 'researchInnovation']);
+
+Route::get('shipping-and-payment',[InformationPageController::class, 'shippingPayment']);
+Route::get('return-information',[InformationPageController::class, 'returnInformation']);
+Route::get('loyalty-system',[InformationPageController::class, 'loyaltySystem']);
+Route::get('information_for_corporate_clients', [InformationPageController::class, 'corporateInformation']);
+Route::get('gift-rules', [InformationPageController::class, 'giftRule']);
+Route::get('guarantee', [InformationPageController::class, 'guarantee']);
+Route::get('rule-operation', [InformationPageController::class, 'ruleOperation']);
