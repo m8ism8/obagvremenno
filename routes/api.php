@@ -11,7 +11,8 @@ use App\Http\Controllers\{
     ConstructorController,
     CartController,
     InformationPageController,
-    ContactController
+    ContactController,
+    CompleteController
 };
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +69,11 @@ Route::get('/page/history', [PageController::class, 'history']);
 Route::get('/page/mission', [PageController::class, 'mission']);
 Route::get('/page/brand-info', [PageController::class, 'brandInfo']);
 Route::get('/page/get-news', [PageController::class, 'getNews']);
+
+//Копмлектующие
+Route::get('subcategory/{id}/complete', [CompleteController::class, 'index']);
+Route::get('complete/{id}', [CompleteController::class, 'show']);
+
 
 //Контакты
 Route::get('contact',[ContactController::class, 'index']);

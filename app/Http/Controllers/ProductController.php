@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 
 use Illuminate\Support\Facades\Auth;
-use App\Models\{
+use App\Models\{CompleteCategory,
     Product,
     Category,
     Subcategory,
@@ -13,8 +13,7 @@ use App\Models\{
     Favourite,
     FilterCategory,
     FilterElement,
-    Certificate
-};
+    Certificate};
 
 use App\Http\Resources\{
     ProductResource,
@@ -204,17 +203,30 @@ class ProductController extends Controller
                 ->exists();
         }
 
+        $completes = CompleteCategory::query()
+            ->where('subcategory_id', $subcategory->id)
+            ->get();
+
+        foreach ($completes as $complete) {
+            $complete->image = env('APP_URL').'/storage/'.$complete->image;
+        }
 
         return response()->json([
             'subcategory' => $subcategory,
+            'completes'  => $completes,
             'filters' => $filters,
             'sales' => SaleResource::collection($sales)
         ]);
     }
 
-    public function subcategoryFiltered(Subcategory $subcategory, Request $request){
+    public function subcategoryFiltered(Subcategory $subcategory, Request $request)
+    {
 
-        $products = Product::where('subcategory_id', $subcategory->id)->get();
+        if (isset($request->complete_id)) {
+            $products = Product::query()->where('complete_id', $request->complete_id)->get();
+        }else {
+            $products = Product::where('subcategory_id', $subcategory->id)->get();
+        }
         foreach($products as $product) {
             $product->actualPrice = $product->new_price ?? $product->price;
         }
