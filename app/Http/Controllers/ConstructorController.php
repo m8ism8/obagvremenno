@@ -38,7 +38,7 @@ class ConstructorController extends Controller
         foreach($constructor->categories as $category) {
             $category->constructorElements;
             foreach($category->constructorElements as $element){
-                $element->preview_image = env('APP_URL').'/storage/'.$element->preview_image;
+                $element->image = env('APP_URL').'/storage/'.$element->image;
                 $element->images = json_decode($element->images, true);
                 foreach ($element->images as $item){
                     $item = env('APP_URL').'/storage/'.$item;
