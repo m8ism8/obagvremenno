@@ -29,14 +29,18 @@ use App\Http\Resources\{
 class ProductController extends Controller
 {
     public function getRecomended(){
-        $randomCategories = Category::inRandomOrder()->take(2)->with('products')->get();
-        $randomProductsIds1 = $randomCategories[0]->products->pluck('id')->random(4);
-        $randomProducts1 = Product::whereIn('id', $randomProductsIds1)->get();
-        $randomProductsIds2 = $randomCategories[1]->products->pluck('id')->random(4);
-        $randomProducts2 = Product::whereIn('id', $randomProductsIds2)->get();
-        $newestProducts = Product::orderBy('created_at', 'desc')->take(4)->get();
-        $popularProducts = Product::inRandomOrder()->take(4)->get();
 
+        try {
+            $randomCategories = Category::inRandomOrder()->take(2)->with('products')->get();
+            $randomProductsIds1 = $randomCategories[0]->products->pluck('id')->random(4);
+            $randomProducts1 = Product::whereIn('id', $randomProductsIds1)->get();
+            $randomProductsIds2 = $randomCategories[1]->products->pluck('id')->random(4);
+            $randomProducts2 = Product::whereIn('id', $randomProductsIds2)->get();
+            $newestProducts = Product::orderBy('created_at', 'desc')->take(4)->get();
+            $popularProducts = Product::inRandomOrder()->take(4)->get();
+        } catch (\Exception $exception) {
+            return [];
+        }
 
 
 
