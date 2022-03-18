@@ -16,6 +16,8 @@ class AddCompleteIdToProductsTable extends Migration
         Schema::table('products', function (Blueprint $table) {
             $table->foreignId('subcategory_id')->nullable()->change();
 
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
             $table->unsignedBigInteger('complete_id')
                     ->nullable();
             $table->foreign('complete_id')
@@ -24,6 +26,8 @@ class AddCompleteIdToProductsTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
+
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         });
     }
 
