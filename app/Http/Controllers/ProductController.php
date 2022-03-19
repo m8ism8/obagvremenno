@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\{CompleteCategory,
+    CompleteProduct,
     Product,
     Category,
     Subcategory,
@@ -272,22 +273,27 @@ class ProductController extends Controller
         $product->filterElements;
         $product->reviews;
 
+        $complete =  CompleteProduct::query()
+            ->where('product_id', $product->id)
+            ->join('complete_categories', 'complete_categories.id','=','complete_products.complete_category_id')
+            ->select('complete_categories.*')
+            ->get();
+
+        foreach ($complete as $item) {
+            $item->image = env('APP_URL').'/storage/'.$item->image;
+        }
+
+        $product->complete   = $complete;
+
         $product->isFavorite = Favourite::query()
-                                         ->where('product_id',$product->id)
-                                         ->where('user_id', Auth::guard('sanctum')->id())
-                                         ->exists();
+            ->where('product_id',$product->id)
+            ->where('user_id', Auth::guard('sanctum')->id())
+            ->exists();
+
+
+
         return response()->json([
             'product' => new ProductResource($product),
-        ]);
-    }
-
-    public function favourite($id){
-        $favourite = Favourite::where('user_id', Auth()->id())->where('product_id', $id)->firstOrCreate([
-            'user_id' => Auth()->id(),
-            'product_id' => $id
-        ]);
-        return response()->json([
-            'favourite' => $favourite,
         ]);
     }
 

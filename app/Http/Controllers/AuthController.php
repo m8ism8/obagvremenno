@@ -52,7 +52,7 @@ class AuthController extends Controller
         if(!$user || !Hash::check($fields['password'], $user->password)) {
             return response()->json([
                 'message' => 'Пользователяс таким номером телефона нет, или пароль не подходит'
-            ]);
+            ], 401);
         }
 
         $token = $user->createToken('myapptoken')->plainTextToken;

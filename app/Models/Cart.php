@@ -19,6 +19,7 @@ class Cart extends Model
         'delivery_type',
         'payment_type',
         'address',
+        'payment_status'
     ];
 
     public function elements(){

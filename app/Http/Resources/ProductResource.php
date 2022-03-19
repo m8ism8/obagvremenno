@@ -33,7 +33,8 @@ class ProductResource extends JsonResource
             'image' => $image,
             'video' => $this->video ?? null,
             'reviews' => $this->reviews,
-            'isFavorite' => $this->isFavorite ?? self::isFavorite($this->id)
+            'isFavorite' => $this->isFavorite ?? self::isFavorite($this->id),
+            'complete'  => $this->complete
         ];
     }
 

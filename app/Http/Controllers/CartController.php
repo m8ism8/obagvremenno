@@ -15,6 +15,9 @@ use App\Models\{
 
 class CartController extends Controller
 {
+    protected $url_Def = 'https://securepayments.sberbank.kz/payment/rest/register.do?';
+
+
     public function store(Request $request){
         if($request->user_id){
             $user = User::find($request->user_id);
@@ -50,14 +53,94 @@ class CartController extends Controller
                 'title' => $element['title']
             ]);
         }
-        $cart->elements;
+
+        if ($cart['payment_type'] == "card") {
+            return [
+                'payment'     => $this->onlinePayment($cart),
+                'cart'        => $cart
+            ];
+        }
+
         try {
             \Mail::to($email)->send(new DeliveryMail($cart));
         }
-        catch (Throwable $e){
+        catch (\Throwable $e){
         }
+
+        $cart->update([
+            'payment_status' => 'Оплата при получении'
+        ]);
         return response()->json([
             'cart' => $cart,
         ]);
+    }
+
+    protected function onlinePayment($cart)
+    {
+        $attributes = [];
+
+        $attributes['userName'] = 'obagoffical-api';
+        $attributes['password'] = 'obagofficalOperator123/';
+
+        $orderId = $cart->id + 1000;
+        $totalSum = $cart->price;
+
+        $attributes['amount'] = $totalSum * 100;
+        $attributes['orderNumber'] = $orderId;
+
+        $attributes['returnUrl'] = 'https://aptekadom.kz/account/history';
+        $attributes['failUrl'] = 'https://obagnew.a-lux.dev/';
+        $attributes['description'] = 'Заказ №' . $orderId . ' на ' . env('APP_URL');
+
+
+
+        $ch = curl_init($this->url_Def . http_build_query($attributes));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        $res = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($res, true);
+    }
+
+    public function checkPayment()
+    {
+        $carts = Cart::query()
+            ->where('payment_status', 'В обработке')
+            ->get();
+
+        foreach ($carts as $cart) {
+            $status = self::checkRequest($cart->payment_id);
+            if ($status['orderStatus'] == 2) {
+                $cart->update([
+                    'status' => 'Оплачен'
+                ]);
+            } elseif ($status['orderStatus'] == 0) {
+                $cart->update([
+                    'status' => 'В обработке'
+                ]);
+            } else {
+                $cart->update([
+                    'status' => 'Отказано в оплате'
+                ]);
+            }
+        }
+    }
+
+    protected function checkRequest($orderId)
+    {
+        $attributes['userName'] = 'obagoffical-api';
+        $attributes['password'] = 'obagofficalOperator123/';
+        $attributes['orderId'] = $orderId;
+
+        $ch = curl_init($this->url_Def . http_build_query($attributes));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        $res = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($res, true);
     }
 }
