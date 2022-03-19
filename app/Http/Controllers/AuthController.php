@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+use Laravel\Socialite\Facades\Socialite;
 use App\Models\{
     User,
     Favourite,
@@ -141,5 +143,35 @@ class AuthController extends Controller
         return response()->json([
             'message' => $message,
         ]);
+    }
+
+
+    public function googleRegister()
+    {
+        return \response()->json([
+            'url' => Socialite::driver('google')->redirect()->getTargetUrl()
+        ]);
+    }
+
+    public function googleCallback(Request $request)
+    {
+        $user = Socialite::driver('google')->user();
+        $existingUser = User::where('email', $user->email)->first();
+
+        //TODO как то отдавать досу
+        if($existingUser){
+            // log them in
+            Auth::login($existingUser);
+        } else {
+            // create a new user
+            $newUser = User::create([
+                'name' => $user->name,
+                'email' => $user->email,
+                'google_id' => $user->id
+            ]);
+            Auth::login($newUser);
+        }
+        return redirect()->to('/');
+
     }
 }

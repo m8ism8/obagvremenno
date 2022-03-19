@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Str;
 use Mail;
 use App\Mail\DeliveryMail;
 
@@ -55,6 +56,10 @@ class CartController extends Controller
         }
 
         if ($cart['payment_type'] == "card") {
+            $payment = $this->onlinePayment($cart);
+            $cart->update([
+                'payment_id' => $payment['orderId']
+            ]);
             return [
                 'payment'     => $this->onlinePayment($cart),
                 'cart'        => $cart
@@ -82,7 +87,7 @@ class CartController extends Controller
         $attributes['userName'] = 'obagoffical-api';
         $attributes['password'] = 'obagofficalOperator123/';
 
-        $orderId = $cart->id + 1000;
+        $orderId = $cart->id . Str::random(14);
         $totalSum = $cart->price;
 
         $attributes['amount'] = $totalSum * 100;

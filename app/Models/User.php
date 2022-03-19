@@ -24,7 +24,8 @@ class User extends \TCG\Voyager\Models\User
         'bonus',
         'phone',
         'address',
-        'date_of_birth'
+        'date_of_birth',
+        'google_id'
     ];
 
     /**
@@ -53,7 +54,7 @@ class User extends \TCG\Voyager\Models\User
     public function carts(){
         return $this->hasMany(Cart::class)->orderBy('created_at', 'desc');
     }
-    
+
     public function cartElements(){
         return $this->hasManyThrough(CartElement::class, Cart::class);
     }
