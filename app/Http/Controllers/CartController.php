@@ -8,11 +8,7 @@ use Illuminate\Support\Str;
 use Mail;
 use App\Mail\DeliveryMail;
 
-use App\Models\{
-    Cart,
-    CartElement,
-    User
-};
+use App\Models\{Cart, CartElement, PercentBonus, User};
 
 class CartController extends Controller
 {
@@ -26,7 +22,11 @@ class CartController extends Controller
             $phone = $user->phone;
             $email = $user->email;
             $address = $user->address;
+            if (!$request->spend_bonuses) {
+                $bonus = $this->accrueBonuses($request->price);
+            }
         }
+
         $name = $request->name ?? $name;
         $phone = $request->phone ?? $phone;
         $email = $request->email ?? $email;
@@ -35,13 +35,14 @@ class CartController extends Controller
         $cart = Cart::create([
             'user_id' => $request->user_id ?? null,
             'price' => $request->price,
-            'bonus_waste' => $request->bonus_waste,
+            'bonus_waste' => $request->bonus_waste ?? 0,
             'name' => $name,
             'phone' => $phone,
             'email' => $email,
             'delivery_type' => $request->delivery_type,
             'payment_type' => $request->payment_type,
-            'address' => $address
+            'address' => $address,
+            'bonuses_accrued' => $bonus ?? 0
         ]);
         foreach($request->cart_elements as $element) {
             CartElement::create([
@@ -51,7 +52,7 @@ class CartController extends Controller
                 'cart_id' => $cart->id,
                 'quantity' => $element['quantity'],
                 'price' => $element['price'],
-                'title' => $element['title']
+                'title' => $element['title'],
             ]);
         }
 
@@ -79,6 +80,20 @@ class CartController extends Controller
             'cart' => $cart,
         ]);
     }
+
+    protected function accrueBonuses($sum)
+    {
+        $percent  = PercentBonus::query()->first();
+        return ($sum * ($percent->percent / 100));
+    }
+
+    protected function spendBonuses($totalSun)
+    {
+        $percent = PercentBonus::query()->first();
+
+    }
+
+
 
     protected function onlinePayment($cart)
     {
@@ -148,4 +163,6 @@ class CartController extends Controller
 
         return json_decode($res, true);
     }
+
+
 }

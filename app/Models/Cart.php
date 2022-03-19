@@ -20,8 +20,14 @@ class Cart extends Model
         'payment_type',
         'address',
         'payment_status',
-        'payment_id'
+        'payment_id',
+        'bonuses_accrued'
     ];
+
+    public function getStatusAttribute()
+    {
+        dd($this->status);
+    }
 
     public function elements(){
         return $this->hasMany(CartElement::class);

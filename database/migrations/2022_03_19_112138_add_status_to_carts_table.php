@@ -13,9 +13,16 @@ class AddStatusToCartsTable extends Migration
      */
     public function up()
     {
+
         Schema::table('carts', function (Blueprint $table) {
-            $table->enum('status', ['Заказ принят', 'Заказ собирается', 'Доставляется', 'Доставлен', 'Отменен', 'В обработке'])
-                ->default('В обработке');
+            $table->unsignedBigInteger('status')
+                ->nullable();
+
+            $table->foreign('status')
+                ->references('id')
+                ->on('statuses')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
         });
     }
 
@@ -28,6 +35,7 @@ class AddStatusToCartsTable extends Migration
     {
         Schema::table('carts', function (Blueprint $table) {
             $table->dropColumn('status');
+            Schema::dropIfExists('statuses');
         });
     }
 }
