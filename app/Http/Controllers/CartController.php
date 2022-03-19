@@ -42,7 +42,8 @@ class CartController extends Controller
             'delivery_type' => $request->delivery_type,
             'payment_type' => $request->payment_type,
             'address' => $address,
-            'bonuses_accrued' => $bonus ?? 0
+            'bonuses_accrued' => $bonus ?? 0,
+            'status'          => 1
         ]);
         foreach($request->cart_elements as $element) {
             CartElement::create([

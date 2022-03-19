@@ -15,10 +15,10 @@ class AddStatusToCartsTable extends Migration
     {
 
         Schema::table('carts', function (Blueprint $table) {
-            $table->unsignedBigInteger('status')
+            $table->unsignedBigInteger('status_id')
                 ->nullable();
 
-            $table->foreign('status')
+            $table->foreign('status_id')
                 ->references('id')
                 ->on('statuses')
                 ->onUpdate('cascade')
