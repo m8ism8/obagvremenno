@@ -7,13 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 use Laravel\Socialite\Facades\Socialite;
-use App\Models\{
-    User,
-    Favourite,
-    Product,
-    Review,
-    Mail,
-};
+use App\Models\{Subscription, User, Favourite, Product, Review, Mail};
 
 use App\Http\Resources\{
     ProductResource,
@@ -26,8 +20,14 @@ class AuthController extends Controller
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed',
-            'phone' => 'required|string|unique:users,phone'
+            'phone' => 'required|string|unique:users,phone',
+            'subscription'  => 'boolean'
         ]);
+        if ($fields['subscription']) {
+            Subscription::query()->create([
+                'email' => $fields['email']
+            ]);
+        }
 
         $user = User::create([
             'name' => $fields['name'],
@@ -153,25 +153,65 @@ class AuthController extends Controller
         ]);
     }
 
-    public function googleCallback(Request $request)
+    public function googleCallback()
     {
-        $user = Socialite::driver('google')->user();
+       $user = Socialite::driver('google')->stateless()->user();
         $existingUser = User::where('email', $user->email)->first();
-
         //TODO как то отдавать досу
         if($existingUser){
             // log them in
-            Auth::login($existingUser);
+            $user = User::query()->where('google_id', $user->id)->first();
+            $token = $user->createToken('myapptoken')->plainTextToken;
         } else {
             // create a new user
             $newUser = User::create([
                 'name' => $user->name,
+                'phone' => '',
+                'password' => '',
                 'email' => $user->email,
                 'google_id' => $user->id
             ]);
-            Auth::login($newUser);
+            $token = $newUser->createToken('myapptoken')->plainTextToken;
         }
-        return redirect()->to('/');
+        return \response()->json([
+            'account' => $token
+        ]);
+    }
+
+    public function subscription(Request $request)
+    {
+        $email = $request->email;
+        try {
+            Subscription::query()->create([
+                'email' => $email
+            ]);
+        } catch (\Exception $exception) {
+            return \response()->json([
+                'message' => $exception->getMessage()
+            ], 409);
+        }
+
+        return \response()->json([
+            'message' => 'Операция прошла успешно'
+        ], 200);
+    }
+
+    public function deleteSubscription(Request $request)
+    {
+        $email = $request->email;
+        try {
+            Subscription::query()->where([
+                'email' => $email
+            ])->delete();
+        } catch (\Exception $exception) {
+            return \response()->json([
+                'message' => $exception->getMessage()
+            ], 409);
+        }
+
+        return \response()->json([
+            'message' => 'Операция прошла успешно'
+        ], 200);
 
     }
 }

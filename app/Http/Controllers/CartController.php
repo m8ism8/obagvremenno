@@ -8,23 +8,29 @@ use Illuminate\Support\Str;
 use Mail;
 use App\Mail\DeliveryMail;
 
-use App\Models\{Cart, CartElement, PercentBonus, User};
+use App\Models\{Cart, CartElement, DeliveryPrice, PercentBonus, User};
 
 class CartController extends Controller
 {
     protected $url_Def = 'https://securepayments.sberbank.kz/payment/rest/register.do?';
 
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         if($request->user_id){
             $user = User::find($request->user_id);
             $name = $user->name;
             $phone = $user->phone;
             $email = $user->email;
             $address = $user->address;
-            if (!$request->spend_bonuses) {
-                $bonus = $this->accrueBonuses($request->price);
-            }
+        }
+
+        if (!$request->spend_bonuses) {
+            $bonus = $this->accrueBonuses($request->price);
+        } else {
+            $writeOffBonuses = $this->writeOffBonuses($request->price, $user);
+            $request->price        = $writeOffBonuses['totalSum'];
+            $request->bonus_waste  = $writeOffBonuses['bonuses_spent'];
         }
 
         $name = $request->name ?? $name;
@@ -45,6 +51,7 @@ class CartController extends Controller
             'bonuses_accrued' => $bonus ?? 0,
             'status_id'          => 1
         ]);
+
         foreach($request->cart_elements as $element) {
             CartElement::create([
                 'product_id' => $element['product_id'] ?? null,
@@ -81,19 +88,38 @@ class CartController extends Controller
             'cart' => $cart,
         ]);
     }
-
+    public function deliveryPrice()
+    {
+        $price = DeliveryPrice::query()->select('price')->first();
+        return response()->json($price);
+    }
     protected function accrueBonuses($sum)
     {
         $percent  = PercentBonus::query()->first();
         return ($sum * ($percent->percent / 100));
     }
 
-    protected function spendBonuses($totalSun)
+    protected function writeOffBonuses($sum, $user): array
     {
-        $percent = PercentBonus::query()->first();
+        $userBonus = $user->bonus;
+        $totalSum = $sum - $userBonus;
 
+        if ($totalSum < 0) {
+            $totalSum = 0;
+            $currentBonus = $userBonus - $sum;
+            $bonusesSpent = $sum;
+        } else {
+            $currentBonus = 0;
+            $bonusesSpent = $sum - $totalSum;
+        }
+        User::query()->find($user->id)->update([
+            'bonus' => $currentBonus
+        ]);
+        return [
+            'totalSum'      => $totalSum,
+            'bonuses_spent' => $bonusesSpent
+        ];
     }
-
 
 
     protected function onlinePayment($cart)

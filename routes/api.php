@@ -101,3 +101,11 @@ Route::get('rule-operation', [InformationPageController::class, 'ruleOperation']
 
 Route::get('mobile-shopping', [InformationPageController::class, 'mobileShopping']);
 Route::get('shops', [InformationPageController::class, 'shops']);
+
+//Подписка
+Route::post('subscription', [AuthController::class, 'subscription']);
+Route::delete('subscription',[AuthController::class, 'deleteSubscription']);
+
+//Заказ в один клик
+Route::post('order-callback', [CallBackController::class, 'order']);
+Route::get('delivery-price', [CartController::class, 'deliveryPrice']);
