@@ -69,12 +69,14 @@ class InformationPageController extends Controller
 
     public function loyaltySystem(): JsonResponse
     {
+        //TODO сделать блоки
         $content = LoyaltySystem::query()->first();
         return response()->json($content);
     }
 
     public function corporateInformation(): JsonResponse
     {
+        //TODO сделать блоки
         $content = CorporateInformation::query()->first();
         return response()->json($content);
     }

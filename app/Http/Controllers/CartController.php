@@ -43,7 +43,7 @@ class CartController extends Controller
             'payment_type' => $request->payment_type,
             'address' => $address,
             'bonuses_accrued' => $bonus ?? 0,
-            'status'          => 1
+            'status_id'          => 1
         ]);
         foreach($request->cart_elements as $element) {
             CartElement::create([
