@@ -5,9 +5,7 @@ namespace App\Imports;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
-use App\Models\{
-    Category, Subcategory, Product
-};
+use App\Models\{Category, CompleteCategory, Subcategory, Product};
 
 class ProductsImport implements ToCollection
 {
@@ -29,14 +27,20 @@ class ProductsImport implements ToCollection
             if($row[0]=='Название') {}
             else {
                 try {
-                    $category = Category::where('title', $row[10])->firstOrCreate([
-                        'title' => $row[10],
-                        'full_title' => $row[10]
-                    ]);
-                    $subcategory = Subcategory::where('title', $row[11])->where('category_id', $category->id)->firstOrCreate([
-                        'title' => $row[11],
-                        'category_id' => $category->id
-                    ]);
+                    if ($row[10] != null) {
+                        $category = Category::where('title', $row[10])->firstOrCreate([
+                            'title' => $row[10],
+                            'full_title' => $row[10]
+                        ]);
+                    }
+                    if ($row[11] != null) {
+                        $subcategory = Subcategory::where('title', $row[11])->where('category_id', $category->id)->firstOrCreate([
+                            'title' => $row[11],
+                            'category_id' => $category->id
+                        ]);
+                    }
+                    $complete = CompleteCategory::query()->where('title', $row[12])->first();
+
                     $characteristics = '<p>'.$row[6].'</p>';
                     $description = '<p>'.$row[7].'</p>';
                     $product = Product::create([
@@ -50,10 +54,13 @@ class ProductsImport implements ToCollection
                         'description' => $description,
                         'image' => $row[8] ?? null,
                         'video' => $row[9] ?? null,
-                        'subcategory_id' => $subcategory->id
+                        'subcategory_id' => $subcategory->id ?? null,
+                        'complete_id'    => $complete->id ?? null
                     ]);
                 }
-                catch (\Exception $e) {}
+                catch (\Exception $e) {
+                    dd($e);
+                }
             }
         }
         return [

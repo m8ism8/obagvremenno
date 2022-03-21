@@ -275,8 +275,8 @@ class ProductController extends Controller
 
         $complete =  CompleteProduct::query()
             ->where('product_id', $product->id)
-            ->join('complete_categories', 'complete_categories.id','=','complete_products.complete_category_id')
-            ->select('complete_categories.*')
+            ->join('products', 'products.id','=','complete_products.complete_id')
+            ->select('products.*')
             ->get();
 
         foreach ($complete as $item) {
