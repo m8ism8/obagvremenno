@@ -98,3 +98,6 @@ Route::get('information_for_corporate_clients', [InformationPageController::clas
 Route::get('gift-rules', [InformationPageController::class, 'giftRule']);
 Route::get('guarantee', [InformationPageController::class, 'guarantee']);
 Route::get('rule-operation', [InformationPageController::class, 'ruleOperation']);
+
+Route::get('mobile-shopping', [InformationPageController::class, 'mobileShopping']);
+Route::get('shops', [InformationPageController::class, 'shops']);
