@@ -77,6 +77,8 @@ Route::get('/page/get-news', [PageController::class, 'getNews']);
 Route::get('subcategory/{id}/complete', [CompleteController::class, 'index']);
 Route::get('complete/{id}', [CompleteController::class, 'show']);
 
+//Вакансии
+Route::post('vacancies',[CallBackController::class, 'vacancies']);
 
 //Контакты
 Route::get('contact',[ContactController::class, 'index']);

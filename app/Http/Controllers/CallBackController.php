@@ -36,4 +36,21 @@ class CallBackController extends Controller
         return response()->json(['message' => 'Операция прошла успешно']);
 
     }
+
+    public function vacancies(Request $request)
+    {
+        $fields = $request->validate([
+            'name' => 'required|string',
+            'surname' => 'required|string',
+            'email' => 'required|string',
+            'phone' => 'required|string',
+            'text' => 'required|string',
+            'file' => ''
+        ]);
+        $file = $request->file('file')->store('/vacancies');
+        $fields['file'] = $file;
+        Vacancy::query()->create($fields);
+        return response()->json(['message' => 'Операция прошла успешно']);
+
+    }
 }
