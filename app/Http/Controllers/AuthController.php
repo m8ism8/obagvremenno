@@ -174,9 +174,8 @@ class AuthController extends Controller
             ]);
             $token = $newUser->createToken('myapptoken')->plainTextToken;
         }
-        return \response()->json([
-            'account' => $token
-        ]);
+        $path = 'https://obagnew.a-lux.dev?token=' . $token;
+        return redirect($path);
     }
 
     public function subscription(Request $request)

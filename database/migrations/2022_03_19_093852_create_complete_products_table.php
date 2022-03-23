@@ -23,10 +23,10 @@ class CreateCompleteProductsTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->unsignedBigInteger('complete_category_id');
-            $table->foreign('complete_category_id')
+            $table->unsignedBigInteger('	complete_id');
+            $table->foreign('complete_id')
                 ->references('id')
-                ->on('complete_categories')
+                ->on('products')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
