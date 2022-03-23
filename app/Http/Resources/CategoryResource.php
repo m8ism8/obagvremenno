@@ -23,9 +23,11 @@ class CategoryResource extends JsonResource
         $products = ProductResource::collection($this->products);
 
         if (request()->has('sort_price')) {
+            $sort = request()->input('sort_price');
+            $sort = strtolower($sort);
             $products = $products->sortBy([
                 [
-                    'price', request()->input('sort_price')
+                    'price', $sort
                 ]
             ]);
         }

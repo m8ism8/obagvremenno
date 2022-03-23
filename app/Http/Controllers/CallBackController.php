@@ -47,8 +47,12 @@ class CallBackController extends Controller
             'text' => 'required|string',
             'file' => ''
         ]);
-        $file = $request->file('file')->store('/vacancies');
-        $fields['file'] = $file;
+        if (isset($fields['file'])) {
+            $file = $request->file('file')->store('/vacancies');
+            $fields['file'] = $file;
+        } else {
+            $fields['file'] = 0;
+        }
         Vacancy::query()->create($fields);
         return response()->json(['message' => 'Операция прошла успешно']);
 

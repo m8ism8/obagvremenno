@@ -172,9 +172,11 @@ class ProductController extends Controller
         }
 
         if ($request->sort_price) {
+            $sort = $request->sort_price;
+            $sort = strtolower($sort);
             $products = $products->sortBy([
                 [
-                    'price', $request->sort_price
+                    'price', $sort
                 ]
             ]);
         }
@@ -257,9 +259,11 @@ class ProductController extends Controller
         }
 
         if ($request->sort_price) {
+            $sort = $request->sort_price;
+            $sort = strtolower($sort);
             $products = $products->sortBy([
                 [
-                    'price', $request->sort_price
+                    'price', $sort
                 ]
             ]);
         }
@@ -294,6 +298,16 @@ class ProductController extends Controller
 
         return response()->json([
             'product' => new ProductResource($product),
+        ]);
+    }
+
+    public function favourite($id){
+        $favourite = Favourite::where('user_id', Auth()->id())->where('product_id', $id)->firstOrCreate([
+            'user_id' => Auth()->id(),
+            'product_id' => $id
+        ]);
+        return response()->json([
+            'favourite' => $favourite,
         ]);
     }
 

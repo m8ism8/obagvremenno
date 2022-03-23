@@ -93,7 +93,8 @@ class AuthController extends Controller
             $message = 'Данные изменены';
         }
         return response()->json([
-            'message' => $message,
+            'user'    => $user,
+            'message' => $message
         ]);
     }
     public function user(){
