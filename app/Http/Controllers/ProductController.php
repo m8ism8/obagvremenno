@@ -170,6 +170,7 @@ class ProductController extends Controller
                 ->where('user_id', Auth::guard('sanctum')->id())
                 ->exists();
         }
+        $product->image = env('APP_URL') . '/storage/' . $product->image;
 
         if ($request->sort_price) {
             $sort = $request->sort_price;
