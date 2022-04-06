@@ -169,8 +169,8 @@ class ProductController extends Controller
                 ->where('product_id',$product->id)
                 ->where('user_id', Auth::guard('sanctum')->id())
                 ->exists();
+            $product->image = env('APP_URL') . '/storage/' . $product->image;
         }
-        $product->image = env('APP_URL') . '/storage/' . $product->image;
 
         if ($request->sort_price) {
             $sort = $request->sort_price;
@@ -257,8 +257,8 @@ class ProductController extends Controller
                 ->where('product_id',$product->id)
                 ->where('user_id', Auth::guard('sanctum')->id())
                 ->exists();
+            $product->image = env('APP_URL') . '/storage/' . $product->image;
         }
-        $product->image = env('APP_URL') . '/storage/' . $product->image;
 
         if ($request->sort_price) {
             $sort = $request->sort_price;
