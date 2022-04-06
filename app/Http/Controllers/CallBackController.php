@@ -4,11 +4,22 @@ namespace App\Http\Controllers;
 use App\Http\Requests\VacanciesRequest;
 use Illuminate\Http\Request;
 
-use App\Models\{Callback, Mail, OrderCallback, Vacancy};
+use App\Models\{Callback, Mail, NotifyProduct, OrderCallback, Vacancy};
 use Symfony\Component\HttpFoundation\Response;
 
 class CallBackController extends Controller
 {
+    public function notify(Request $request)
+    {
+        $fields = $request->validate([
+            'product_id' => 'required|integer',
+            'email' => 'required|string',
+        ]);
+
+        NotifyProduct::query()->create($fields);
+        return response()->json(['message' => 'done.']);
+    }
+
     public function callback(Request $request){
         $fields = $request->validate([
             'name' => 'required|string',

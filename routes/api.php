@@ -111,3 +111,6 @@ Route::delete('subscription',[AuthController::class, 'deleteSubscription']);
 //Заказ в один клик
 Route::post('order-callback', [CallBackController::class, 'order']);
 Route::get('delivery-price', [CartController::class, 'deliveryPrice']);
+
+//Уведомить о поступлении
+Route::post('notify', [CallBackController::class, 'notify']);

@@ -14,7 +14,6 @@ class CartController extends Controller
 {
     protected $url_Def = 'https://securepayments.sberbank.kz/payment/rest/register.do?';
 
-
     public function store(Request $request)
     {
         if($request->user_id){
