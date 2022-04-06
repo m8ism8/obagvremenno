@@ -9,6 +9,11 @@ class FilterElement extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'category_id',
+        'title'
+    ];
+
     public function products(){
         return $this->belongsToMany(Product::class, 'element_products', 'element_id', 'product_id');
     }

@@ -24,4 +24,8 @@ Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
     Route::get('/excel-import', [ImportController::class, 'index']);
     Route::post('/excel-import/send', [ImportController::class, 'import']);
+
+    Route::get('/excel-import/backpacks', [ImportController::class, 'indexBackpacks']);
+    Route::post('/excel-import/backpacks/send', [ImportController::class, 'backpacks']);
+
 });

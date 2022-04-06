@@ -2,40 +2,22 @@
 
 namespace App\Imports;
 
+use App\Models\CompleteCategory;
+use App\Models\ElementProduct;
+use App\Models\FilterElement;
+use App\Models\Product;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
-use App\Models\{Category, CompleteCategory, ElementProduct, FilterCategory, FilterElement, Subcategory, Product};
-
-class ProductsImport implements ToCollection
+class BackpacksImport implements ToCollection
 {
-    //0 => "Артикул"
-    //1 => "Название товара"
-    //2 => "Бренд"
-    //3 => "Код изображений"
-    //4 => "Ссылка на Youtube"
-    //5 => "Тип"
-    //6 => "Назначение"
-    //7 => "Материал"
-    //8 => "Цвет"
-    //9 => "Застежка"
-    //10 => "Отделение для монет"
-    //11 => "Отделения для карт/визиток"
-    //12 => "Страна производства"
-    //13 => "Размеры"
-    //14 => "Дополнительная информация"
-    //15 => "Артикул производителя"
-    //16 => "Цена"
-
     public function collection(Collection $rows)
     {
-
         foreach($rows as $row) {
             if($row[0]=='Артикул') {
 
             }
             else {
-                dd($row);
                 try {
 //                    if ($row[10] != null) {
 //                        $category = Category::where('title', $row[10])->firstOrCreate([
@@ -50,19 +32,17 @@ class ProductsImport implements ToCollection
 //                        ]);
 //                    }
 
-
                     $complete = CompleteCategory::query()->where('title', $row[12])->first();
 
                     $characteristics  = '<p>' . 'Бренд:'    . $row[2].'</p>';
-                    $characteristics .= '<p>' . 'Тип:'      . $row[5].'</p>';
-                    $characteristics .= '<p>' . 'Материал:' . $row[7].'</p>';
-                    $characteristics .= '<p>' . 'Застежка:' . $row[9].'</p>';
-                    $characteristics .= '<p>' . 'Отделение для монет:' . $row[10].'</p>';
-                    $characteristics .= '<p>' . 'Отделения для карт/визиток:' . $row[11].'</p>';
+                    $characteristics .= '<p>' . 'Материал верха:'      . $row[8].'</p>';
                     $characteristics .= '<p>' . 'Страна производства:' . $row[12].'</p>';
                     $characteristics .= '<p>' . 'Размеры:' . $row[13].'</p>';
+                    $characteristics .= '<p>' . 'Цвет:' . $row[14].'</p>';
+                    $characteristics .= '<p>' . 'Артикул производителя:' . $row[17].'</p>';
+                    $characteristics .= '<p>' . 'Стиль:' . $row[18].'</p>';
 
-                    $description = '<p>'.$row[14].'</p>';
+                    $description = '<p>'.$row[11].'</p>';
 
 
 
@@ -70,7 +50,7 @@ class ProductsImport implements ToCollection
                     $product = Product::create([
                         'code'  => $row[0],
                         'title' => $row[1],
-                        'price' => $row[16],
+                        'price' => $row[19],
                         'characteristics' => $characteristics,
                         'description' => $description,
                         'image' => 'products/' . $row[3],

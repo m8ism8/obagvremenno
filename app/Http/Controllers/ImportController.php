@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Imports\BackpacksImport;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Storage;
@@ -16,12 +17,38 @@ class ImportController extends Controller
         return view('excelImport');
     }
 
-    public function import(Request $request){
+    public function import(Request $request)
+    {
         if($request->file) {
             Storage::deleteDirectory('/public/excel');
             $fileName = $request->file->getClientOriginalName();
             $file = $request->file('file')->storeAs('/excel', $fileName, 'public');
             Excel::import(new ProductsImport, '/public/excel/'.$fileName);
+            return redirect('/admin/products')->with([
+                'message'    => 'Продукты были добавлены на сайт!',
+                'alert-type' => 'success',
+            ]);
+        }
+        else{
+            return redirect()->back()->with([
+                'message'    => 'Файл не был найден',
+                'alert-type' => 'error',
+            ]);
+        }
+    }
+
+
+    public function indexBackpacks(){
+        return view('backpacksExcelImport');
+    }
+
+    public function backpacks(Request $request)
+    {
+        if($request->file) {
+            Storage::deleteDirectory('/public/excel');
+            $fileName = $request->file->getClientOriginalName();
+            $file = $request->file('file')->storeAs('/excel', $fileName, 'public');
+            Excel::import(new BackpacksImport, '/public/excel/'.$fileName);
             return redirect('/admin/products')->with([
                 'message'    => 'Продукты были добавлены на сайт!',
                 'alert-type' => 'success',
