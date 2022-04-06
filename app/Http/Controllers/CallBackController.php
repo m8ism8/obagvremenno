@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Requests\VacanciesRequest;
 use Illuminate\Http\Request;
 
 use App\Models\{Callback, Mail, OrderCallback, Vacancy};
+use Symfony\Component\HttpFoundation\Response;
 
 class CallBackController extends Controller
 {
@@ -37,23 +39,32 @@ class CallBackController extends Controller
 
     }
 
+
     public function vacancies(Request $request)
     {
-        $fields = $request->validate([
-            'name' => 'required|string',
-            'surname' => 'required|string',
-            'email' => 'required|string',
-            'phone' => 'required|string',
-            'text' => 'required|string',
-            'file' => ''
-        ]);
-        if (isset($fields['file'])) {
-            $file = $request->file('file')->store('/vacancies');
-            $fields['file'] = $file;
-        } else {
-            $fields['file'] = 0;
+        $fields = [
+            'name' => $request->name,
+            'surname' => $request->surname ?? '',
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'text' => $request->text ?? '',
+            'file' => $request->file ?? ''
+        ];
+        try {
+            if (!empty($fields['file'])) {
+                $file = $request->file('file')->store('/vacancies');
+                $fields['file'] = $file;
+            } else {
+                $fields['file'] = 0;
+            }
+        } catch (\Exception $exception) {
+            return response()->json("Ошибка при загрузки файла", Response::HTTP_I_AM_A_TEAPOT);
         }
-        Vacancy::query()->create($fields);
+        try {
+            Vacancy::query()->create($fields);
+        }catch (\Exception $exception) {
+            return response()->json($exception->getMessage(), 422);
+        }
         return response()->json(['message' => 'Операция прошла успешно']);
 
     }

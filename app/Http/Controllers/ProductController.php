@@ -267,7 +267,9 @@ class ProductController extends Controller
                 ]
             ]);
         }
-
+        foreach ($products as $product) {
+            $product->image = env('APP_URL') . '/storage/' . $product->image;
+        }
         return response()->json([
             'products' => $products,
         ]);
