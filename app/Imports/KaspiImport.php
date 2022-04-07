@@ -62,11 +62,8 @@ class KaspiImport implements ToCollection
     public function collection(Collection $rows)
     {
         foreach($rows as $row) {
-            if($row[0]=='Артикул' or $row[0] == null or $row[0] == "merchant_sku" or $row[0] == "Начало работы" or $row[0] = "Бренд") {}
-            else {
+            if ($row[19] == null and $row[0]) {
                 try {
-                    $complete = CompleteCategory::query()->where('title', $row[12])->first();
-
                     if ($row[2] != null){
                         $characteristics  = '<p>' . 'Бренд:'    . $row[2].'</p>';
                     }
