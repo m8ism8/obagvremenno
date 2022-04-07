@@ -22,10 +22,18 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
+
+    //Кошельки
     Route::get('/excel-import', [ImportController::class, 'index']);
     Route::post('/excel-import/send', [ImportController::class, 'import']);
 
+    //Рюкзаки
     Route::get('/excel-import/backpacks', [ImportController::class, 'indexBackpacks']);
     Route::post('/excel-import/backpacks/send', [ImportController::class, 'backpacks']);
 
+    Route::get('/excel-import/bags', [ImportController::class, 'indexBags']);
+    Route::post('/excel-import/bags/send', [ImportController::class, 'bags']);
+
+    Route::get('/excel-import/kaspi', [ImportController::class, 'indexKaspi']);
+    Route::post('/excel-import/kaspi/send', [ImportController::class, 'kaspi']);
 });

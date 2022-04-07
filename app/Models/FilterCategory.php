@@ -9,6 +9,10 @@ class FilterCategory extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'title'
+    ];
+
     public function elements(){
         return $this->hasMany(FilterElement::class);
     }

@@ -29,13 +29,12 @@ class ProductsImport implements ToCollection
 
     public function collection(Collection $rows)
     {
-
         foreach($rows as $row) {
+
             if($row[0]=='Артикул') {
 
             }
             else {
-                dd($row);
                 try {
 //                    if ($row[10] != null) {
 //                        $category = Category::where('title', $row[10])->firstOrCreate([
@@ -65,7 +64,7 @@ class ProductsImport implements ToCollection
                     $description = '<p>'.$row[14].'</p>';
 
 
-
+                    $subcategory = Subcategory::query()->where('title', 'Кошельки')->first();
                     //TODO subcategory_id СЮДА сделать сабкатегорию
                     $product = Product::create([
                         'code'  => $row[0],
@@ -76,7 +75,7 @@ class ProductsImport implements ToCollection
                         'image' => 'products/' . $row[3],
                         'video' => $row[4],
 
-                        'subcategory_id' => '',
+                        'subcategory_id' => $subcategory->id,
 
 //                        'complete_id' => 'ЕСЛИ КОМЛЕКТ'
 //                        'price' => $row[2],
@@ -91,17 +90,123 @@ class ProductsImport implements ToCollection
 //                        'complete_id'    => $complete->id ?? null
                     ]);
 
-                    //TODO Сюда 'category_id' => 5 id категории фильтра
-                    $element = FilterElement::query()->create([
-                        'category_id' => 5,
+                    //Назначение $row[6]
+                    $filterCategories = FilterCategory::query()->where('title', 'Назначение')->first();
+
+                    if ($filterCategories == null) {
+                        $filterCategories = FilterCategory::query()->create([
+                            'title' => 'Назначение'
+                        ]);
+                    }
+
+                    $element = FilterElement::query()->where([
+                        'category_id' => $filterCategories->id,
                         'title'       => $row[6]
-                    ]);
+                    ])->first();
+
+                    if ($element == null) {
+                        $element = FilterElement::query()->create([
+                            'category_id' => $filterCategories->id,
+                            'title'       => $row[6]
+                        ]);
+                    }
 
                     ElementProduct::query()
                         ->create([
                             'element_id' => $element->id,
                             'product_id' => $product->id
                         ]);
+                    //КОНЕЦ Назначение $row[6]
+
+                    //НАЧАЛО ЦВЕТ $row[8]
+
+                    $filterCategories = FilterCategory::query()->where('title', 'Цвет')->first();
+
+                    if ($filterCategories == null) {
+                        $filterCategories = FilterCategory::query()->create([
+                            'title' => 'Цвет'
+                        ]);
+                    }
+
+                    $element = FilterElement::query()->where([
+                        'category_id' => $filterCategories->id,
+                        'title'       => $row[8]
+                    ])->first();
+
+                    if ($element == null){
+                        $element = FilterElement::query()->create([
+                            'category_id' => $filterCategories->id,
+                            'title'       => $row[8]
+                        ]);
+                    }
+
+                    ElementProduct::query()
+                        ->create([
+                            'element_id' => $element->id,
+                            'product_id' => $product->id
+                        ]);
+
+                    //КОНЕЦ ЦВЕТ
+
+                    //НАЧАЛО РАЗМЕРЫ $row[13]
+
+                    $filterCategories = FilterCategory::query()->where('title', 'Размеры')->first();
+
+                    if ($filterCategories == null) {
+                        $filterCategories = FilterCategory::query()->create([
+                            'title' => 'Размеры'
+                        ]);
+                    }
+
+                    $element = FilterElement::query()->where([
+                        'category_id' => $filterCategories->id,
+                        'title'       => $row[13]
+                    ])->first();
+
+                    if ($element == null){
+                        $element = FilterElement::query()->create([
+                            'category_id' => $filterCategories->id,
+                            'title'       => $row[13]
+                        ]);
+                    }
+
+                    ElementProduct::query()
+                        ->create([
+                            'element_id' => $element->id,
+                            'product_id' => $product->id
+                        ]);
+
+                    //КОНЕЦ РАЗМЕРЫ
+
+
+                    //НАЧАЛО Дополнительная информация $row[14]
+
+                    $filterCategories = FilterCategory::query()->where('title', 'Дополнительная информация')->first();
+
+                    if ($filterCategories == null) {
+                        $filterCategories = FilterCategory::query()->create([
+                            'title' => 'Дополнительная информация'
+                        ]);
+                    }
+
+                    $element = FilterElement::query()->where([
+                        'category_id' => $filterCategories->id,
+                        'title'       => $row[14]
+                    ])->first();
+
+                    if ($element == null) {
+                        $element = FilterElement::query()->create([
+                            'category_id' => $filterCategories->id,
+                            'title'       => $row[14]
+                        ]);
+                    }
+                    ElementProduct::query()
+                        ->create([
+                            'element_id' => $element->id,
+                            'product_id' => $product->id
+                        ]);
+
+                    //КОНЕЦ Дополнительная информация
                 }
                 catch (\Exception $e) {
                     dd($e);
