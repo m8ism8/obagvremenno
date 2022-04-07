@@ -97,7 +97,7 @@ class BagsImport implements ToCollection
                         'price' => $row[19],
                         'characteristics' => $characteristics,
                         'description' => $description,
-                        'image' => 'products/' . $row[3],
+                        'image' => 'products/' . $row[3] . '.jpg',
                         'video' => $row[4],
 
                         'subcategory_id' => $subcategory->id,
