@@ -8,6 +8,9 @@ use App\Models\City;
 
 class PageController extends Controller
 {
+
+
+
     public function history(){
         $content = [
             'title' => setting('history.title'),
@@ -38,7 +41,18 @@ class PageController extends Controller
         ]);
     }
     public function getNews(){
-        $news_items = Sale::orderBy('created_at', 'desc')->take(4)->get();
+        $news_items = Sale::query()
+            ->select(
+                'id',
+                        'title',
+                        'subtitle',
+                        'badge',
+                        'image',
+                        'text',
+                        'created_at'
+            )
+            ->orderBy('created_at', 'desc')
+            ->get();
         foreach($news_items as $news){
             $news->image = env('APP_URL').'/storage/'.$news->image;
         }
@@ -46,6 +60,41 @@ class PageController extends Controller
             'news' => $news_items
         ]);
     }
+
+    public function new(int $id)
+    {
+        $article = Sale::query()->find($id);
+
+        $article->image = env('APP_URL').'/storage/'.$article->image;
+
+        $images = json_decode($article->images);
+        $newImages = [];
+        foreach ($images as $image) {
+            $image = env('APP_URL').'/storage/' . $image;
+            $newImages[] = $image;
+        }
+        $article->images = $newImages;
+
+        $images = json_decode($article->second_images);
+        $newImages = [];
+        foreach ($images as $image) {
+            $image = env('APP_URL').'/storage/' . $image;
+            $newImages[] = $image;
+        }
+        $article->second_images = $newImages;
+
+        $images = json_decode($article->third_images);
+        $newImages = [];
+        foreach ($images as $image) {
+            $image = env('APP_URL').'/storage/' . $image;
+            $newImages[] = $image;
+        }
+        $article->third_images = $newImages;
+
+
+        return response()->json($article);
+    }
+
     public function getCities(){
         $cities = City::with('fillials')->get();
         return response()->json([

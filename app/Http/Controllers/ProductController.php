@@ -111,13 +111,36 @@ class ProductController extends Controller
             'image' => env('APP_URL').'/storage/'.setting('main-banner.image'),
             'link' => setting('main-banner.link')
         ];
-        $mainSale = Sale::orderBy('created_at', 'desc')->take(1)->with('products')->first();
-        $sales = Sale::where('is_main', 1)->take(2)->get();
-        $news = Sale::orderBy('created_at', 'desc')->take(4)->get();
+        $mainSale = Sale::query()
+            ->where('is_main', 1)
+            ->orderBy('created_at', 'desc')
+            ->take(1)
+            ->with('products')
+            ->first();
+
+        $sales = Sale::query()
+            ->where('is_sub_main', 1)
+            ->take(2)
+            ->get();
+
+
+        $news = Sale::query()->select(
+            'id',
+            'title',
+            'subtitle',
+            'badge',
+            'image',
+            'text',
+            'created_at')
+            ->orderBy('created_at', 'desc')
+            ->take(4)
+            ->get();
+
         return response()->json([
             'banner' => $banner,
             'mainSale' => new SaleResource($mainSale),
-            'sales' => SaleResource::collection($sales),
+            'secondSales' => SaleResource::collection($sales),
+            'news' => $news
         ]);
     }
 
