@@ -64,33 +64,44 @@ class PageController extends Controller
     public function new(int $id)
     {
         $article = Sale::query()->find($id);
-
+        if ($article == null) {
+            return response()->json([
+                'message' => 'Страница не найдена'
+            ],404);
+        }
         $article->image = env('APP_URL').'/storage/'.$article->image;
 
         $images = json_decode($article->images);
-        $newImages = [];
-        foreach ($images as $image) {
-            $image = env('APP_URL').'/storage/' . $image;
-            $newImages[] = $image;
+        if ($images != null) {
+            $newImages = [];
+
+            foreach ($images as $image) {
+                $image = env('APP_URL').'/storage/' . $image;
+                $newImages[] = $image;
+            }
+            $article->images = $newImages;
         }
-        $article->images = $newImages;
 
         $images = json_decode($article->second_images);
-        $newImages = [];
-        foreach ($images as $image) {
-            $image = env('APP_URL').'/storage/' . $image;
-            $newImages[] = $image;
+        if ($images != null) {
+            $newImages = [];
+            foreach ($images as $image) {
+                $image = env('APP_URL') . '/storage/' . $image;
+                $newImages[] = $image;
+            }
+            $article->second_images = $newImages;
         }
-        $article->second_images = $newImages;
+
 
         $images = json_decode($article->third_images);
-        $newImages = [];
-        foreach ($images as $image) {
-            $image = env('APP_URL').'/storage/' . $image;
-            $newImages[] = $image;
+        if ($images != null) {
+            $newImages = [];
+            foreach ($images as $image) {
+                $image = env('APP_URL') . '/storage/' . $image;
+                $newImages[] = $image;
+            }
+            $article->third_images = $newImages;
         }
-        $article->third_images = $newImages;
-
 
         return response()->json($article);
     }
