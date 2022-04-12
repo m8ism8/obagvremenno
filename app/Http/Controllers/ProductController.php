@@ -237,7 +237,7 @@ class ProductController extends Controller
         foreach ($completes as $complete) {
             $complete->image = env('APP_URL').'/storage/'.$complete->image;
         }
-
+        $subcategory->image = env('APP_URL').'/storage/'. $subcategory->image;
         return response()->json([
             'subcategory' => $subcategory,
             'completes'  => $completes,
