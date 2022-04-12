@@ -21,7 +21,7 @@ class SubcategoriesResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'image' => $image
+            'image' => $image,
         ];
     }
 }

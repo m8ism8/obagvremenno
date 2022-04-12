@@ -224,6 +224,7 @@ class ProductController extends Controller
         $filters = $this->getFilters($subcategory->products);
 
         foreach ($subcategory->products as $product) {
+            $product->image = env('APP_URL') . '/storage/' . $product->image;
             $product->isFavorite = Favourite::query()
                 ->where('product_id',$product->id)
                 ->where('user_id', Auth::guard('sanctum')->id())
