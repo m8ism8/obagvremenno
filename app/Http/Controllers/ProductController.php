@@ -9,6 +9,7 @@ use App\Models\{CompleteCategory,
     CompleteProduct,
     Product,
     Category,
+    SubcategoriesProduct,
     Subcategory,
     Sale,
     Favourite,
@@ -154,6 +155,24 @@ class ProductController extends Controller
     public function category(Category $category){
         $sales = Sale::all();
 
+        $subcategoriesIds = Subcategory::query()
+                                    ->where('category_id', $category->id)
+                                    ->select('id')
+                                    ->get()
+                                    ->pluck('id')
+                                    ->toArray();
+
+        $productsIds = SubcategoriesProduct::query()
+                                            ->whereIn('subcategory_id', $subcategoriesIds)
+                                            ->get()
+                                            ->pluck('product_id')
+                                            ->toArray();
+
+        $category->products = Product::query()
+            ->whereIn('id', $productsIds)
+            ->get();
+
+
         $filters = $this->getFilters($category->products);
 
         return response()->json([
@@ -164,7 +183,23 @@ class ProductController extends Controller
     }
 
     public function categoryFiltered(category $category, Request $request){
-        $products = $category->products;
+        $subcategoriesIds = Subcategory::query()
+            ->where('category_id', $category->id)
+            ->select('id')
+            ->get()
+            ->pluck('id')
+            ->toArray();
+
+        $productsIds = SubcategoriesProduct::query()
+            ->whereIn('subcategory_id', $subcategoriesIds)
+            ->get()
+            ->pluck('product_id')
+            ->toArray();
+
+        $products = Product::query()
+            ->whereIn('id', $productsIds)
+            ->get();
+
         foreach($products as $product) {
             $product->actualPrice = $product->new_price ?? $product->price;
         }
@@ -211,8 +246,8 @@ class ProductController extends Controller
         ]);
     }
 
-    public function subcategory(Subcategory $subcategory){
-
+    public function subcategory(Subcategory $subcategory)
+    {
         if (request()->has('sort_price')) {
             $subcategory->product = $subcategory->products->sortBy([
                 [
@@ -253,7 +288,7 @@ class ProductController extends Controller
         if (isset($request->complete_id)) {
             $products = Product::query()->where('complete_id', $request->complete_id)->get();
         }else {
-            $products = Product::where('subcategory_id', $subcategory->id)->get();
+            $products = $subcategory->products();
         }
         foreach($products as $product) {
             $product->actualPrice = $product->new_price ?? $product->price;
