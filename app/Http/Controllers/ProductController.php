@@ -346,7 +346,12 @@ class ProductController extends Controller
             ->get();
 
         foreach ($complete as $item) {
-            $item->image = env('APP_URL').'/storage/'.$item->image;
+            if(json_decode($item->image, true) != null) {
+                $item->image = json_decode($item->image, true);
+                $item->image = env('APP_URL') . '/storage/' . $item->image[0];
+            } else {
+                $item->image = env('APP_URL') . '/storage/' . $item->image;
+            }
         }
 
         $product->complete   = $complete;
@@ -356,7 +361,7 @@ class ProductController extends Controller
             ->where('user_id', Auth::guard('sanctum')->id())
             ->exists();
 
-
+        $product->getProducts = true;
 
         return response()->json([
             'product' => new ProductResource($product),

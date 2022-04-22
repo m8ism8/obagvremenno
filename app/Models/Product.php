@@ -35,7 +35,11 @@ class Product extends Model
                                                ->get();
 
                 foreach ($notification as $item) {
+                    try {
                     \Illuminate\Support\Facades\Mail::to($item->email)->send(new NotifyMail($data));
+                    }catch (\Exception $exception) {
+
+                    }
                 }
 
             }

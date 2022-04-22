@@ -17,9 +17,20 @@ class ProductResource extends JsonResource
     public function toArray($request)
     {
         $image = $this->image;
-        if($image && str_split($image, 4)[0] != 'http' ) {
-            $image = env('APP_URL').'/storage/'.$this->image;
+
+        if(json_decode($image, true) != null) {
+            $image = json_decode($image, true);
+            if ($this->getProducts) {
+                for ($i = 0; $i < count($image); $i++) {
+                    $image[$i] = env('APP_URL') . '/storage/' . $image[$i];
+                }
+            } else {
+                $image = env('APP_URL') . '/storage/' . $image[0];
+            }
+        } else {
+            $image = env('APP_URL') . '/storage/' . $image;
         }
+
         return [
             'id' => $this->id,
             'title' => $this->title,
