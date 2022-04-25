@@ -3,9 +3,17 @@
 namespace App\Imports;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
-use App\Models\{Category, CompleteCategory, ElementProduct, FilterCategory, FilterElement, Subcategory, Product};
+use App\Models\{Category,
+    CompleteCategory,
+    CompleteProduct,
+    ElementProduct,
+    FilterCategory,
+    FilterElement,
+    Subcategory,
+    Product};
 
 class ProductsImport implements ToCollection
 {
@@ -26,8 +34,11 @@ class ProductsImport implements ToCollection
     //14 => "Дополнительная информация"
     //15 => "Артикул производителя"
     //16 => "Цена"
+    //17 => "Подкатегория продукта"
+    //18 => "Категории комплектующие"
+    //19 => "Комплектующие"
 
-    public function collection(Collection $rows)
+    public function collection(Collection $rows): array
     {
         foreach($rows as $row) {
 
@@ -36,21 +47,12 @@ class ProductsImport implements ToCollection
             }
             else {
                 try {
-//                    if ($row[10] != null) {
-//                        $category = Category::where('title', $row[10])->firstOrCreate([
-//                            'title' => $row[10],
-//                            'full_title' => $row[10]
-//                        ]);
-//                    }
-//                    if ($row[11] != null) {
-//                        $subcategory = Subcategory::where('title', $row[11])->where('category_id', $category->id)->firstOrCreate([
-//                            'title' => $row[11],
-//                            'category_id' => $category->id
-//                        ]);
-//                    }
 
-
-                    $complete = CompleteCategory::query()->where('title', $row[12])->first();
+                    if ($row[18] != null) {
+                        $complete = CompleteCategory::query()->where('title', $row[18])->first()->id;
+                    } else {
+                        $complete = null;
+                    }
 
                     $characteristics  = '<p>' . 'Бренд:'    . $row[2].'</p>';
                     $characteristics .= '<p>' . 'Тип:'      . $row[5].'</p>';
@@ -63,10 +65,9 @@ class ProductsImport implements ToCollection
 
                     $description = '<p>'.$row[14].'</p>';
 
+                    $subcategory = Subcategory::query()->where('title', $row[17])->first();
 
-                    $subcategory = Subcategory::query()->where('title', 'Кошельки')->first();
-                    //TODO subcategory_id СЮДА сделать сабкатегорию
-                    $product = Product::create([
+                    $product = Product::query()->create([
                         'code'  => $row[0],
                         'title' => $row[1],
                         'price' => $row[16],
@@ -76,19 +77,21 @@ class ProductsImport implements ToCollection
                         'video' => $row[4],
 
                         'subcategory_id' => $subcategory->id,
-
-//                        'complete_id' => 'ЕСЛИ КОМЛЕКТ'
-//                        'price' => $row[2],
-//                        'new_price' => $row[3] ?? null,
-//                        'badge' => $row[4] ?? null,
-//                        'available' => $row[5],
-//                        'characteristics' => $characteristics,
-//                        'description' => $description,
-//                        'image' => $row[8] ?? null,
-//                        'video' => $row[9] ?? null,
-//                        'subcategory_id' => $subcategory->id ?? null,
-//                        'complete_id'    => $complete->id ?? null
+                        'complete_id'    => $complete
                     ]);
+
+                    if ($row[19] != null) {
+                        $data = explode(',', $row[19]);
+                        foreach ($data as $item) {
+                            $item = trim($item);
+                            $completeProduct = Product::query()->where('title', $item)->first();
+                            CompleteProduct::query()->create([
+                                'complete_id' => $completeProduct->id,
+                                'product_id'  => $product->id
+                            ]);
+                        }
+
+                    }
 
                     //Назначение $row[6]
                     $filterCategories = FilterCategory::query()->where('title', 'Назначение')->first();
