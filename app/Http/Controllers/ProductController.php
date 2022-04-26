@@ -157,7 +157,7 @@ class ProductController extends Controller
 
         $subcategoriesIds = Subcategory::query()
                                     ->where('category_id', $category->id)
-                                    ->select('id')
+                                    ->select('id','preview_image')
                                     ->get()
                                     ->pluck('id')
                                     ->toArray();
@@ -274,6 +274,12 @@ class ProductController extends Controller
             $complete->image = env('APP_URL').'/storage/'.$complete->image;
         }
         $subcategory->image = env('APP_URL').'/storage/'. $subcategory->image;
+        try {
+            $subcategory->preview_image = json_decode($subcategory->preview_image, true)[0];
+            $subcategory->preview_image = env('APP_URL') . '/storage/' . $subcategory->preview_image['download_link'];
+        }catch (\Exception $exception) {
+            $subcategory->preview_image = null;
+        }
         return response()->json([
             'subcategory' => $subcategory,
             'completes'  => $completes,
