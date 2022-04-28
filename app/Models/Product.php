@@ -23,7 +23,8 @@ class Product extends Model
         'image',
         'video',
         'subcategory_id',
-        'complete_id'
+        'complete_id',
+        'remainder'
     ];
 
     public static function boot()

@@ -41,13 +41,12 @@ class ProductsImport implements ToCollection
     public function collection(Collection $rows): array
     {
         foreach($rows as $row) {
-
             if($row[0]=='Артикул') {
 
             }
             else {
                 try {
-
+                    dd( $rows);
                     if ($row[18] != null) {
                         $complete = CompleteCategory::query()->where('title', $row[18])->first()->id;
                     } else {
@@ -60,7 +59,7 @@ class ProductsImport implements ToCollection
                     $characteristics .= '<p>' . 'Застежка:' . $row[9].'</p>';
                     $characteristics .= '<p>' . 'Отделение для монет:' . $row[10].'</p>';
                     $characteristics .= '<p>' . 'Отделения для карт/визиток:' . $row[11].'</p>';
-                    $characteristics .= '<p>' . 'Страна производства:' . $row[12].'</p>';
+                    $characteristics .= '<p>' . 'Страна производства:'        . $row[12].'</p>';
                     $characteristics .= '<p>' . 'Размеры:' . $row[13].'</p>';
 
                     $description = '<p>'.$row[14].'</p>';
@@ -75,7 +74,7 @@ class ProductsImport implements ToCollection
                         'description' => $description,
                         'image' => 'products/' . $row[3] . '.jpg',
                         'video' => $row[4],
-
+                        'remainder' => $row[22],
                         'subcategory_id' => $subcategory->id,
                         'complete_id'    => $complete
                     ]);

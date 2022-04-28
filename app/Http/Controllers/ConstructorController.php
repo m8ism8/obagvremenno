@@ -4,10 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-use App\Models\{
-    Constructor,
-    ConstructorCategory,
-};
+use App\Models\{Constructor, ConstructorCategory, Product};
 
 use App\Http\Resources\{
     ConstructorResource,
@@ -54,11 +51,22 @@ class ConstructorController extends Controller
         ]);
     }
 
-    public function category(ConstructorCategory $category){
-        $category->constructorElements;
+    public function category(ConstructorCategory $category): JsonResponse
+    {
+
         foreach($category->constructorElements as $element){
             $element->image = env('APP_URL').'/storage/'.$element->image;
+            unset($element->images);
         }
+        $additionalElements = Product::query()
+            ->select('id', 'title', 'price', 'new_price', 'constructor_id', 'image')
+            ->where('constructor_id', $category->id)
+            ->get();
+        foreach($additionalElements as $element){
+            $element->image = env('APP_URL').'/storage/'.json_decode($element->image,true)[0];
+            $category->constructorElements->push($element);
+        }
+
         return response()->json([
             'category' => $category,
         ]);
