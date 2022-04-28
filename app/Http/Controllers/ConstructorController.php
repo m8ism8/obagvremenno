@@ -33,7 +33,6 @@ class ConstructorController extends Controller
         $constructor->template_image = $this->parseImage($constructor->template_image);
         $images = [];
         foreach($constructor->categories as $category) {
-            $category->constructorElements;
             foreach($category->constructorElements as $element){
                 $element->image = env('APP_URL').'/storage/'.$element->image;
                 $element->images = json_decode($element->images, true);
@@ -41,16 +40,23 @@ class ConstructorController extends Controller
                     $item = env('APP_URL').'/storage/'.$item;
                     $images[] = $item;
                 }
-                $additionalElements = Product::query()
-                    ->select('id', 'title', 'price', 'new_price', 'constructor_id', 'image')
-                    ->where('constructor_id', $category->id)
-                    ->get();
-                foreach($additionalElements as $element){
-                    $element->image = env('APP_URL').'/storage/'.json_decode($element->image,true)[0];
-                    $category->constructorElements->push($element);
-                }
+
                 $element->images = $images;
                 $images = [];
+            }
+            $additionalElements = Product::query()
+                ->select('id', 'title', 'price', 'new_price', 'constructor_id', 'image', 'constructor_image')
+                ->where('constructor_id', $category->id)
+                ->get();
+            foreach($additionalElements as $element){
+                $element->image = env('APP_URL').'/storage/'.json_decode($element->image,true)[0];
+                $images = json_decode($element->constructor_image,true);
+                for ($i = 0; $i < count($images); $i++) {
+                    $images[$i] = env('APP_URL').'/storage/'.$images[$i];
+                }
+                unset($element->constructor_image);
+                $element->images = $images;
+                $category->constructorElements->push($element);
             }
         }
 
