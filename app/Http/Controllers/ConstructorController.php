@@ -41,10 +41,20 @@ class ConstructorController extends Controller
                     $item = env('APP_URL').'/storage/'.$item;
                     $images[] = $item;
                 }
+                $additionalElements = Product::query()
+                    ->select('id', 'title', 'price', 'new_price', 'constructor_id', 'image')
+                    ->where('constructor_id', $category->id)
+                    ->get();
+                foreach($additionalElements as $element){
+                    $element->image = env('APP_URL').'/storage/'.json_decode($element->image,true)[0];
+                    $category->constructorElements->push($element);
+                }
                 $element->images = $images;
                 $images = [];
             }
         }
+
+
 
         return response()->json([
             'constructor' => $constructor,
