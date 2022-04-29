@@ -45,14 +45,15 @@ class ProductsImport implements ToCollection
 
             }
             else {
+                dd($rows);
+
                 try {
-                    dd( $rows);
                     if ($row[18] != null) {
                         $complete = CompleteCategory::query()->where('title', $row[18])->first()->id;
                     } else {
                         $complete = null;
                     }
-
+                    dd($row);
                     $characteristics  = '<p>' . 'Бренд:'    . $row[2].'</p>';
                     $characteristics .= '<p>' . 'Тип:'      . $row[5].'</p>';
                     $characteristics .= '<p>' . 'Материал:' . $row[7].'</p>';
@@ -61,8 +62,9 @@ class ProductsImport implements ToCollection
                     $characteristics .= '<p>' . 'Отделения для карт/визиток:' . $row[11].'</p>';
                     $characteristics .= '<p>' . 'Страна производства:'        . $row[12].'</p>';
                     $characteristics .= '<p>' . 'Размеры:' . $row[13].'</p>';
+                    $characteristics .= '<p>' . 'Дополнительная информация:' . $row[14].'</p>';
 
-                    $description = '<p>'.$row[14].'</p>';
+                    $description = '<p>'.$row[21].'</p>';
 
                     $subcategory = Subcategory::query()->where('title', $row[17])->first();
 
@@ -74,7 +76,7 @@ class ProductsImport implements ToCollection
                         'description' => $description,
                         'image' => 'products/' . $row[3] . '.jpg',
                         'video' => $row[4],
-                        'remainder' => $row[22],
+                        'remainder' => $row[20],
                         'subcategory_id' => $subcategory->id,
                         'complete_id'    => $complete
                     ]);

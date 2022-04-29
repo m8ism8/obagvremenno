@@ -259,7 +259,11 @@ class ProductController extends Controller
         $filters = $this->getFilters($subcategory->products);
 
         foreach ($subcategory->products as $product) {
-            $product->image = env('APP_URL') . '/storage/' . $product->image;
+            if(json_decode($product->image) != null) {
+                $product->image = env('APP_URL') . '/storage/' .  json_decode($product->image, true)[0];
+            }else {
+                $product->image = env('APP_URL') . '/storage/' . $product->image;
+            }
             $product->isFavorite = Favourite::query()
                 ->where('product_id',$product->id)
                 ->where('user_id', Auth::guard('sanctum')->id())
@@ -294,8 +298,9 @@ class ProductController extends Controller
         if (isset($request->complete_id)) {
             $products = Product::query()->where('complete_id', $request->complete_id)->get();
         }else {
-            $products = $subcategory->products();
+            $products = $subcategory->products()->get();
         }
+
         foreach($products as $product) {
             $product->actualPrice = $product->new_price ?? $product->price;
         }
