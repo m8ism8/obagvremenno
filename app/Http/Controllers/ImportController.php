@@ -24,8 +24,7 @@ class ImportController extends Controller
         if($request->file) {
             Storage::deleteDirectory('/public/excel');
             $fileName = $request->file->getClientOriginalName();
-            $file = $request->file('file')->storeAs('/excel', $fileName, 'public');
-            dd(phpinfo());
+            $request->file('file')->storeAs('/excel', $fileName, 'public');
             Excel::import(new ProductsImport, '/public/excel/'.$fileName);
             return redirect('/admin/products')->with([
                 'message'    => 'Продукты были добавлены на сайт!',
