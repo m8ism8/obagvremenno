@@ -38,117 +38,165 @@ class ProductsImport implements ToCollection
     //16 => "Артикул производителя"
     //17 => "Описание"
     //18 => "Цена"
-    //19 => "Подкатегория продукта"
-    //20 => "Категории комплектующие"
-    //21 => "Комплектующие"
+    //19 => "Категория"
+    //20 => "Подкатегория"
+    //21 => "Категория комплектующие"
     //22 => "Остатки"
     //23 => "Категория конструктора "
     //24 => "Конструктор картинка"
     public function filterCreate($title, $row, $product_id)
     {
-        $filterCategories = FilterCategory::query()->where('title', $title)->first();
+        $filterCategories = FilterCategory::query()
+                                          ->where('title', $title)
+                                          ->first()
+        ;
 
         if ($filterCategories == null) {
-            $filterCategories = FilterCategory::query()->create([
-                                                                    'title' => $title
-                                                                ]);
+            $filterCategories = FilterCategory::query()
+                                              ->create([
+                                                           'title' => $title,
+                                                       ])
+            ;
         }
 
-        $element = FilterElement::query()->where([
-                                                     'category_id' => $filterCategories->id,
-                                                     'title'       => $row
-                                                 ])->first();
+        $element = FilterElement::query()
+                                ->where([
+                                            'category_id' => $filterCategories->id,
+                                            'title'       => $row,
+                                        ])
+                                ->first()
+        ;
 
         if ($element == null) {
-            $element = FilterElement::query()->create([
-                                                          'category_id' => $filterCategories->id,
-                                                          'title'       => $row
-                                                      ]);
+            if ($row != null) {
+            $element = FilterElement::query()
+                                    ->create([
+                                                 'category_id' => $filterCategories->id,
+                                                 'title'       => $row,
+                                             ])
+            ;
+            }
         }
-
-        ElementProduct::query()
-                      ->create([
-                                   'element_id' => $element->id,
-                                   'product_id' => $product_id
-                               ]);
+        if ($row != null) {
+            ElementProduct::query()
+                          ->create([
+                                       'element_id' => $element->id,
+                                       'product_id' => $product_id,
+                                   ])
+            ;
+        }
     }
 
     public function collection(Collection $rows): array
     {
         foreach ($rows as $row) {
-            if ($row[0] == 'Артикул') {
+            if ($row[0] == 'Артикул' or $row[0] == null) {
 
             } else {
                 try {
+
+
+                    if ($row[19] != null) {
+                        $category = Category::query()
+                                            ->where('title', $row[19])
+                        ;
+                        if ($category->exists()) {
+                            $category = $category->first();
+                        } else {
+                            $category = Category::query()->create([
+                                                  'title'      => $row[19],
+                                                  'full_title' => $row[19],
+                                                  'text'       => $row[19],
+                                                  'image'      => 'NULL',
+                                              ]);
+                        }
+                    }
+
                     if ($row[20] != null) {
+
+                        $subcategory = Subcategory::query()
+                                                  ->where('title', $row[20])
+                        ;
+                        if ($subcategory->exists()) {
+                            $subcategory = $subcategory->first()->id;
+                        } else {
+                            $subcategory = $subcategory->create([
+                                                                    'title'       => $row[20],
+                                                                    'image'       => 'NULL',
+                                                                    'category_id' => $category->id,
+                                                                ])->id;
+                        }
+                    }
+                    if ($row[21] != null) {
                         $complete = CompleteCategory::query()
-                                                    ->where('title', $row[20])
-                                                    ->first()->id;
+                                                    ->where('title', $row[21])
+                        ;
+                        if ($complete->exists()) {
+                            $complete = $complete->first()->id;
+                        } else {
+                            $complete = CompleteCategory::query()
+                                                        ->create([
+                                                                     'title'          => $row[21],
+                                                                     'image'          => 'NULL',
+                                                                     'subcategory_id' => 104,
+                                                                 ])->id
+                            ;
+                        }
                     } else {
                         $complete = null;
                     }
 
-
-                    $subcategory = Subcategory::query()
-                                              ->where('title', $row[19])
-                                              ->first()
-                    ;
-                    if ($subcategory == null ) {
-                        dd($row, $rows);
-                    }
                     if ($row[3] != null) {
-                        $image = Storage::disk('public')->exists('products/' . $row[3]);
-                        $images = Storage::disk('public')->allFiles('products/' . $row[3] . '/');
+                        $images = Storage::disk('public')
+                                         ->allFiles('products/' . $row[3] . '/')
+                        ;
                         $images = json_encode($images);
-
-                        //dd($image, $row[3], );
                     }
 
-                    $characteristics      = '<p>' . 'Артикул:'    . $row[0] . '</p>';
+                    $characteristics = '<p>' . 'Артикул:' . $row[0] . '</p>';
                     if ($row[2] != null) {
-                        $characteristics .= '<p>' . 'Бренд:'      . $row[2] . '</p>';
+                        $characteristics .= '<p>' . 'Бренд:' . $row[2] . '</p>';
                     }
                     if ($row[5] != null) {
-                        $characteristics .= '<p>' . 'Модель:'     . $row[5] . '</p>';
+                        $characteristics .= '<p>' . 'Модель:' . $row[5] . '</p>';
                     }
 
                     if ($row[6] != null) {
-                        $characteristics .= '<p>' . 'Тип:'        . $row[6] . '</p>';
+                        $characteristics .= '<p>' . 'Тип:' . $row[6] . '</p>';
                     }
                     if ($row[7] != null) {
                         $characteristics .= '<p>' . 'Назначение:' . $row[7] . '</p>';
                     }
                     if ($row[8] != null) {
-                        $characteristics .= '<p>' . 'Материал:'   . $row[8] . '</p>';
+                        $characteristics .= '<p>' . 'Материал:' . $row[8] . '</p>';
                     }
                     if ($row[9] != null) {
-                        $characteristics .= '<p>' . 'Цвет:'       . $row[9] . '</p>';
+                        $characteristics .= '<p>' . 'Цвет:' . $row[9] . '</p>';
                     }
                     if ($row[10] != null) {
-                        $characteristics .= '<p>' . 'Застежка:'   . $row[10] . '</p>';
+                        $characteristics .= '<p>' . 'Застежка:' . $row[10] . '</p>';
                     }
                     if ($row[11] != null) {
-                        $characteristics .= '<p>' . 'Отделение для монет:'   . $row[11] . '</p>';
+                        $characteristics .= '<p>' . 'Отделение для монет:' . $row[11] . '</p>';
                     }
                     if ($row[12] != null) {
-                        $characteristics .= '<p>' . 'Отделения для карт/визиток:'   . $row[12] . '</p>';
+                        $characteristics .= '<p>' . 'Отделения для карт/визиток:' . $row[12] . '</p>';
                     }
                     if ($row[13] != null) {
-                        $characteristics .= '<p>' . 'Страна производства:'   . $row[13] . '</p>';
+                        $characteristics .= '<p>' . 'Страна производства:' . $row[13] . '</p>';
                     }
                     if ($row[14] != null) {
-                        $characteristics .= '<p>' . 'Размеры:'   . $row[14] . '</p>';
+                        $characteristics .= '<p>' . 'Размеры:' . $row[14] . '</p>';
                     }
                     if ($row[15] != null) {
-                        $characteristics .= '<p>' . 'Дополнительная информация:'   . $row[15] . '</p>';
+                        $characteristics .= '<p>' . 'Дополнительная информация:' . $row[15] . '</p>';
                     }
                     if ($row[16] != null) {
-                        $characteristics .= '<p>' . 'Артикул производителя:'   . $row[16] . '</p>';
+                        $characteristics .= '<p>' . 'Артикул производителя:' . $row[16] . '</p>';
                     }
                     if ($row[17] != null) {
                         $description = '<p>' . $row[17] . '</p>';
                     }
-
 
                     $product = Product::query()
                                       ->create([
@@ -160,34 +208,33 @@ class ProductsImport implements ToCollection
                                                    'image'           => $images,
                                                    'video'           => $row[4],
                                                    'remainder'       => $row[22] ?? null,
-                                                   'subcategory_id'  => $subcategory->id,
+                                                   'subcategory_id'  => $subcategory->id ?? null,
                                                    'complete_id'     => $complete,
                                                ])
                     ;
-
-                    if ($row[21] != null) {
-                        $data = explode(',', $row[21]);
-                        foreach ($data as $item) {
-                            $item            = trim($item);
-                            $completeProduct = Product::query()
-                                                      ->where('title', $item)
-                                                      ->first()
-                            ;
-                            CompleteProduct::query()
-                                           ->create([
-                                                        'complete_id' => $completeProduct->id,
-                                                        'product_id'  => $product->id,
-                                                    ])
-                            ;
-                        }
-
-                    }
+//                    dd($rows);
+//                    if ($row[21] != null) {
+//                        $data = explode(',', $row[21]);
+//                        foreach ($data as $item) {
+//                            $item            = trim($item);
+//                            $completeProduct = Product::query()
+//                                                      ->where('title', $item)
+//                                                      ->first()
+//                            ;
+//                            CompleteProduct::query()
+//                                           ->create([
+//                                                        'complete_id' => $completeProduct->id,
+//                                                        'product_id'  => $product->id,
+//                                                    ])
+//                            ;
+//                        }
+//
+//                    }
 
 
                     if ($row[7] != null) {
                         $this->filterCreate('Назначение', $row[6], $product->id);
                     }
-
                     if ($row[8] != null) {
                         $this->filterCreate('Материал', $row[8], $product->id);
                     }
@@ -215,6 +262,7 @@ class ProductsImport implements ToCollection
                     if ($row[14] != null) {
                         $this->filterCreate('Размеры', $row[14], $product->id);
                     }
+
                 } catch (\Exception $e) {
                     dd($e);
                 }
