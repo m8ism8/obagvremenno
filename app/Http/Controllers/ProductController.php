@@ -227,6 +227,10 @@ class ProductController extends Controller
                 ->where('product_id',$product->id)
                 ->where('user_id', Auth::guard('sanctum')->id())
                 ->exists();
+            $images = json_decode($product->image);
+            if ($images) {
+                $product->image = env('APP_URL') . '/storage/' . $images[0];
+            }
             $product->image = env('APP_URL') . '/storage/' . $product->image;
         }
 
@@ -327,6 +331,10 @@ class ProductController extends Controller
                 ->where('product_id',$product->id)
                 ->where('user_id', Auth::guard('sanctum')->id())
                 ->exists();
+            $images = json_decode($product->image);
+            if ($images) {
+                $product->image = env('APP_URL') . '/storage/' . $images[0];
+            }
             $product->image = env('APP_URL') . '/storage/' . $product->image;
         }
 
