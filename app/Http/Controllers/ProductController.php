@@ -230,8 +230,9 @@ class ProductController extends Controller
             $images = json_decode($product->image);
             if ($images) {
                 $product->image = env('APP_URL') . '/storage/' . $images[0];
+            } else{
+                $product->image = env('APP_URL') . '/storage/' . $product->image;
             }
-            $product->image = env('APP_URL') . '/storage/' . $product->image;
         }
 
         if ($request->sort_price) {
@@ -334,8 +335,9 @@ class ProductController extends Controller
             $images = json_decode($product->image);
             if ($images) {
                 $product->image = env('APP_URL') . '/storage/' . $images[0];
-            }
+            }else {
             $product->image = env('APP_URL') . '/storage/' . $product->image;
+            }
         }
 
         if ($request->sort_price) {
