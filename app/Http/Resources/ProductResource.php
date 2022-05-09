@@ -47,6 +47,7 @@ class ProductResource extends JsonResource
             'reviews' => $this->reviews,
             'isFavorite' => $this->isFavorite ?? self::isFavorite($this->id),
             'complete'  => $this->complete,
+            'remainder' => $this->remainder,
             'slug'      => Str::slug($this->title)
         ];
     }

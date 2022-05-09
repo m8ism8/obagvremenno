@@ -21,23 +21,27 @@ class ConstructorController extends Controller
         $categories = Category::all();
 
         foreach ($categories as $category) {
-            $constructors = Constructor::query()
-                                       ->where('category_id', $category->id)
+            $subcategories = Subcategory::query()
+                                        ->where('category_id', $category->id)
             ;
-            if ($constructors->exists()) {
-                $constructors = $constructors->get();
-                foreach ($constructors as $constructor) {
-                    $constructor->template_image = $this->parseImage($constructor->template_image);
-                    $constructor->wide_image     = $this->parseImage($constructor->wide_image);
-                    $constructor->square_image   = $this->parseImage($constructor->square_image);
+            if ($subcategories->exists()) {
+                $subcategories = $subcategories->get();
+                foreach ($subcategories as $subcategory) {
+                    $subcategory->image = env('APP_URL') . '/storage/' . $subcategory->image;
+                    if ($subcategory->preview_image != null) {
+                        $subcategory->preview_image = env('APP_URL') . '/storage/' . json_decode(
+                                $subcategory->preview_image, true
+                            )[0]['download_link'];
+                    }
                 }
-                $category->image = env('APP_URL') . '/storage/' . $category->image;
-                $category->constructors = $constructors;
+                $subcategories->makeHidden(['created_at', 'updated_at', 'category_id']);
+                $category->image         = env('APP_URL') . '/storage/' . $category->image;
+                $category->subcategories = $subcategories;
             }
         }
+        $categories = $categories->whereNotNull('subcategories');
 
-        $categories = $categories->whereNotNull('constructors');
-        return response()->json($categories->values());
+        return response()->json($categories->makeHidden(['created_at', 'updated_at', 'text'])->values());
     }
 
     public function constructor($slug)

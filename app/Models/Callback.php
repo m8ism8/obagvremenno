@@ -10,4 +10,5 @@ class Callback extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'surname', 'email', 'phone', 'text'];
+
 }
