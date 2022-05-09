@@ -67,6 +67,8 @@ class ProductController extends Controller
         } catch (\Exception $exception) {
             dd($exception->getMessage());
         }
+
+
         $recomendedProducts = collect([
                                           [
                                               'title'    => $randomCategories[0]->title,
@@ -101,6 +103,7 @@ class ProductController extends Controller
                                          )
                                          ->exists()
             ;
+            $item->slug = Str::slug($item->title);
             if ($item->image && str_split($item->image, 4)[0] != 'http') {
                 $image = env('APP_URL') . '/storage/' . $item->image;
             }
