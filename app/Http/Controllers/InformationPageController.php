@@ -54,7 +54,7 @@ class InformationPageController extends Controller
     public function exploitationAccessories()
     {
         $data = ExploitationArticle::query()
-                                   ->select('id', 'title', 'image')
+                                   ->select('id', 'title', 'image', 'subtitle')
                                    ->get()
         ;
 
