@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class SubcategoriesResource extends JsonResource
 {
@@ -34,6 +35,7 @@ class SubcategoriesResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'image' => $image,
+            'slug'  => Str::slug($this->title),
             'preview_image' => $preview_image
         ];
     }

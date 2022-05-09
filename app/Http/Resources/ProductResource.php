@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\Favourite;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ProductResource extends JsonResource
 {
@@ -45,7 +46,8 @@ class ProductResource extends JsonResource
             'video' => $this->video ?? null,
             'reviews' => $this->reviews,
             'isFavorite' => $this->isFavorite ?? self::isFavorite($this->id),
-            'complete'  => $this->complete
+            'complete'  => $this->complete,
+            'slug'      => Str::slug($this->title)
         ];
     }
 
