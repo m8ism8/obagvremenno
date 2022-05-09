@@ -41,7 +41,10 @@ class ConstructorController extends Controller
         }
         $categories = $categories->whereNotNull('subcategories');
 
-        return response()->json($categories->makeHidden(['created_at', 'updated_at', 'text'])->values());
+        return response()->json(
+            $categories->makeHidden(['created_at', 'updated_at', 'text'])
+                       ->values()
+        );
     }
 
     public function constructor($slug)
@@ -135,25 +138,45 @@ class ConstructorController extends Controller
                                 ]);
     }
 
-    public function category(ConstructorCategory $category): JsonResponse
+    public function category(int $id): JsonResponse
     {
 
-        foreach ($category->constructorElements as $element) {
-            $element->image = env('APP_URL') . '/storage/' . $element->image;
-            unset($element->images);
-        }
-        $additionalElements = Product::query()
-                                     ->select('id', 'title', 'price', 'new_price', 'constructor_id', 'image')
-                                     ->where('constructor_id', $category->id)
-                                     ->get()
+        $subcategories = Subcategory::query()
+                                    ->where('id', $id)
+                                    ->first()
         ;
-        foreach ($additionalElements as $element) {
-            $element->image = env('APP_URL') . '/storage/' . json_decode($element->image, true)[0];
-            $category->constructorElements->push($element);
+        $subcategories->makeHidden(['created_at', 'updated_at']);
+        if ($subcategories->preview_image != null) {
+            $subcategories->preview_image = env('APP_URL') . '/storage/' . json_decode($subcategories->preview_image, true)[0]['download_link'];
         }
+        $subcategories->image = env('APP_URL') . '/storage/' . $subcategories->image;
+
+        $completeCategories = CompleteCategory::query()
+                                              ->where('subcategory_id', $subcategories->id)
+                                              ->get()
+        ;
+        $completeCategories->makeHidden(['created_at', 'updated_at']);
+
+        foreach ($completeCategories as $completeCategory) {
+            $completeCategory->image = env('APP_URL') . '/storage/' . $completeCategory->image;
+
+            $constructor_elements = Product::query()
+                ->select('id', 'title', 'price', 'new_price', 'code', 'image', 'constructor_image')
+                                                             ->where('complete_id', $completeCategory->id)
+                //   ->where('is_constructor', true)
+                                                             ->get()
+            ;
+
+            foreach ($constructor_elements as $element) {
+
+            }
+
+            $completeCategory->constructor_elements = $constructor_elements;
+        }
+        $subcategories->completeCategories = $completeCategories;
 
         return response()->json([
-                                    'category' => $category,
+                                    'category' => $subcategories,
                                 ]);
     }
 

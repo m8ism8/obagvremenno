@@ -118,3 +118,6 @@ Route::post('notify', [CallBackController::class, 'notify']);
 
 Route::get('/seo/{title}', [InformationPageController::class, 'seo']);
 Route::get('/seo/parser/test', [InformationPageController::class, 'seoParser']);
+
+Route::get('/page/sales', [PageController::class, 'sales']);
+Route::get('/page/sales/{id}', [PageController::class, 'salesById']);

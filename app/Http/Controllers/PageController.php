@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\NewSales;
 use Illuminate\Http\Request;
 
 use App\Models\Sale;
@@ -9,7 +10,72 @@ use App\Models\City;
 class PageController extends Controller
 {
 
+    public function sales()
+    {
+        $news_items = NewSales::query()
+                          ->select(
+                              'id',
+                              'title',
+                              'subtitle',
+                              'badge',
+                              'image',
+                              'text',
+                              'created_at'
+                          )
+                          ->orderBy('created_at', 'desc')
+                          ->get();
+        foreach($news_items as $news){
+            $news->image = env('APP_URL').'/storage/'.$news->image;
+        }
+        return response()->json([
+                                    'news' => $news_items
+                                ]);
+    }
 
+    public function salesById(int $id)
+    {
+        $article = NewSales::query()->find($id);
+        if ($article == null) {
+            return response()->json([
+                                        'message' => 'Страница не найдена'
+                                    ],404);
+        }
+        $article->image = env('APP_URL').'/storage/'.$article->image;
+
+        $images = json_decode($article->images);
+        if ($images != null) {
+            $newImages = [];
+
+            foreach ($images as $image) {
+                $image = env('APP_URL').'/storage/' . $image;
+                $newImages[] = $image;
+            }
+            $article->images = $newImages;
+        }
+
+        $images = json_decode($article->second_images);
+        if ($images != null) {
+            $newImages = [];
+            foreach ($images as $image) {
+                $image = env('APP_URL') . '/storage/' . $image;
+                $newImages[] = $image;
+            }
+            $article->second_images = $newImages;
+        }
+
+
+        $images = json_decode($article->third_images);
+        if ($images != null) {
+            $newImages = [];
+            foreach ($images as $image) {
+                $image = env('APP_URL') . '/storage/' . $image;
+                $newImages[] = $image;
+            }
+            $article->third_images = $newImages;
+        }
+
+        return response()->json($article);
+    }
 
     public function history(){
         $content = [
