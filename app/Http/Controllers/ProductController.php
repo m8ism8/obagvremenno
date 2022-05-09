@@ -105,7 +105,7 @@ class ProductController extends Controller
             ;
             $item->slug = Str::slug($item->title);
             if ($item->image && str_split($item->image, 4)[0] != 'http') {
-                $image = env('APP_URL') . '/storage/' . $item->image;
+                $item->image = env('APP_URL') . '/storage/' . $item->image;
             }
         }
 
