@@ -36,18 +36,18 @@ class ProductController extends Controller
     {
 
         try {
-            $randomCategories   = Subcategory::query()
-                                            ->take(2)
-                ->skip(4)
-                ->get()
+            $randomCategories = Subcategory::query()
+                                           ->take(2)
+                                           ->skip(4)
+                                           ->get()
             ;
 
             $randomProductsIds1 = $randomCategories[0]->products->pluck('id')
                                                                 ->random(4)
             ;
 
-            $randomProducts1    = Product::whereIn('id', $randomProductsIds1)
-                                         ->get()
+            $randomProducts1 = Product::whereIn('id', $randomProductsIds1)
+                                      ->get()
             ;
 
             $randomProductsIds2 = $randomCategories[1]->products->pluck('id')
@@ -103,9 +103,13 @@ class ProductController extends Controller
                                          )
                                          ->exists()
             ;
-            $item->slug = Str::slug($item->title);
+            $item->slug       = Str::slug($item->title);
             if ($item->image && str_split($item->image, 4)[0] != 'http') {
-                $item->image = env('APP_URL') . '/storage/' . $item->image;
+                if (json_decode($item->image, true) != null) {
+                    $item->image = env('APP_URL') . '/storage/' . json_decode($item->image, true)[0];
+                } else {
+                    $item->image = env('APP_URL') . '/storage/' . $item->image;
+                }
             }
         }
 
