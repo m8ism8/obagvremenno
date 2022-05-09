@@ -37,9 +37,9 @@ class ProductController extends Controller
 
         try {
             $randomCategories   = Subcategory::query()
-                                          ->inRandomOrder()
-                                          ->take(2)
-                                          ->get()
+                                            ->take(2)
+                ->skip(4)
+                ->get()
             ;
 
             $randomProductsIds1 = $randomCategories[0]->products->pluck('id')
@@ -67,7 +67,6 @@ class ProductController extends Controller
         } catch (\Exception $exception) {
             dd($exception->getMessage());
         }
-
         $recomendedProducts = collect([
                                           [
                                               'title'    => $randomCategories[0]->title,
