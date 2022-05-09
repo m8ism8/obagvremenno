@@ -16,6 +16,7 @@ use App\Models\ProductInformation;
 use App\Models\ResearchInnovation;
 use App\Models\ReturnInformation;
 use App\Models\RuleOperation;
+use App\Models\Seo;
 use App\Models\ShippingPayment;
 use App\Models\SocialMission;
 use App\Models\StoresKazakhstan;
@@ -23,6 +24,16 @@ use Illuminate\Http\JsonResponse;
 
 class InformationPageController extends Controller
 {
+    public function seo(string $seo)
+    {
+        $seo = Seo::query()->where('slug', $seo)->first();
+        if ($seo == null) {
+            return response()->json([
+                'message' => 'Не найдено'
+                                    ], 404);
+        }
+        return response()->json($seo);
+    }
     public function historyMission(): JsonResponse
     {
         $content = HistoryMission::query()->first();

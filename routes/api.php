@@ -115,3 +115,5 @@ Route::get('delivery-price', [CartController::class, 'deliveryPrice']);
 
 //Уведомить о поступлении
 Route::post('notify', [CallBackController::class, 'notify']);
+
+Route::get('/seo/{title}', [InformationPageController::class, 'seo']);
