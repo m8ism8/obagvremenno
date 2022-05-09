@@ -121,3 +121,6 @@ Route::get('/seo/parser/test', [InformationPageController::class, 'seoParser']);
 
 Route::get('/page/sales', [PageController::class, 'sales']);
 Route::get('/page/sales/{id}', [PageController::class, 'salesById']);
+
+Route::get('page/exploitation-accessories', [InformationPageController::class, 'exploitationAccessories']);
+Route::get('page/exploitation-accessories/{id}', [InformationPageController::class, 'exploitationAccessoriesById']);

@@ -6,6 +6,7 @@ use App\Models\AffiliateStore;
 use App\Models\AllAboutProduct;
 use App\Models\BrandInformation;
 use App\Models\CorporateInformation;
+use App\Models\ExploitationArticle;
 use App\Models\GiftRule;
 use App\Models\Guarantee;
 use App\Models\HistoryMission;
@@ -22,6 +23,7 @@ use App\Models\SocialMission;
 use App\Models\StoresKazakhstan;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 
 class InformationPageController extends Controller
 {
@@ -43,10 +45,36 @@ class InformationPageController extends Controller
 
         return response()->json([
                                     'title' => $title,
-                                    'meta' => [
-                                        $seo
+                                    'meta'  => [
+                                        $seo,
                                     ],
                                 ]);
+    }
+
+    public function exploitationAccessories()
+    {
+        $data = ExploitationArticle::query()
+                                   ->select('id', 'title', 'image')
+                                   ->get()
+        ;
+
+        foreach ($data as $item) {
+            $item->image = asset('storage/' . $item->image);
+            $item->slug  = Str::slug($item->title);
+        }
+
+        return response()->json($data);
+    }
+
+    public function exploitationAccessoriesById(int $id)
+    {
+        $data = ExploitationArticle::query()
+                                   ->where('id', $id)
+            ->first()
+        ;
+        $data->image = asset('storage/' . $data->image);
+
+        return response()->json($data);
     }
 
     public function seoParser(Request $request)
