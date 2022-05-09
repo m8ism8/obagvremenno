@@ -39,6 +39,7 @@ class InformationPageController extends Controller
         }
         $title = $seo->title;
         unset($seo->title);
+        unset($seo->slug);
 
         return response()->json([
                                     'title' => $title,
