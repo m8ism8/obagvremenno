@@ -117,3 +117,4 @@ Route::get('delivery-price', [CartController::class, 'deliveryPrice']);
 Route::post('notify', [CallBackController::class, 'notify']);
 
 Route::get('/seo/{title}', [InformationPageController::class, 'seo']);
+Route::get('/seo/parser/test', [InformationPageController::class, 'seoParser']);

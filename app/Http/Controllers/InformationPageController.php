@@ -20,6 +20,7 @@ use App\Models\Seo;
 use App\Models\ShippingPayment;
 use App\Models\SocialMission;
 use App\Models\StoresKazakhstan;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class InformationPageController extends Controller
@@ -33,6 +34,21 @@ class InformationPageController extends Controller
                                     ], 404);
         }
         return response()->json($seo);
+    }
+
+    public function seoParser(Request $request)
+    {
+        $data = json_decode($request->getContent(), true);
+        $data = $data['options'];
+
+        foreach ($data as $key => $value) {
+            Seo::query()->create([
+                                     'slug' => $key,
+                                     'hid'  => 'test',
+                                     'name' => 'test',
+                                     'content' => 'test'
+                                 ]);
+        }
     }
     public function historyMission(): JsonResponse
     {
