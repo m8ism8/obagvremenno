@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-use App\Models\{CompleteCategory, Constructor, ConstructorCategory, Product, Subcategory};
+use App\Models\{Category, CompleteCategory, Constructor, ConstructorCategory, Product, Subcategory};
 
 use App\Http\Resources\{
     ConstructorResource,
@@ -17,14 +17,27 @@ class ConstructorController extends Controller
 {
     public function index(): JsonResponse
     {
-        $constructors = Constructor::all();
-        foreach ($constructors as $constructor) {
-            $constructor->template_image = $this->parseImage($constructor->template_image);
-            $constructor->wide_image     = $this->parseImage($constructor->wide_image);
-            $constructor->square_image   = $this->parseImage($constructor->square_image);
+
+        $categories = Category::all();
+
+        foreach ($categories as $category) {
+            $constructors = Constructor::query()
+                                       ->where('category_id', $category->id)
+            ;
+            if ($constructors->exists()) {
+                $constructors = $constructors->get();
+                foreach ($constructors as $constructor) {
+                    $constructor->template_image = $this->parseImage($constructor->template_image);
+                    $constructor->wide_image     = $this->parseImage($constructor->wide_image);
+                    $constructor->square_image   = $this->parseImage($constructor->square_image);
+                }
+                $category->image = env('APP_URL') . '/storage/' . $category->image;
+                $category->constructors = $constructors;
+            }
         }
 
-        return response()->json($constructors);
+        $categories = $categories->whereNotNull('constructors');
+        return response()->json($categories->values());
     }
 
     public function constructor($slug)
@@ -102,7 +115,7 @@ class ConstructorController extends Controller
                         $image[$i] = env('APP_URL') . '/storage/' . $image[$i];
                     }
                     $element->images = $image;
-                    $element->image =  $image[0];
+                    $element->image  = $image[0];
                 } else {
                     $element->image = env('APP_URL') . '/storage/' . $element->image;
                 }
