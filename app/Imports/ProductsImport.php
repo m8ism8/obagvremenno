@@ -153,46 +153,46 @@ class ProductsImport implements ToCollection
                         $images = json_encode($images);
                     }
 
-                    $characteristics = '<p>' . 'Артикул:' . $row[0] . '</p>';
+                    $characteristics = '<p>' . 'Артикул: ' . $row[0] . '</p>';
                     if ($row[2] != null) {
-                        $characteristics .= '<p>' . 'Бренд:' . $row[2] . '</p>';
+                        $characteristics .= '<p>' . 'Бренд: ' . $row[2] . '</p>';
                     }
                     if ($row[5] != null) {
-                        $characteristics .= '<p>' . 'Модель:' . $row[5] . '</p>';
+                        $characteristics .= '<p>' . 'Модель: ' . $row[5] . '</p>';
                     }
 
                     if ($row[6] != null) {
-                        $characteristics .= '<p>' . 'Тип:' . $row[6] . '</p>';
+                        $characteristics .= '<p>' . 'Тип: ' . $row[6] . '</p>';
                     }
                     if ($row[7] != null) {
-                        $characteristics .= '<p>' . 'Назначение:' . $row[7] . '</p>';
+                        $characteristics .= '<p>' . 'Назначение: ' . $row[7] . '</p>';
                     }
                     if ($row[8] != null) {
-                        $characteristics .= '<p>' . 'Материал:' . $row[8] . '</p>';
+                        $characteristics .= '<p>' . 'Материал: ' . $row[8] . '</p>';
                     }
                     if ($row[9] != null) {
-                        $characteristics .= '<p>' . 'Цвет:' . $row[9] . '</p>';
+                        $characteristics .= '<p>' . 'Цвет: ' . $row[9] . '</p>';
                     }
                     if ($row[10] != null) {
-                        $characteristics .= '<p>' . 'Застежка:' . $row[10] . '</p>';
+                        $characteristics .= '<p>' . 'Застежка: ' . $row[10] . '</p>';
                     }
                     if ($row[11] != null) {
-                        $characteristics .= '<p>' . 'Отделение для монет:' . $row[11] . '</p>';
+                        $characteristics .= '<p>' . 'Отделение для монет: ' . $row[11] . '</p>';
                     }
                     if ($row[12] != null) {
-                        $characteristics .= '<p>' . 'Отделения для карт/визиток:' . $row[12] . '</p>';
+                        $characteristics .= '<p>' . 'Отделения для карт/визиток: ' . $row[12] . '</p>';
                     }
                     if ($row[13] != null) {
-                        $characteristics .= '<p>' . 'Страна производства:' . $row[13] . '</p>';
+                        $characteristics .= '<p>' . 'Страна производства: ' . $row[13] . '</p>';
                     }
                     if ($row[14] != null) {
-                        $characteristics .= '<p>' . 'Размеры:' . $row[14] . '</p>';
+                        $characteristics .= '<p>' . 'Размеры: ' . $row[14] . '</p>';
                     }
                     if ($row[15] != null) {
-                        $characteristics .= '<p>' . 'Дополнительная информация:' . $row[15] . '</p>';
+                        $characteristics .= '<p>' . 'Дополнительная информация: ' . $row[15] . '</p>';
                     }
                     if ($row[16] != null) {
-                        $characteristics .= '<p>' . 'Артикул производителя:' . $row[16] . '</p>';
+                        $characteristics .= '<p>' . 'Артикул производителя: ' . $row[16] . '</p>';
                     }
                     if ($row[17] != null) {
                         $description = '<p>' . $row[17] . '</p>';
