@@ -15,8 +15,7 @@ class Category extends Model
         return $this->hasMany(Subcategory::class);
     }
     public function products(){
-        //return $this->hasManyThrough(Product::class, Subcategory::class);
-        return $this->morphToMany();
+        return $this->hasManyThrough(Product::class, Subcategory::class);
     }
     public function constructor(){
         return $this->hasOne(Constructor::class);

@@ -36,17 +36,20 @@ class ProductController extends Controller
     {
 
         try {
-            $randomCategories   = Category::inRandomOrder()
+            $randomCategories   = Subcategory::query()
+                                          ->inRandomOrder()
                                           ->take(2)
-                                          ->with('products')
                                           ->get()
             ;
+
             $randomProductsIds1 = $randomCategories[0]->products->pluck('id')
                                                                 ->random(4)
             ;
+
             $randomProducts1    = Product::whereIn('id', $randomProductsIds1)
                                          ->get()
             ;
+
             $randomProductsIds2 = $randomCategories[1]->products->pluck('id')
                                                                 ->random(4)
             ;
@@ -62,9 +65,8 @@ class ProductController extends Controller
                                          ->get()
             ;
         } catch (\Exception $exception) {
-            return [];
+            dd($exception->getMessage());
         }
-
 
         $recomendedProducts = collect([
                                           [
@@ -94,8 +96,9 @@ class ProductController extends Controller
         foreach ($collection as $item) {
             $item->isFavorite = Favourite::query()
                                          ->where('product_id', $item->id)
-                                         ->where('user_id', Auth::guard('sanctum')
-                                                                ->id()
+                                         ->where(
+                                             'user_id', Auth::guard('sanctum')
+                                                            ->id()
                                          )
                                          ->exists()
             ;
@@ -281,8 +284,9 @@ class ProductController extends Controller
         foreach ($products as $product) {
             $product->isFavorite = Favourite::query()
                                             ->where('product_id', $product->id)
-                                            ->where('user_id', Auth::guard('sanctum')
-                                                                   ->id()
+                                            ->where(
+                                                'user_id', Auth::guard('sanctum')
+                                                               ->id()
                                             )
                                             ->exists()
             ;
@@ -333,8 +337,9 @@ class ProductController extends Controller
             $product->slug       = Str::slug($product->title);
             $product->isFavorite = Favourite::query()
                                             ->where('product_id', $product->id)
-                                            ->where('user_id', Auth::guard('sanctum')
-                                                                   ->id()
+                                            ->where(
+                                                'user_id', Auth::guard('sanctum')
+                                                               ->id()
                                             )
                                             ->exists()
             ;
@@ -409,8 +414,9 @@ class ProductController extends Controller
         foreach ($products as $product) {
             $product->isFavorite = Favourite::query()
                                             ->where('product_id', $product->id)
-                                            ->where('user_id', Auth::guard('sanctum')
-                                                                   ->id()
+                                            ->where(
+                                                'user_id', Auth::guard('sanctum')
+                                                               ->id()
                                             )
                                             ->exists()
             ;
@@ -464,8 +470,9 @@ class ProductController extends Controller
 
         $product->isFavorite = Favourite::query()
                                         ->where('product_id', $product->id)
-                                        ->where('user_id', Auth::guard('sanctum')
-                                                               ->id()
+                                        ->where(
+                                            'user_id', Auth::guard('sanctum')
+                                                           ->id()
                                         )
                                         ->exists()
         ;
@@ -526,8 +533,9 @@ class ProductController extends Controller
         foreach ($products as $product) {
             $product->isFavorite = Favourite::query()
                                             ->where('product_id', $product->id)
-                                            ->where('user_id', Auth::guard('sanctum')
-                                                                   ->id()
+                                            ->where(
+                                                'user_id', Auth::guard('sanctum')
+                                                               ->id()
                                             )
                                             ->exists()
             ;
