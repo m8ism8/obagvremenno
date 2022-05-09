@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductResource;
 use App\Models\AffiliateStore;
 use App\Models\AllAboutProduct;
 use App\Models\BrandInformation;
@@ -13,6 +14,7 @@ use App\Models\HistoryMission;
 use App\Models\LoyaltySystem;
 use App\Models\MobileShoppingContent;
 use App\Models\MobileShoppingStore;
+use App\Models\Product;
 use App\Models\ProductInformation;
 use App\Models\ResearchInnovation;
 use App\Models\ReturnInformation;
@@ -62,6 +64,17 @@ class InformationPageController extends Controller
             $item->image = asset('storage/' . $item->image);
             $item->slug  = Str::slug($item->title);
         }
+
+        return response()->json($data);
+    }
+
+    public function giftCertificates()
+    {
+        $data = Product::query()
+            ->where('is_certificate', true)
+            ->get();
+
+        $data = ProductResource::collection($data);
 
         return response()->json($data);
     }
