@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class CategoriesResource extends JsonResource
 {
@@ -26,6 +27,7 @@ class CategoriesResource extends JsonResource
                 'title' => $this->title,
                 'text' => $this->text,
                 'image' => $image,
+                'slug' => Str::slug($this->title),
                 'subcategories' => SubcategoriesResource::collection($this->subcategories),
                 'constructor' => new ConstructorResource($this->constructor)
             ];

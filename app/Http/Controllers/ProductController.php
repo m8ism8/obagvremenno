@@ -17,6 +17,7 @@ use App\Models\{CompleteCategory,
     FilterElement,
     Certificate};
 
+use Illuminate\Support\Str;
 use App\Http\Resources\{
     ProductResource,
     SaleResource,
@@ -233,6 +234,7 @@ class ProductController extends Controller
             } else{
                 $product->image = env('APP_URL') . '/storage/' . $product->image;
             }
+            $product->slug = Str::slug($product->title);
         }
 
         if ($request->sort_price) {
@@ -262,6 +264,7 @@ class ProductController extends Controller
         }
         $sales = Sale::all();
         $filters = $this->getFilters($subcategory->products);
+        $subcategory->slug = Str::slug($subcategory->title);
 
         foreach ($subcategory->products as $product) {
             if(json_decode($product->image) != null) {
@@ -269,6 +272,7 @@ class ProductController extends Controller
             }else {
                 $product->image = env('APP_URL') . '/storage/' . $product->image;
             }
+            $product->slug = Str::slug($product->title);
             $product->isFavorite = Favourite::query()
                 ->where('product_id',$product->id)
                 ->where('user_id', Auth::guard('sanctum')->id())
@@ -338,6 +342,7 @@ class ProductController extends Controller
             }else {
             $product->image = env('APP_URL') . '/storage/' . $product->image;
             }
+            $product->slug = Str::slug($product->title);
         }
 
         if ($request->sort_price) {
