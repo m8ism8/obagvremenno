@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Sale;
 use App\Models\City;
+use Illuminate\Support\Str;
 
 class PageController extends Controller
 {
@@ -25,6 +26,7 @@ class PageController extends Controller
                           ->orderBy('created_at', 'desc')
                           ->get();
         foreach($news_items as $news){
+            $news->slug = Str::slug($news->title);
             $news->image = env('APP_URL').'/storage/'.$news->image;
         }
         return response()->json([
