@@ -98,22 +98,12 @@ class ConstructorController extends Controller
         $constructor->makeHidden(['created_at', 'updated_at', 'category_id']);
         $images                     = [];
         $constructor->image         = env('APP_URL') . '/storage/' . $constructor->image;
-        $constructor->preview_image = env('APP_URL') . '/storage/' . json_decode(
-                $constructor->preview_image, true
-            )[0]['download_link'];
-//        $subcategories              = Subcategory::query()
-//                                                 ->where('category_id', $constructor->category_id)
-//                                                 ->get()
-//        ;
-//
-//
-//        $completeCategories      = CompleteCategory::query()
-//                                                   ->whereIn(
-//                                                       'subcategory_id', $subcategories->pluck('id')
-//                                                                                       ->toArray()
-//                                                   )
-//                                                   ->get()
-//        ;
+        if ($constructor->preview_image != null) {
+            $constructor->preview_image = env('APP_URL') . '/storage/' . json_decode(
+                    $constructor->preview_image, true
+                )[0]['download_link'];
+        }
+
         $constructor->categories = CompleteCategory::query()
                                                    ->where('subcategory_id', $constructor->id)
                                                    ->get()
@@ -148,7 +138,7 @@ class ConstructorController extends Controller
                 } else {
                     $element->image  = env('APP_URL') . '/storage/' . $element->image;
                     $element->images = [
-                        env('APP_URL') . '/storage/' . $element->image,
+                         $element->image,
                     ];
                 }
             }
