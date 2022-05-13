@@ -50,7 +50,7 @@ class ConstructorController extends Controller
                 $category->constructor = $subcategories->values();
             }
         }
-        $categories = $categories->whereNotNull('constructor');
+//        $categories = $categories->whereNotNull('constructor');
 
         $categories = $categories->makeHidden(['created_at', 'updated_at', 'text'])->toArray();
 
