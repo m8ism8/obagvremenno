@@ -37,12 +37,20 @@ class ConstructorController extends Controller
                                 $subcategory->preview_image, true
                             )[0]['download_link'];
                     }
+                    $check = $this->check($subcategory->id);
+                    if (!$check) {
+                        $subcategory->check = true;
+                    }
                 }
+                $subcategories = $subcategories->whereNotNull('check');
+
                 $subcategories->makeHidden(['created_at', 'updated_at', 'category_id']);
                 $category->image       = env('APP_URL') . '/storage/' . $category->image;
-                $category->constructor = $subcategories;
+
+                $category->constructor = $subcategories->values();
             }
         }
+        $categories = $categories->whereNotNull('constructor');
 
         $categories = $categories->makeHidden(['created_at', 'updated_at', 'text'])->toArray();
 
@@ -55,6 +63,30 @@ class ConstructorController extends Controller
         return response()->json(
             array_values($categories)
         );
+    }
+
+    public function check($id)
+    {
+        $constructor = CompleteCategory::query()
+                                      ->where('subcategory_id', $id)
+                                      ->get()
+                                      ->makeHidden(['created_at', 'updated_at']);
+        foreach ($constructor as $category) {
+            $category->image = env('APP_URL') . '/storage/' . $category->image;
+
+            $category->constructorElements = Product::query()
+                                                    ->select('id', 'title', 'price', 'new_price', 'image')
+                                                    ->where('complete_id', $category->id)
+                                                    ->where('is_constructor', true)
+                                                    ->get()
+            ;
+            if ($category->constructorElements->isEmpty()) {
+                unset($category->constructorElements);
+            }
+        }
+
+        $constructor = $constructor->whereNotNull('constructorElements');
+        return $constructor->isEmpty();
     }
 
     public function constructor($id)
