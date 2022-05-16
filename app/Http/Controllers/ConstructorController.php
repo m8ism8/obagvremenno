@@ -137,6 +137,8 @@ class ConstructorController extends Controller
                             $images[$key] = $image;
                         }
                         $element->images = $images;
+                    } else {
+                        $element->images = null;
                     }
 
                     $element->image = json_decode($element->image, true)[0] ?? null;
