@@ -45,17 +45,19 @@ class ConstructorController extends Controller
                 $subcategories = $subcategories->whereNotNull('check');
 
                 $subcategories->makeHidden(['created_at', 'updated_at', 'category_id']);
-                $category->image       = env('APP_URL') . '/storage/' . $category->image;
+                $category->image = env('APP_URL') . '/storage/' . $category->image;
 
                 $category->constructor = $subcategories->values();
             }
         }
 //        $categories = $categories->whereNotNull('constructor');
 
-        $categories = $categories->makeHidden(['created_at', 'updated_at', 'text'])->toArray();
+        $categories = $categories->makeHidden(['created_at', 'updated_at', 'text'])
+                                 ->toArray()
+        ;
 
         foreach ($categories as $key => $category) {
-            if(!isset($category['constructor'])) {
+            if (!isset($category['constructor'])) {
                 unset($categories[$key]);
             }
         }
@@ -68,9 +70,10 @@ class ConstructorController extends Controller
     public function check($id)
     {
         $constructor = CompleteCategory::query()
-                                      ->where('subcategory_id', $id)
-                                      ->get()
-                                      ->makeHidden(['created_at', 'updated_at']);
+                                       ->where('subcategory_id', $id)
+                                       ->get()
+                                       ->makeHidden(['created_at', 'updated_at'])
+        ;
         foreach ($constructor as $category) {
             $category->image = env('APP_URL') . '/storage/' . $category->image;
 
@@ -86,6 +89,7 @@ class ConstructorController extends Controller
         }
 
         $constructor = $constructor->whereNotNull('constructorElements');
+
         return $constructor->isEmpty();
     }
 
@@ -96,8 +100,8 @@ class ConstructorController extends Controller
                                   ->first()
         ;
         $constructor->makeHidden(['created_at', 'updated_at', 'category_id']);
-        $images                     = [];
-        $constructor->image         = env('APP_URL') . '/storage/' . $constructor->image;
+        $images             = [];
+        $constructor->image = env('APP_URL') . '/storage/' . $constructor->image;
         if ($constructor->preview_image != null) {
             $constructor->preview_image = env('APP_URL') . '/storage/' . json_decode(
                     $constructor->preview_image, true
@@ -114,80 +118,54 @@ class ConstructorController extends Controller
             $category->image = env('APP_URL') . '/storage/' . $category->image;
 
             $category->constructorElements = Product::query()
-                                                    ->select('id', 'title', 'price', 'new_price', 'image')
+                                                    ->select(
+                                                        'id', 'title', 'price', 'new_price', 'image',
+                                                        'constructor_image'
+                                                    )
                                                     ->where('complete_id', $category->id)
-                                                   ->where('is_constructor', true)
+                                                    ->where('is_constructor', true)
                                                     ->get()
             ;
             if ($category->constructorElements->isEmpty()) {
-                    unset($category->constructorElements);
-            }else {
-            foreach ($category->constructorElements as $element) {
-                if (json_decode($element->image, true)) {
-
-                    $element->images = json_decode($element->image, true);
-                    foreach ($element->images as $item) {
-                        $item     = env('APP_URL') . '/storage/' . $item;
-                        $images[] = $item;
+                unset($category->constructorElements);
+            } else {
+                foreach ($category->constructorElements as $element) {
+                    if (json_decode($element->constructor_image, true)) {
+                        $images = json_decode($element->constructor_image, true);
+                        foreach ($images as $key => $image) {
+                            $image = env('APP_URL') . '/storage/' . $image;
+                            $images[$key] = $image;
+                        }
+                        $element->images = $images;
                     }
-                    $element->image  = $images[0];
-                    $element->images = $images;
-                    $images          = [];
-                } elseif ($element->image == null) {
-                    $element->images = null;
-                } else {
-                    $element->image  = env('APP_URL') . '/storage/' . $element->image;
-                    $element->images = [
-                         $element->image,
-                    ];
+
+                    $element->image = json_decode($element->image, true)[0] ?? null;
+                    if ($element->image != null) {
+                        $element->image = env('APP_URL') . '/storage/' . $element->image;
+                    }
+                    unset($element->constructor_image);
                 }
             }
-            }
-
-//            $additionalElements = Product::query()
-//                                         ->select(
-//                                             'id', 'title', 'price', 'new_price', 'constructor_id', 'image',
-//                                             'constructor_image'
-//                                         )
-//                                         ->where('constructor_id', $category->id)
-//                                         ->get()
-//            ;
-//            foreach ($additionalElements as $element) {
-//                $element->image = env('APP_URL') . '/storage/' . json_decode($element->image, true)[0];
-//                $images         = json_decode($element->constructor_image, true);
-//                for ($i = 0; $i < count($images); $i++) {
-//                    $images[$i] = env('APP_URL') . '/storage/' . $images[$i];
-//                }
-//                unset($element->constructor_image);
-//                $element->images = $images;
-//                $category->constructorElements->push($element);
-//            }
         }
-//        foreach ($completeCategories as $completeCategory) {
-//            $completeCategory->constructor_elements = Product::query()
-//                                                             ->select(
-//                                                                 'id', 'title', 'price', 'new_price', 'constructor_id',
-//                                                                 'image', 'constructor_image'
-//                                                             )
-//                                                             ->where('complete_id', $completeCategory->id)
-//                                                             ->get()
-//            ;
-//
-//            foreach ($completeCategory->constructor_elements as $element) {
-//                $image = json_decode($element->image, true);
-//                if ($image) {
-//                    for ($i = 0; $i < count($image); $i++) {
-//                        $image[$i] = env('APP_URL') . '/storage/' . $image[$i];
-//                    }
-//                    $element->images = $image;
-//                    $element->image  = $image[0];
-//                } else {
-//                    $element->image = env('APP_URL') . '/storage/' . $element->image;
+//        foreach ($category->constructorElements as $element) {
+//            if (json_decode($element->constructor_image, true)) {
+//                $element->images = json_decode($element->constructor_image, true);
+//                foreach ($element->images as $item) {
+//                    $item     = env('APP_URL') . '/storage/' . $item;
+//                    $images[] = $item;
 //                }
+//                $element->image  = $images[0];
+//                $element->images = $images;
+//                $images          = [];
+//            } elseif ($element->image == null) {
+//                $element->images = null;
+//            } else {
+//                $element->image  = env('APP_URL') . '/storage/' . $element->image;
+//                $element->images = [
+//                    $element->image,
+//                ];
 //            }
-//            $constructor->categories[] = $completeCategory;
 //        }
-
         $constructor->categories = $constructor->categories->whereNotNull('constructorElements');
 
         return response()->json([
@@ -207,7 +185,7 @@ class ConstructorController extends Controller
         $category->constructorElements = Product::query()
                                                 ->select('id', 'title', 'price', 'new_price', 'image')
                                                 ->where('complete_id', $category->id)
-                                               ->where('is_constructor', true)
+                                                ->where('is_constructor', true)
                                                 ->get()
         ;
         foreach ($category->constructorElements as $element) {
