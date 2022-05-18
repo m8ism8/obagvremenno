@@ -71,8 +71,9 @@ class InformationPageController extends Controller
     public function giftCertificates()
     {
         $data = Product::query()
-            ->where('is_certificate', true)
-            ->get();
+                       ->where('is_certificate', true)
+                       ->get()
+        ;
 
         $data = ProductResource::collection($data);
 
@@ -81,9 +82,9 @@ class InformationPageController extends Controller
 
     public function exploitationAccessoriesById(int $id)
     {
-        $data = ExploitationArticle::query()
-                                   ->where('id', $id)
-            ->first()
+        $data        = ExploitationArticle::query()
+                                          ->where('id', $id)
+                                          ->first()
         ;
         $data->image = asset('storage/' . $data->image);
 
@@ -147,12 +148,14 @@ class InformationPageController extends Controller
 
     public function productInformation(): JsonResponse
     {
-        $content        = ProductInformation::query()
-                                            ->first()
+        $data = ProductInformation::query()
+                                  ->get()
         ;
-        $content->image = env('APP_URL') . '/storage/' . $content->image;
+        foreach ($data as $content) {
+            $content->image = env('APP_URL') . '/storage/' . $content->image;
+        }
 
-        return response()->json($content);
+        return response()->json($data);
     }
 
     public function allAboutProducts(): JsonResponse

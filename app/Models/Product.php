@@ -24,7 +24,8 @@ class Product extends Model
         'video',
         'subcategory_id',
         'complete_id',
-        'remainder'
+        'remainder',
+        'is_constructor'
     ];
 
     public static function boot()
