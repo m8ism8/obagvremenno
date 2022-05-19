@@ -168,7 +168,7 @@ class ProductsImport implements ToCollection
                                     }
                                 }
                             }
-                            $images = json_encode($images);
+                            $images = json_encode(array_values($images));
                         }
 
                         $characteristics = '<p>' . 'Артикул: ' . $row[0] . '</p>';
@@ -219,7 +219,7 @@ class ProductsImport implements ToCollection
                         if ($row[23] == 'Да') {
                             $isConstructor = true;
                         } else {
-                            $isConstructor = falser;
+                            $isConstructor = false;
                         }
 
                         $product = Product::query()
