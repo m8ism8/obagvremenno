@@ -20,6 +20,11 @@ Route::get('/', function () {
 });
 
 
+Route::get('/kek', function () {
+    return view('halyk.index');
+});
+
+
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
 
