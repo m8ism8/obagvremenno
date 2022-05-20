@@ -23,6 +23,40 @@ class CartController extends Controller
     protected $client_secret = 'yF587AV9Ms94qN2QShFzVR3vFnWkhjbAK3sG';
     protected $terminal_id = '67e34d63-102f-4bd1-898e-370781d0074d';
 
+    public function test()
+    {
+        $data = [
+            "grant_type"      => "client_credentials",
+            "scope"           => "webapi usermanagement email_send verification statement statistics payment",
+            "client_id"       => $this->client_id,
+            "client_secret"   => $this->client_secret,
+            "invoiceID"       => 100000,
+            "amount"          => 100001,
+            "currency"        => "KZT",
+            "terminal"        => $this->terminal_id,
+            "postLink"        => "https://bag.a-lux.dev/",
+            "failurePostLink" => "https://bag.a-lux.dev/",
+
+        ];
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $this->url_get_token);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt(
+            $ch, CURLOPT_POSTFIELDS,
+            http_build_query($data)
+        );
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $server_output = curl_exec($ch);
+        $server_output = json_decode($server_output, true);
+        curl_close($ch);
+
+        return view('halyk.index', ['payment' => $server_output]);
+    }
+
     public function store(Request $request)
     {
         if ($request->user_id) {
@@ -45,22 +79,23 @@ class CartController extends Controller
         $phone   = $request->phone ?? $phone;
         $email   = $request->email ?? $email;
         $address = $request->address ?? $address;
-
-        $cart = Cart::create([
-                                 'user_id'         => $request->user_id ?? null,
-                                 'price'           => $request->price,
-                                 'bonus_waste'     => $request->bonus_waste ?? 0,
-                                 'name'            => $name,
-                                 'phone'           => $phone,
-                                 'email'           => $email,
-                                 'delivery_type'   => $request->delivery_type,
-                                 'payment_type'    => $request->payment_type,
-                                 'address'         => $address,
-                                 'bonuses_accrued' => $bonus ?? 0,
-                                 'status_id'       => 1,
-                             ]);
+        $amount  = 0;
+        $cart    = Cart::create([
+                                    'user_id'         => $request->user_id ?? null,
+                                    'price'           => $request->price,
+                                    'bonus_waste'     => $request->bonus_waste ?? 0,
+                                    'name'            => $name,
+                                    'phone'           => $phone,
+                                    'email'           => $email,
+                                    'delivery_type'   => $request->delivery_type,
+                                    'payment_type'    => $request->payment_type,
+                                    'address'         => $address,
+                                    'bonuses_accrued' => $bonus ?? 0,
+                                    'status_id'       => 1,
+                                ]);
 
         foreach ($request->cart_elements as $element) {
+            $amount += $element['quantity'];
             CartElement::create([
                                     'product_id'             => $element['product_id'] ?? null,
                                     'constructor_element_id' => $element['constructor_element_id'] ?? null,
@@ -73,13 +108,17 @@ class CartController extends Controller
         }
 
         if ($cart['payment_type'] == "card") {
-            $payment = $this->onlinePayment($cart);
+            $auth = $this->getToken($cart);
 //            $cart->update([
 //                              'payment_id' => $payment['orderId'],
 //                          ]);
-
             return [
-                'payment' => $payment,
+                'auth'    => $auth,
+                'payment' => [
+                    'invoiceID' => $cart->id + 100000,
+                    'amount'    => $cart->price,
+                    'terminal'  => $this->terminal_id,
+                ],
                 'cart'    => $cart,
             ];
         }
@@ -145,45 +184,45 @@ class CartController extends Controller
         ];
     }
 
-    protected function onlinePayment($cart)
-    {
-        $token = $this->getToken();
-        return $token;
-        $data = [
-            "grant_type"    => "client_credentials",
-            "scope"         => "webapi usermanagement email_send verification statement statistics payment",
-            "client_id"     => $this->client_id,
-            "client_secret" => $this->client_secret,
-        ];
+//    protected function onlinePayment($cart)
+//    {
+//        $token = $this->getToken();
+//        return $token;
+//        $data = [
+//            "grant_type"    => "client_credentials",
+//            "scope"         => "webapi usermanagement email_send verification statement statistics payment",
+//            "client_id"     => $this->client_id,
+//            "client_secret" => $this->client_secret,
+//        ];
+//
+//        $ch = curl_init();
+//
+//        curl_setopt($ch, CURLOPT_URL, $this->url_payment);
+//
+//        curl_setopt($ch, CURLOPT_POST, 1);
+//        curl_setopt(
+//            $ch, CURLOPT_POSTFIELDS,
+//            http_build_query($data)
+//        );
+//
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//
+//        $server_output = curl_exec($ch);
+//        $server_output = json_decode($server_output);
+//        curl_close($ch);
+//
+//        return $server_output->access_token;
+//    }
 
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $this->url_payment);
-
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt(
-            $ch, CURLOPT_POSTFIELDS,
-            http_build_query($data)
-        );
-
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        $server_output = curl_exec($ch);
-        $server_output = json_decode($server_output);
-        curl_close($ch);
-
-        return $server_output->access_token;
-    }
-
-    protected function getToken()
+    protected function getToken($cart)
     {
         $data = [
             "grant_type"      => "client_credentials",
             "scope"           => "webapi usermanagement email_send verification statement statistics payment",
             "client_id"       => $this->client_id,
             "client_secret"   => $this->client_secret,
-            "invoiceID"       => "123123",
-            "amount"          => "100",
+            "invoiceID"       => $cart->id + 100000,
+            "amount"          => $cart->price,
             "currency"        => "KZT",
             "terminal"        => $this->terminal_id,
             "postLink"        => "https://bag.a-lux.dev/",
@@ -203,7 +242,7 @@ class CartController extends Controller
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $server_output = curl_exec($ch);
-        $server_output = json_decode($server_output);
+        $server_output = json_decode($server_output, true);
         curl_close($ch);
 
         return $server_output;

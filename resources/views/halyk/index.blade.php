@@ -1,27 +1,47 @@
-
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Halyk</title>
+</head>
+<body>
 
 <script src="https://test-epay.homebank.kz/payform/payment-api.js">
 </script>
 <script>
-    var createPaymentObject = function(auth, invoiceId, amount) {
+    var createPaymentObject = function (auth, invoiceId, amount) {
         var paymentObject = {
-            invoiceId: "000001",
-            backLink: "https://example.kz/success.html",
-            failureBackLink: "https://example.kz/failure.html",
-            postLink: "https://example.kz/",
-            failurePostLink: "https://example.kz/order/1123/fail",
-            language: "RU",
-            description: "Оплата в интернет магазине",
-            accountId: "testuser1",
-            terminal: "TerminalID",
-            amount: 10000,
-            currency: "KZT",
-            cardSave: true  //Параметр должен передаваться как Boolean
+            invoiceId:       invoiceId,
+            backLink:        "https://bag.a-lux.dev/",
+            failureBackLink: "https://bag.a-lux.dev/",
+            postLink:        "https://bag.a-lux.dev/",
+            failurePostLink: "https://bag.a-lux.dev/",
+            language:        "RU",
+            description:     "Оплата в интернет магазине",
+            terminal:        "67e34d63-102f-4bd1-898e-370781d0074d",
+            amount:          amount,
+            currency:        "KZT",
+            cardSave:        false  //Параметр должен передаваться как Boolean
         };
+        console.log(auth);
         paymentObject.auth = auth;
         return paymentObject;
     };
+    const paymentObj        = {};
 
-    halyk.showPaymentWidget(createPaymentObject('QKUFXNDTORMVYI4P-BBBCA', invoiceId, amount), callBk);
+    paymentObj['access_token']  = '{{$payment['access_token']}}';
+    paymentObj['expires_in']    = '{{$payment['expires_in']}}';
+    paymentObj['refresh_token'] = '{{$payment['refresh_token']}}';
+    paymentObj['scope']         = '{{$payment['scope']}}';
+    paymentObj['token_type']    = '{{$payment['token_type']}}';
+
+    let callBk = true;
+
+    console.log(paymentObj);
+    halyk.showPaymentWidget(createPaymentObject(paymentObj, '123124', '1'), callBk)
 </script>
+
 <?php

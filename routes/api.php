@@ -66,6 +66,7 @@ Route::get('/constructor/{slug}', [ConstructorController::class, 'constructor'])
 Route::get('/constructor/category/{category}', [ConstructorController::class, 'category']);
 
 Route::post('/cart/store', [CartController::class, 'store']);
+Route::get('/cart/test', [CartController::class, 'test']);
 
 Route::get('/get-cities', [PageController::class, 'getCities']);
 Route::get('/page/history', [PageController::class, 'history']);
