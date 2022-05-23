@@ -122,8 +122,9 @@ class ProductsImport implements ToCollection
 
             } else {
                 $check = Product::query()
-                                 ->where('code', $row[0])
-                                 ->exists();
+                                ->where('code', $row[0])
+                                ->exists()
+                ;
                 if (!$check) {
                     try {
 
@@ -163,7 +164,7 @@ class ProductsImport implements ToCollection
                             if (!empty($images)) {
                                 foreach ($images as $key => $image) {
                                     $check = strpos($image, '150x150');
-                                    if (!$check)  {
+                                    if (!$check) {
                                         unset($images[$key]);
                                     }
                                 }
@@ -234,27 +235,27 @@ class ProductsImport implements ToCollection
                                                        'remainder'       => $row[21] ?? null,
                                                        'subcategory_id'  => $subcategory->id ?? null,
                                                        'complete_id'     => $complete,
-                                                       'is_constructor'  => $isConstructor
+                                                       'is_constructor'  => $isConstructor,
                                                    ])
                         ;
-    //                    dd($rows);
-    //                    if ($row[21] != null) {
-    //                        $data = explode(',', $row[21]);
-    //                        foreach ($data as $item) {
-    //                            $item            = trim($item);
-    //                            $completeProduct = Product::query()
-    //                                                      ->where('title', $item)
-    //                                                      ->first()
-    //                            ;
-    //                            CompleteProduct::query()
-    //                                           ->create([
-    //                                                        'complete_id' => $completeProduct->id,
-    //                                                        'product_id'  => $product->id,
-    //                                                    ])
-    //                            ;
-    //                        }
-    //
-    //                    }
+                        //                    dd($rows);
+                        //                    if ($row[21] != null) {
+                        //                        $data = explode(',', $row[21]);
+                        //                        foreach ($data as $item) {
+                        //                            $item            = trim($item);
+                        //                            $completeProduct = Product::query()
+                        //                                                      ->where('title', $item)
+                        //                                                      ->first()
+                        //                            ;
+                        //                            CompleteProduct::query()
+                        //                                           ->create([
+                        //                                                        'complete_id' => $completeProduct->id,
+                        //                                                        'product_id'  => $product->id,
+                        //                                                    ])
+                        //                            ;
+                        //                        }
+                        //
+                        //                    }
 
 
                         if ($row[7] != null) {
@@ -292,6 +293,13 @@ class ProductsImport implements ToCollection
                         DB::rollBack();
                         dd($e);
                     }
+                } else {
+                    $product = Product::query()
+                                      ->where('code', $row[0])
+                                      ->update([
+                                                   'remainder'       => $row[21] ?? null
+                                               ])
+                    ;
                 }
             }
         }

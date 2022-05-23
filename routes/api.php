@@ -72,8 +72,7 @@ Route::get('/get-cities', [PageController::class, 'getCities']);
 Route::get('/page/history', [PageController::class, 'history']);
 Route::get('/page/mission', [PageController::class, 'mission']);
 Route::get('/page/brand-info', [PageController::class, 'brandInfo']);
-Route::get('/page/get-news', [PageController::class, 'getNews']);
-Route::get('/page/get-news/{id}', [PageController::class, 'new']);
+
 
 //Копмлектующие
 Route::get('subcategory/{id}/complete', [CompleteController::class, 'index']);
@@ -120,8 +119,13 @@ Route::post('notify', [CallBackController::class, 'notify']);
 Route::get('/seo/{title}', [InformationPageController::class, 'seo']);
 Route::get('/seo/parser/test', [InformationPageController::class, 'seoParser']);
 
-Route::get('/page/sales', [PageController::class, 'sales']);
-Route::get('/page/sales/{id}', [PageController::class, 'salesById']);
+Route::get('page/sales', [PageController::class, 'getNews']);
+Route::get('/page/sales/{id}', [PageController::class, 'new']);
+
+///page/sales
+///page/get-news/{id}
+Route::get('/page/get-news', [PageController::class, 'sales']);
+Route::get('/page/get-news/{id}', [PageController::class, 'salesById']);
 
 Route::get('page/exploitation-accessories', [InformationPageController::class, 'exploitationAccessories']);
 Route::get('page/exploitation-accessories/{id}', [InformationPageController::class, 'exploitationAccessoriesById']);

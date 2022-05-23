@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use App\Models\{CompleteCategory,
     CompleteProduct,
+    NewSales,
     Product,
     Category,
     SubcategoriesProduct,
@@ -168,25 +169,42 @@ class ProductController extends Controller
         ;
 
 
-        $news = Sale::query()
-                    ->select(
-                        'id',
-                        'title',
-                        'subtitle',
-                        'badge',
-                        'image',
-                        'text',
-                        'created_at'
-                    )
-                    ->orderBy('created_at', 'desc')
-                    ->take(4)
-                    ->get()
+        $salesMore = Sale::query()
+                         ->select(
+                             'id',
+                             'title',
+                             'subtitle',
+                             'badge',
+                             'image',
+                             'text',
+                             'created_at'
+                         )
+                         ->orderBy('created_at', 'desc')
+                         ->take(4)
+                         ->get()
         ;
-
+        $news      = NewSales::query()
+                             ->select(
+                                 'id',
+                                 'title',
+                                 'subtitle',
+                                 'image',
+                             )
+                             ->orderBy('created_at', 'desc')
+                             ->take(4)
+                             ->get()
+        ;
+        foreach ($news as $new) {
+            $new->image = env('APP_URL') . '/storage/' . $new->image;
+        }
+        foreach ($salesMore as $salesMore) {
+            $salesMore->image = env('APP_URL') . '/storage/' . $salesMore->image;
+        }
         return response()->json([
                                     'banner'      => $banner,
                                     'mainSale'    => new SaleResource($mainSale),
                                     'secondSales' => SaleResource::collection($sales),
+                                    'sales'       => $salesMore,
                                     'news'        => $news,
                                 ]);
     }
