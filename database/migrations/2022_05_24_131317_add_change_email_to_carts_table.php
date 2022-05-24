@@ -14,7 +14,7 @@ class AddChangeEmailToCartsTable extends Migration
     public function up()
     {
         Schema::table('carts', function (Blueprint $table) {
-            //
+            $table->string('email')->nullable()->change();
         });
     }
 
