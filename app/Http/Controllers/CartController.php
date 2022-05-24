@@ -65,6 +65,8 @@ class CartController extends Controller
             $phone   = $user->phone;
             $email   = $user->email;
             $address = $user->address;
+        } else {
+            $email  = null;
         }
 
         if (!$request->spend_bonuses) {

@@ -60,8 +60,14 @@ class ConstructorController extends Controller
             if (!isset($category['constructor'])) {
                 unset($categories[$key]);
             }
-        }
 
+           if ($category['title'] == 'Аксесуары') {
+               unset($categories[$key]);
+           }
+            if ($category['title'] == 'Рюкзаки') {
+                unset($categories[$key]);
+            }
+        }
         return response()->json(
             array_values($categories)
         );

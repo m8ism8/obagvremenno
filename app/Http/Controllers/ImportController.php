@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Imports\BackpacksImport;
 use App\Imports\BagsImport;
+use App\Imports\ExportProducts;
 use App\Imports\KaspiImport;
 use Illuminate\Http\Request;
 
@@ -112,5 +113,11 @@ class ImportController extends Controller
                 'alert-type' => 'error',
             ]);
         }
+    }
+
+    public function export()
+    {
+        dd(1);
+        return Excel::download(new ExportProducts(), 'products.xlsx');
     }
 }

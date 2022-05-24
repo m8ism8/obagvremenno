@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProductsExport;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -21,6 +22,7 @@ use App\Models\{CompleteCategory,
 };
 
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\{
     ProductResource,
     SaleResource,
@@ -33,6 +35,10 @@ use App\Http\Resources\{
 
 class ProductController extends Controller
 {
+    public function export()
+    {
+        return Excel::download(new ProductsExport(), 'products.xlsx');
+    }
     public function getRecomended()
     {
 
