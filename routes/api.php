@@ -132,20 +132,3 @@ Route::get('page/exploitation-accessories/{id}', [InformationPageController::cla
 
 Route::get('page/gift-certificates', [InformationPageController::class, 'giftCertificates']);
 
-Route::get('kek/kek', function () {
-    $products = \App\Models\Product::all('id', 'image');
-    foreach ($products as $product) {
-        if ($product->image != null) {
-            if (json_decode($product->image, true)) {
-                $images = json_decode($product->image, true)[0];
-                if (strpos($images, '_150x150')) {
-                    $images = str_replace('_150x150', '', $images);
-                    $product->update([
-                        'image' => json_encode([$images])
-                                     ]);
-                }
-            }
-        }
-    }
-    dd('ok');
-});
