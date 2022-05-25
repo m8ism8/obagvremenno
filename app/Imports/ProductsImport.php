@@ -164,7 +164,7 @@ class ProductsImport implements ToCollection
                             if (!empty($images)) {
                                 foreach ($images as $key => $image) {
                                     $check = strpos($image, '150x150');
-                                    if (!$check) {
+                                    if ($check) {
                                         unset($images[$key]);
                                     }
                                 }
