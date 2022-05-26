@@ -112,14 +112,25 @@ class InformationPageController extends Controller
     public function saveYourObag()
     {
         $content = SaveYourObag::all('title', 'link');
+
         return response()->json($content);
     }
+
     public function historyMission(): JsonResponse
     {
+        $language = \request()->header('Accept-Language');
+
         $content = HistoryMission::query()
                                  ->first()
+                                 ->translate($language)
         ;
 
+        if ($content->translations->isEmpty()) {
+            $content = HistoryMission::query()
+                                     ->first()
+                                     ->translate('ru')
+            ;
+        }
         $content->main_image   = env('APP_URL') . '/storage/' . $content->main_image;
         $content->image_first  = env('APP_URL') . '/storage/' . $content->image_first;
         $content->image_second = env('APP_URL') . '/storage/' . $content->main_image;
@@ -132,7 +143,15 @@ class InformationPageController extends Controller
     {
         $content = SocialMission::query()
                                 ->first()
+                                ->translate(\request()->header('Accept-Language'))
         ;
+
+        if ($content->translations->isEmpty()) {
+            $content = SocialMission::query()
+                                    ->first()
+                                    ->translate('ru')
+            ;
+        }
 
         $content->main_image   = env('APP_URL') . '/storage/' . $content->main_image;
         $content->image_first  = env('APP_URL') . '/storage/' . $content->image_first;
@@ -147,7 +166,15 @@ class InformationPageController extends Controller
     {
         $content = BrandInformation::query()
                                    ->first()
+                                   ->translate(\request()->header('Accept-Language'))
         ;
+
+        if ($content->translations->isEmpty()) {
+            $content = BrandInformation::query()
+                                       ->first()
+                                       ->translate('ru')
+            ;
+        }
 
         return response()->json($content);
     }
@@ -156,9 +183,13 @@ class InformationPageController extends Controller
     {
         $data = ProductInformation::query()
                                   ->get()
+                                  ->translate(\request()->header('Accept-Language'))
         ;
         foreach ($data as $content) {
             $content->image = env('APP_URL') . '/storage/' . $content->image;
+            if ($content->translations->isEmpty()) {
+                $content->translate('ru');
+            }
         }
 
         return response()->json($data);
@@ -166,9 +197,13 @@ class InformationPageController extends Controller
 
     public function allAboutProducts(): JsonResponse
     {
-        $content        = AllAboutProduct::query()
-                                         ->first()
+        $content = AllAboutProduct::query()
+                                  ->first()
+                                  ->translate(\request()->header('Accept-Language'))
         ;
+        if ($content->translations->isEmpty()) {
+            $content = $content->translate('ru');
+        }
         $content->image = env('APP_URL') . '/storage/' . $content->image;
 
         return response()->json($content);
@@ -178,7 +213,12 @@ class InformationPageController extends Controller
     {
         $content = ResearchInnovation::query()
                                      ->first()
+                                     ->translate(\request()->header('Accept-Language'))
         ;
+
+        if ($content->translations->isEmpty()) {
+            $content = $content->translate('ru');
+        }
 
         return response()->json($content);
     }
@@ -187,9 +227,15 @@ class InformationPageController extends Controller
     {
         $content = ShippingPayment::query()
                                   ->first()
+                                  ->translate(\request()->header('Accept-Language'))
         ;
-        $images  = json_decode($content->images, true);
-        $img     = [];
+
+        if ($content->translations->isEmpty()) {
+            $content = $content->translate('ru');
+        }
+
+        $images = json_decode($content->images, true);
+        $img    = [];
         foreach ($images as $image) {
             $image = env('APP_URL') . '/storage/' . $image;
             $img[] = $image;
@@ -203,17 +249,25 @@ class InformationPageController extends Controller
     {
         $content = ReturnInformation::query()
                                     ->first()
+                                    ->translate(\request()->header('Accept-Language'))
         ;
+        if ($content->translations->isEmpty()) {
+            $content = $content->translate('ru');
+        }
 
         return response()->json($content);
     }
 
     public function loyaltySystem(): JsonResponse
     {
-        //TODO сделать блоки
         $content = LoyaltySystem::query()
                                 ->first()
+                                ->translate(\request()->header('Accept-Language'))
         ;
+
+        if ($content->translations->isEmpty()) {
+            $content = $content->translate('ru');
+        }
 
         return response()->json($content);
     }
@@ -223,7 +277,11 @@ class InformationPageController extends Controller
         //TODO сделать блоки
         $content = CorporateInformation::query()
                                        ->first()
+                                       ->translate(\request()->header('Accept-Language'))
         ;
+        if ($content->translations->isEmpty()) {
+            $content = $content->translate('ru');
+        }
 
         return response()->json($content);
     }
@@ -232,8 +290,12 @@ class InformationPageController extends Controller
     {
         $content        = GiftRule::query()
                                   ->first()
+                                  ->translate(\request()->header('Accept-Language'))
         ;
         $content->image = env('APP_URL') . '/storage/' . $content->image;
+        if ($content->translations->isEmpty()) {
+            $content = $content->translate('ru');
+        }
 
         return response()->json($content);
     }
@@ -242,7 +304,11 @@ class InformationPageController extends Controller
     {
         $content = Guarantee::query()
                             ->first()
+                            ->translate(\request()->header('Accept-Language'))
         ;
+        if ($content->translations->isEmpty()) {
+            $content = $content->translate('ru');
+        }
 
         return response()->json($content);
     }
@@ -251,20 +317,32 @@ class InformationPageController extends Controller
     {
         $content = RuleOperation::query()
                                 ->first()
+                                ->translate(\request()->header('Accept-Language'))
         ;
+        if ($content->translations->isEmpty()) {
+            $content = $content->translate('ru');
+        }
 
         return response()->json($content);
     }
 
-    public function mobileShopping(): JsonResponse
+    public function mobileShopping()
     {
         $content = MobileShoppingContent::query()
                                         ->first()
+                                        ->translate(\request()->header('Accept-Language'))
         ;
-        $blocks  = MobileShoppingStore::all();
-
+        $blocks  = MobileShoppingStore::all()
+                                      ->translate(\request()->header('Accept-Language'))
+        ;
+        if ($content->translations->isEmpty()) {
+            $content = $content->translate('ru');
+        }
         foreach ($blocks as $block) {
             $block->image = env('APP_URL') . '/storage/' . $block->image;
+            if ($block->translations->isEmpty()) {
+                $block = $block->translate('ru');
+            }
         }
         $content->blocks = $blocks;
 
@@ -273,13 +351,23 @@ class InformationPageController extends Controller
 
     public function shops(): JsonResponse
     {
-        $affiliateStore = AffiliateStore::all();
+        $affiliateStore = AffiliateStore::all()
+                                        ->translate(\request()->header('Accept-Language'))
+        ;
         foreach ($affiliateStore as $item) {
             $item->image = env('APP_URL') . '/storage/' . $item->image;
+            if ($item->translations->isEmpty()) {
+                $item = $item->translate('ru');
+            }
         }
-        $storeKazakhstan = StoresKazakhstan::all();
+        $storeKazakhstan = StoresKazakhstan::all()
+                                           ->translate(\request()->header('Accept-Language'))
+        ;
         foreach ($storeKazakhstan as $item) {
             $item->image = env('APP_URL') . '/storage/' . $item->image;
+            if ($item->translations->isEmpty()) {
+                $item = $item->translate('ru');
+            }
         }
 
         return response()->json([

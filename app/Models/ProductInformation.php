@@ -4,8 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use TCG\Voyager\Traits\Translatable;
 
 class ProductInformation extends Model
 {
-    use HasFactory;
+    use HasFactory, Translatable;
+
+    protected $translatable = [
+        'title',
+        'text',
+        'name_button'
+    ];
 }

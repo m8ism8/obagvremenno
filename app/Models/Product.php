@@ -5,11 +5,19 @@ namespace App\Models;
 use App\Mail\NotifyMail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use TCG\Voyager\Traits\Translatable;
 use function Symfony\Component\String\s;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, Translatable;
+
+    protected $translatable = [
+        'title',
+        'text',
+        'characteristics',
+        'description',
+    ];
 
     protected $fillable = [
         'title',
@@ -25,7 +33,7 @@ class Product extends Model
         'subcategory_id',
         'complete_id',
         'remainder',
-        'is_constructor'
+        'is_constructor',
     ];
 
     public static function boot()
@@ -33,13 +41,16 @@ class Product extends Model
         static::updating(function ($data) {
             if ($data->available) {
                 $notification = NotifyProduct::query()
-                                               ->where('product_id', $data['id'])
-                                               ->get();
+                                             ->where('product_id', $data['id'])
+                                             ->get()
+                ;
 
                 foreach ($notification as $item) {
                     try {
-                    \Illuminate\Support\Facades\Mail::to($item->email)->send(new NotifyMail($data));
-                    }catch (\Exception $exception) {
+                        \Illuminate\Support\Facades\Mail::to($item->email)
+                                                        ->send(new NotifyMail($data))
+                        ;
+                    } catch (\Exception $exception) {
 
                     }
                 }
@@ -59,7 +70,11 @@ class Product extends Model
         return $this->belongsToMany(FilterElement::class, 'element_products', 'product_id', 'element_id');
     }
 
-    public function reviews(){
-        return $this->hasMany(Review::class)->where('is_approved', '1')->orderBy('created_at', 'desc');
+    public function reviews()
+    {
+        return $this->hasMany(Review::class)
+                    ->where('is_approved', '1')
+                    ->orderBy('created_at', 'desc')
+        ;
     }
 }
