@@ -30,6 +30,11 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::get('/excel-export', [\App\Http\Controllers\ProductController::class, 'export']);
 
+
+    //Загрузка update
+    Route::get('/excel-import-update', [ImportController::class, 'indexUpdate']);
+    Route::post('/excel-import-update/send', [ImportController::class, 'importUpdate']);
+
     //Кошельки
     Route::get('/excel-import', [ImportController::class, 'index']);
     Route::post('/excel-import/send', [ImportController::class, 'import']);
