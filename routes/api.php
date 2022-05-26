@@ -87,6 +87,7 @@ Route::post('contact',[ContactController::class, 'create']);
 
 
 //Information Pages
+Route::get('save-your-obag',[InformationPageController::class, 'saveYourObag']);
 Route::get('history-and-mission',[InformationPageController::class, 'historyMission']);
 Route::get('social-mission',[InformationPageController::class, 'socialMission']);
 Route::get('brand-information',[InformationPageController::class, 'brandInformation']);

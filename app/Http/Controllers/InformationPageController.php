@@ -19,6 +19,7 @@ use App\Models\ProductInformation;
 use App\Models\ResearchInnovation;
 use App\Models\ReturnInformation;
 use App\Models\RuleOperation;
+use App\Models\SaveYourObag;
 use App\Models\Seo;
 use App\Models\ShippingPayment;
 use App\Models\SocialMission;
@@ -108,6 +109,11 @@ class InformationPageController extends Controller
         }
     }
 
+    public function saveYourObag()
+    {
+        $content = SaveYourObag::all('title', 'link');
+        return response()->json($content);
+    }
     public function historyMission(): JsonResponse
     {
         $content = HistoryMission::query()
