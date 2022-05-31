@@ -21,6 +21,7 @@ use App\Models\{CompleteCategory,
     Certificate
 };
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\{
@@ -39,6 +40,49 @@ class ProductController extends Controller
     {
         return Excel::download(new ProductsExport(), 'products.xlsx');
     }
+
+    public function promotional()
+    {
+        $productsId = DB::table('sale_products')
+                        ->get()
+                        ->pluck('product_id')
+                        ->toArray()
+        ;
+        $products   = Product::query()
+                             ->select(
+                                 'id',
+                                 'title',
+                                 'code',
+                                 'price',
+                                 'new_price',
+                                 'image',
+                                 'remainder',
+                             )
+                             ->whereIn('id', $productsId)
+                             ->get()
+        ;
+
+        foreach ($products as $product) {
+            $product->isFavorite = Favourite::query()
+                                            ->where('product_id', $product->id)
+                                            ->where(
+                                                'user_id', Auth::guard('sanctum')
+                                                               ->id()
+                                            )
+                                            ->exists()
+            ;
+            $images              = json_decode($product->image);
+            if ($images) {
+                $product->image = env('APP_URL') . '/storage/' . $images[0];
+            } else {
+                $product->image = env('APP_URL') . '/storage/' . $product->image;
+            }
+            $product->slug = Str::slug($product->title);
+        }
+
+        return response()->json($products);
+    }
+
     public function getRecomended()
     {
 
@@ -206,6 +250,7 @@ class ProductController extends Controller
         foreach ($salesMore as $salesMore) {
             $salesMore->image = env('APP_URL') . '/storage/' . $salesMore->image;
         }
+
         return response()->json([
                                     'banner'      => $banner,
                                     'mainSale'    => new SaleResource($mainSale),

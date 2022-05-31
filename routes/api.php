@@ -50,6 +50,10 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/callback/send', [CallBackController::class, 'callback']);
 
+
+
+Route::get('category/promotional', [ProductController::class, 'promotional']);
+
 Route::get('/index', [ProductController::class, 'index']);
 Route::get('/get-categories', [ProductController::class, 'getCategories']);
 Route::post('/recomended-products', [ProductController::class, 'getRecomended']);
