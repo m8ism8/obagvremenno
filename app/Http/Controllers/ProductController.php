@@ -269,6 +269,7 @@ class ProductController extends Controller
     public function getcategories()
     {
         $categories = category::with('subcategories')
+            ->where('id', '!=', 1000000)
                               ->get()
         ;
         $categories = CategoriesResource::collection($categories);
@@ -284,7 +285,6 @@ class ProductController extends Controller
                         'subcategories' => [],
                     ])
         );
-
 
         return response()->json([
                                     'categories' => $categories,
