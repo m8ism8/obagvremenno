@@ -41,28 +41,45 @@ class ProductController extends Controller
         return Excel::download(new ProductsExport(), 'products.xlsx');
     }
 
-    public function promotional()
+    public function promotional($sort = null)
     {
         $productsId = DB::table('sale_products')
                         ->get()
                         ->pluck('product_id')
                         ->toArray()
         ;
-        $products   = Product::query()
-                             ->select(
-                                 'id',
-                                 'title',
-                                 'code',
-                                 'price',
-                                 'new_price',
-                                 'image',
-                                 'remainder',
-                             )
-                             ->whereIn('id', $productsId)
-                             ->get()
-                             ->translate(\request()->header('Accept-Language'))
-        ;
-
+        if ($sort != null) {
+            $products = Product::query()
+                               ->select(
+                                   'id',
+                                   'title',
+                                   'code',
+                                   'price',
+                                   'new_price',
+                                   'image',
+                                   'remainder',
+                               )
+                               ->whereIn('id', $productsId)
+                               ->orderBy('price', $sort)
+                               ->get()
+                               ->translate(\request()->header('Accept-Language'))
+            ;
+        } else {
+            $products = Product::query()
+                               ->select(
+                                   'id',
+                                   'title',
+                                   'code',
+                                   'price',
+                                   'new_price',
+                                   'image',
+                                   'remainder',
+                               )
+                               ->whereIn('id', $productsId)
+                               ->get()
+                               ->translate(\request()->header('Accept-Language'))
+            ;
+        }
         foreach ($products as $product) {
             $product->isFavorite = Favourite::query()
                                             ->where('product_id', $product->id)
@@ -269,7 +286,7 @@ class ProductController extends Controller
     public function getcategories()
     {
         $categories = category::with('subcategories')
-            ->where('id', '!=', 1000000)
+                              ->where('id', '!=', 1000000)
                               ->get()
         ;
         $categories = CategoriesResource::collection($categories);
@@ -303,7 +320,7 @@ class ProductController extends Controller
                                             'APP_URL'
                                         ) . '/storage/' . 'categories/February2022/mnjmRWae7dI8LSLHdiEP.png',
                                     'subcategories' => [],
-                                    'products'      => $this->promotional(),
+                                    'products'      => $this->promotional(\request()->input('sort_price')),
                                     'constructor'   => [],
                                 ]);
 
