@@ -109,7 +109,11 @@ class InformationPageController extends Controller
 
     public function saveYourObag()
     {
-        $content = SaveYourObag::all('title', 'link');
+        $language = \request()->header('Accept-Language');
+
+        $content = SaveYourObag::all('title', 'link')
+                               ->translate($language)
+        ;
 
         return response()->json($content);
     }

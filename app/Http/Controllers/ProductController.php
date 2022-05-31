@@ -60,6 +60,7 @@ class ProductController extends Controller
                              )
                              ->whereIn('id', $productsId)
                              ->get()
+                             ->translate(\request()->header('Accept-Language'))
         ;
 
         foreach ($products as $product) {
@@ -72,6 +73,11 @@ class ProductController extends Controller
                                             ->exists()
             ;
             $images              = json_decode($product->image);
+
+            if ($product->translations->isEmpty()) {
+                $product = $product->translate('ru');
+            }
+
             if ($images) {
                 $product->image = env('APP_URL') . '/storage/' . $images[0];
             } else {
@@ -80,7 +86,7 @@ class ProductController extends Controller
             $product->slug = Str::slug($product->title);
         }
 
-        return response()->json($products);
+        return $products;
     }
 
     public function getRecomended()
@@ -265,14 +271,48 @@ class ProductController extends Controller
         $categories = category::with('subcategories')
                               ->get()
         ;
+        $categories = CategoriesResource::collection($categories);
+        $categories->prepend(
+            collect([
+                        'id'            => 1000000,
+                        'title'         => 'Акции',
+                        'full_title'    => 'test',
+                        'text'          => 'test',
+                        'image'         => env(
+                                'APP_URL'
+                            ) . '/storage/' . 'categories/February2022/mnjmRWae7dI8LSLHdiEP.png',
+                        'subcategories' => [],
+                    ])
+        );
+
 
         return response()->json([
-                                    'categories' => CategoriesResource::collection($categories),
+                                    'categories' => $categories,
                                 ]);
     }
 
     public function category(Category $category)
     {
+        if ($category->id == 1000000) {
+            $category = collect([
+                                    'id'            => 1000000,
+                                    'title'         => 'Акции',
+                                    'full_title'    => 'test',
+                                    'text'          => 'test',
+                                    'image'         => env(
+                                            'APP_URL'
+                                        ) . '/storage/' . 'categories/February2022/mnjmRWae7dI8LSLHdiEP.png',
+                                    'subcategories' => [],
+                                    'products'      => $this->promotional(),
+                                    'constructor'   => [],
+                                ]);
+
+            return response()->json([
+                                        'filters'  => [],
+                                        'category' => $category,
+                                        'sales'    => [],
+                                    ]);
+        }
         $sales = Sale::all();
 
         $subcategoriesIds = Subcategory::query()

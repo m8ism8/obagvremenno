@@ -28,8 +28,12 @@ class PageController extends Controller
                               )
                               ->orderBy('created_at', 'desc')
                               ->get()
+                              ->translate(\request()->header('Accept-Language'))
         ;
         foreach ($news_items as $news) {
+            if ($news->translations->isEmpty()) {
+                $news = $news->translate('ru');
+            }
             $news->slug  = Str::slug($news->title);
             $news->image = env('APP_URL') . '/storage/' . $news->image;
         }
@@ -43,7 +47,13 @@ class PageController extends Controller
     {
         $article = NewSales::query()
                            ->find($id)
+                           ->translate(\request()->header('Accept-Language'))
         ;
+
+        if ($article->translations->isEmpty()) {
+            $article = $article->translate('ru');
+        }
+
         if ($article == null) {
             return response()->json([
                                         'message' => 'Страница не найдена',
@@ -138,8 +148,14 @@ class PageController extends Controller
                           )
                           ->orderBy('created_at', 'desc')
                           ->get()
+                          ->translate(\request()->header('Accept-Language'))
         ;
+
+
         foreach ($news_items as $news) {
+            if ($news->translations->isEmpty()) {
+                $news = $news->translate('ru');
+            }
             $news->image = env('APP_URL') . '/storage/' . $news->image;
         }
 
@@ -152,11 +168,16 @@ class PageController extends Controller
     {
         $article = Sale::query()
                        ->find($id)
+                       ->translate(\request()->header('Accept-Language'))
         ;
+
         if ($article == null) {
             return response()->json([
                                         'message' => 'Страница не найдена',
                                     ], 404);
+        }
+        if ($article->translations->isEmpty()) {
+            $article = $article->translate('ru');
         }
         $article->image = env('APP_URL') . '/storage/' . $article->image;
 
@@ -206,12 +227,16 @@ class PageController extends Controller
                            )
                            ->whereIn('id', $productIds)
                            ->get()
+                           ->translate(\request()->header('Accept-Language'))
         ;
         foreach ($products as $product) {
             if (json_decode($product->image) != null) {
                 $product->image = env('APP_URL') . '/storage/' . json_decode($product->image)[0];
             } else {
                 $product->image = env('APP_URL') . '/storage/' . $product->image;
+            }
+            if ($product->translations->isEmpty()) {
+                $product = $product->translate('ru');
             }
         }
         $article->products = $products;
