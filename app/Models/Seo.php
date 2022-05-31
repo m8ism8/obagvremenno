@@ -11,8 +11,8 @@ class Seo extends Model
 
     protected $fillable = [
         'slug',
-        'hid',
-        'name',
+        'title',
+        'description',
         'content'
     ];
 }

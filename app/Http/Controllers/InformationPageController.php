@@ -34,23 +34,21 @@ class InformationPageController extends Controller
     {
         $seo = Seo::query()
                   ->where('slug', $seo)
-                  ->select('slug', 'title', 'hid', 'name', 'content')
+                  ->select('slug', 'title', 'description', 'content')
                   ->first()
         ;
+
         if ($seo == null) {
             return response()->json([
                                         'message' => 'Не найдено',
                                     ], 404);
         }
-        $title = $seo->title;
-        unset($seo->title);
-        unset($seo->slug);
+
 
         return response()->json([
-                                    'title' => $title,
-                                    'meta'  => [
-                                        $seo,
-                                    ],
+                                    'title'       => $seo->title,
+                                    'description' => $seo->description,
+                                    'content'     => $seo->content,
                                 ]);
     }
 
