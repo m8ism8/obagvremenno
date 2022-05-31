@@ -64,7 +64,6 @@ class ProductsImport implements ToCollection
 
     public function collection(Collection $rows): array
     {
-
         foreach ($rows as $row) {
             if ($row[0] == 'Артикул' or $row[0] == null) {
 
@@ -184,6 +183,9 @@ class ProductsImport implements ToCollection
                                                        'subcategory_id'  => $subcategory->id ?? null,
                                                        'complete_id'     => $complete,
                                                        'is_constructor'  => $isConstructor,
+                                                       'seo_title'       => $row[26],
+                                                       'seo_description' => $row[27],
+                                                       'seo_content'     => $row[28],
                                                    ])
                         ;
                         //                    dd($rows);
@@ -245,7 +247,7 @@ class ProductsImport implements ToCollection
                     $product = Product::query()
                                       ->where('code', $row[0])
                                       ->update([
-                                                   'remainder'       => $row[21] ?? null
+                                                   'remainder' => $row[21] ?? null,
                                                ])
                     ;
                 }

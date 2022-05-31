@@ -34,6 +34,9 @@ class Product extends Model
         'complete_id',
         'remainder',
         'is_constructor',
+        'seo_title',
+        'seo_description',
+        'seo_content'
     ];
 
     public static function boot()

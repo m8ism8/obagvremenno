@@ -21,7 +21,6 @@ class UpdateExcel implements ToCollection
 {
     public function collection(Collection $rows): array
     {
-
         foreach ($rows as $row) {
             if ($row[0] == 'Артикул' or $row[0] == null) {
 
@@ -31,14 +30,23 @@ class UpdateExcel implements ToCollection
                                 ->exists()
                 ;
                 if (!$check) {
-                    dd(1);
                 } else {
-                    $code      = $row[0];
-                    $price     = $row[1];
-                    $remainder = $row[2];
+                    $code        = $row[0];
+                    $price       = $row[1];
+                    $remainder   = $row[2];
+                    $title       = $row[3];
+                    $description = $row[4];
+                    $content     = $row[5];
+
                     Product::query()
                            ->where('code', $code)
-                           ->update(['price' => $price, 'remainder' => $remainder])
+                           ->update([
+                                        'price'           => $price,
+                                        'remainder'       => $remainder,
+                                        'seo_title'       => $title,
+                                        'seo_description' => $description,
+                                        'seo_content'     => $content,
+                                    ])
                     ;
                 }
             }

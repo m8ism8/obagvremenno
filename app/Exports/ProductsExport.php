@@ -42,6 +42,9 @@ class ProductsExport implements FromArray
             '23' => 'Конструктор',
             '24' => 'Конструктор картинка',
             '25' => "Конструктор картинка 2",
+            '26' => 'seo_title',
+            '27' => 'seo_description',
+            '28' => 'seo_content',
         ];
         foreach ($products as $product) {
             $arr        = [];
@@ -144,6 +147,9 @@ class ProductsExport implements FromArray
                 '23' => ($product->is_constructor == 1) ? 'Да' : 'Нет',
                 '24' => $product->code,
                 '25' => $product->code,
+                '26' => $product->seo_title,
+                '27' => $product->seo_description,
+                '28' => $product->seo_content,
             ];
         }
 
