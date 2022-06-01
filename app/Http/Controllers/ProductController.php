@@ -223,24 +223,33 @@ class ProductController extends Controller
 
     public function index()
     {
-        $banner   = [
+        $banner = [
             'image' => env('APP_URL') . '/storage/' . setting('main-banner.image'),
             'link'  => setting('main-banner.link'),
         ];
+
         $mainSale = Sale::query()
                         ->where('is_main', 1)
                         ->orderBy('created_at', 'desc')
                         ->take(1)
                         ->with('products')
                         ->first()
+                        ->translate(\request()->header('Accept-Language'))
         ;
-
+        if ($mainSale->translations->isEmpty()) {
+            $mainSale->translate('ru');
+        }
         $sales = Sale::query()
                      ->where('is_sub_main', 1)
                      ->take(2)
                      ->get()
+                     ->translate(\request()->header('Accept-Language'))
         ;
-
+        foreach ($sales as $sale) {
+            if ($sale->translations->isEmpty()) {
+                $sale->translate('ru');
+            }
+        }
 
         $salesMore = Sale::query()
                          ->select(
@@ -255,23 +264,32 @@ class ProductController extends Controller
                          ->orderBy('created_at', 'desc')
                          ->take(4)
                          ->get()
+                         ->translate(\request()->header('Accept-Language'))
         ;
-        $news      = NewSales::query()
-                             ->select(
-                                 'id',
-                                 'title',
-                                 'subtitle',
-                                 'image',
-                             )
-                             ->orderBy('created_at', 'desc')
-                             ->take(4)
-                             ->get()
+
+        $news = NewSales::query()
+                        ->select(
+                            'id',
+                            'title',
+                            'subtitle',
+                            'image',
+                        )
+                        ->orderBy('created_at', 'desc')
+                        ->take(4)
+                        ->get()
+                        ->translate(\request()->header('Accept-Language'))
         ;
         foreach ($news as $new) {
+            if ($new->translations->isEmpty()) {
+                $new->translate('ru');
+            }
             $new->image = env('APP_URL') . '/storage/' . $new->image;
         }
-        foreach ($salesMore as $salesMore) {
-            $salesMore->image = env('APP_URL') . '/storage/' . $salesMore->image;
+        foreach ($salesMore as $salesMoreproduct) {
+            if ($salesMoreproduct->translations->isEmpty()) {
+                $salesMoreproduct->translate('ru');
+            }
+            $salesMoreproduct->image = env('APP_URL') . '/storage/' . $salesMoreproduct->image;
         }
 
         return response()->json([
@@ -288,7 +306,9 @@ class ProductController extends Controller
         $categories = category::with('subcategories')
                               ->where('id', '!=', 1000000)
                               ->get()
+                              ->translate(\request()->header('Accept-Language'))
         ;
+
         $categories = CategoriesResource::collection($categories);
         $categories->prepend(
             collect([
@@ -330,7 +350,16 @@ class ProductController extends Controller
                                         'sales'    => [],
                                     ]);
         }
-        $sales = Sale::all();
+
+        $sales = Sale::all()
+                     ->translate(\request()->header('Accept-Language'))
+        ;
+
+        foreach ($sales as $sale) {
+            if ($sale->translations->isEmpty()) {
+                $sale->translate('ru');
+            }
+        }
 
         $subcategoriesIds = Subcategory::query()
                                        ->where('category_id', $category->id)
@@ -347,13 +376,22 @@ class ProductController extends Controller
                                            ->toArray()
         ;
 
-        $category->products = Product::query()
-                                     ->whereIn('id', $productsIds)
-                                     ->get()
+        $products = Product::query()
+                           ->whereIn('id', $productsIds)
+                           ->get()
+                           ->translate(\request()->header('Accept-Language'))
         ;
 
+        foreach ($products as $product) {
+            if ($product->translations->isEmpty()) {
+                $product->translate('ru');
+            }
+        }
 
-        $filters = $this->getFilters($category->products);
+        $category->products = $products;
+        $filters            = $this->getFilters($category->products);
+        $category->subcategories->translate(\request()->header('Accept-Language'));
+        $category->constructor->translate(\request()->header('Accept-Language'));
 
         return response()->json([
                                     'filters'  => $filters,
@@ -587,7 +625,9 @@ class ProductController extends Controller
                                    ->join('products', 'products.id', '=', 'complete_products.complete_id')
                                    ->select('products.*')
                                    ->get()
+                                   ->translate(\request()->header('Accept-Language'))
         ;
+
 
         foreach ($complete as $item) {
             if (json_decode($item->image, true) != null) {
@@ -611,6 +651,7 @@ class ProductController extends Controller
 
         $product->getProducts = true;
 
+        $product->translate(\request()->header('Accept-Language'));
         return response()->json([
                                     'product' => new ProductResource($product),
                                 ]);
@@ -660,9 +701,13 @@ class ProductController extends Controller
                            ->where('title', 'LIKE', '%' . $string . '%')
                            ->orWhere('code', 'LIKE', '%' . $string . '%')
                            ->get()
+                           ->translate(\request()->header('Accept-Language'))
         ;
 
         foreach ($products as $product) {
+            if ($product->translations->isEmpty()) {
+                $product = $product->translate('ru');
+            }
             $product->isFavorite = Favourite::query()
                                             ->where('product_id', $product->id)
                                             ->where(

@@ -57,9 +57,13 @@ class InformationPageController extends Controller
         $data = ExploitationArticle::query()
                                    ->select('id', 'title', 'image', 'subtitle')
                                    ->get()
+                                   ->translate(\request()->header('Accept-Language'))
         ;
 
         foreach ($data as $item) {
+            if ($item->translations->isEmpty()) {
+                $item->translate('ru');
+            }
             $item->image = asset('storage/' . $item->image);
             $item->slug  = Str::slug($item->title);
         }
@@ -72,8 +76,13 @@ class InformationPageController extends Controller
         $data = Product::query()
                        ->where('is_certificate', true)
                        ->get()
+                       ->translate(\request()->header('Accept-Language'))
         ;
-
+        foreach ($data as $item) {
+            if ($item->translations->isEmpty()) {
+                $item->translate('ru');
+            }
+        }
         $data = ProductResource::collection($data);
 
         return response()->json($data);

@@ -31,7 +31,9 @@ class ProductResource extends JsonResource
         } else {
             $image = env('APP_URL') . '/storage/' . $image;
         }
-
+//        "seo_title" => null
+//    "seo_description" => null
+//    "seo_content" => null
         return [
             'id' => $this->id,
             'title' => $this->title,
@@ -48,7 +50,10 @@ class ProductResource extends JsonResource
             'isFavorite' => $this->isFavorite ?? self::isFavorite($this->id),
             'complete'  => $this->complete,
             'remainder' => $this->remainder,
-            'slug'      => Str::slug($this->title)
+            'slug'      => Str::slug($this->title),
+            'seo_title' => $this->seo_title,
+            'seo_description' => $this->seo_description,
+            'seo_content' => $this->seo_content,
         ];
     }
 
