@@ -390,8 +390,10 @@ class ProductController extends Controller
 
         $category->products = $products;
         $filters            = $this->getFilters($category->products);
-        $category->subcategories->translate(\request()->header('Accept-Language'));
-        $category->constructor->translate(\request()->header('Accept-Language'));
+        $category->subcategories;
+            //->translate(\request()->header('Accept-Language'));
+        $category->constructor;
+            //->translate(\request()->header('Accept-Language'));
 
         return response()->json([
                                     'filters'  => $filters,
@@ -652,6 +654,7 @@ class ProductController extends Controller
         $product->getProducts = true;
 
         $product->translate(\request()->header('Accept-Language'));
+
         return response()->json([
                                     'product' => new ProductResource($product),
                                 ]);
