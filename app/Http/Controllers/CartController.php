@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrderMail;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,7 +11,7 @@ use Illuminate\Support\Str;
 use Mail;
 use App\Mail\DeliveryMail;
 
-use App\Models\{Cart, CartElement, DeliveryPrice, PercentBonus, User};
+use App\Models\{Cart, CartElement, DeliveryPrice, PercentBonus, SendMail, User};
 
 class CartController extends Controller
 {
@@ -66,7 +67,7 @@ class CartController extends Controller
             $email   = $user->email;
             $address = $user->address;
         } else {
-            $email  = null;
+            $email = null;
         }
 
         if (!$request->spend_bonuses) {
@@ -126,8 +127,14 @@ class CartController extends Controller
         }
 
         try {
-            \Mail::to($email)
-                 ->send(new DeliveryMail($cart))
+            $mail = SendMail::query()
+                            ->first()->order;
+            \Illuminate\Support\Facades\Mail::to($mail)
+                                            ->send(new OrderMail($cart))
+            ;
+
+            \Illuminate\Support\Facades\Mail::to($email)
+                                            ->send(new DeliveryMail($cart))
             ;
         } catch (\Throwable $e) {
         }

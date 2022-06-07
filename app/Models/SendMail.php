@@ -5,13 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrderCallback extends Model
+class SendMail extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
-        'name',
-        'phone',
-        'product_id',
-    ];
 }
