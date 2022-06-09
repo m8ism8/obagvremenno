@@ -142,7 +142,21 @@ class AuthController extends Controller
                      ->get()
         ;
         foreach ($carts as $cart) {
-            $cart->elements = CartElement::query()->where('cart_id', $cart->id)->get();
+            $elements = CartElement::query()
+                                   ->where('cart_id', $cart->id)
+                                   ->get()
+                                   ->pluck('product_id')
+                                   ->toArray()
+            ;
+
+            $elements = Product::query()->whereIn('id', $elements)->get();
+
+            foreach ($elements as $element) {
+                $image = env('APP_URL') . '/storage/' . json_decode($element->image, true)[0];
+                $element->image = $image;
+            }
+
+            $cart->elements = $elements;
         }
 
         return response()->json([
