@@ -60,6 +60,12 @@ class CartController extends Controller
 
     public function store(Request $request)
     {
+        if (Auth::guard('sanctum')
+                ->id() != null) {
+            $request->user_id = Auth::guard('sanctum')
+                                    ->id()
+            ;
+        }
         if ($request->user_id) {
             $user    = User::find($request->user_id);
             $name    = $user->name;
