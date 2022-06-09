@@ -100,7 +100,7 @@ class CartController extends Controller
         foreach ($request->cart_elements as $element) {
             $amount += $element['quantity'];
             CartElement::create([
-                                    'product_id'             => $element['product_id'] ?? null,
+                                    'product_id'             => $element['id'] ?? null,
                                     'constructor_element_id' => $element['constructor_element_id'] ?? null,
                                     'certificate_id'         => $element['certificate_id'] ?? null,
                                     'cart_id'                => $cart->id,
@@ -115,6 +115,22 @@ class CartController extends Controller
 //            $cart->update([
 //                              'payment_id' => $payment['orderId'],
 //                          ]);
+
+
+            try {
+                $mail = SendMail::query()
+                                ->first()->order;
+                \Illuminate\Support\Facades\Mail::to($mail)
+                                                ->send(new OrderMail($cart))
+                ;
+
+                \Illuminate\Support\Facades\Mail::to($email)
+                                                ->send(new DeliveryMail($cart))
+                ;
+            } catch (\Throwable $e) {
+            }
+
+
             return [
                 'auth'    => $auth,
                 'payment' => [
@@ -124,19 +140,6 @@ class CartController extends Controller
                 ],
                 'cart'    => $cart,
             ];
-        }
-
-        try {
-            $mail = SendMail::query()
-                            ->first()->order;
-            \Illuminate\Support\Facades\Mail::to($mail)
-                                            ->send(new OrderMail($cart))
-            ;
-
-            \Illuminate\Support\Facades\Mail::to($email)
-                                            ->send(new DeliveryMail($cart))
-            ;
-        } catch (\Throwable $e) {
         }
 
         $cart->update([
