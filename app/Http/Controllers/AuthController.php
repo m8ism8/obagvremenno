@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 use Laravel\Socialite\Facades\Socialite;
-use App\Models\{Subscription, User, Favourite, Product, Review, Mail};
+use App\Models\{Cart, CartElement, Subscription, User, Favourite, Product, Review, Mail};
 
 use App\Http\Resources\{
     ProductResource,
@@ -137,9 +137,12 @@ class AuthController extends Controller
     public function history()
     {
         $user  = auth()->user();
-        $carts = $user->carts;
+        $carts = Cart::query()
+                     ->where('user_id', $user->id)
+                     ->get()
+        ;
         foreach ($carts as $cart) {
-            $cart->elements;
+            $cart->elements = CartElement::query()->where('cart_id', $cart->id)->get();
         }
 
         return response()->json([
