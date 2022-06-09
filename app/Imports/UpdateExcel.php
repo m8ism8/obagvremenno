@@ -3,17 +3,9 @@
 namespace App\Imports;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
-use App\Models\{Category,
-    CompleteCategory,
-    CompleteProduct,
-    ElementProduct,
-    FilterCategory,
-    FilterElement,
-    Subcategory,
+use App\Models\{
     Product
 };
 
@@ -23,22 +15,23 @@ class UpdateExcel implements ToCollection
     {
         foreach ($rows as $row) {
             if ($row[0] == 'Артикул' or $row[0] == null) {
-
+                continue;
             } else {
 
                 $check = Product::query()
                                 ->where('code', $row[0])
                 ;
                 if (!$check->exists()) {
+                    continue;
                 } else {
                     $product     = $check->first();
                     $code        = $row[0];
                     $price       = $row[1] ?? $product->price;
-                    $remainder   = $row[2] ?? $product->price;
-                    $new_price   = $row[3] ?? $product->price;
-                    $title       = $row[4] ?? $product->price;
-                    $description = $row[5] ?? $product->price;
-                    $content     = $row[6] ?? $product->price;
+                    $remainder   = $row[2] ?? $product->remainder;
+                    $new_price   = $row[3] ?? $product->new_price;
+                    $title       = $row[4] ?? $product->title;
+                    $description = $row[5] ?? $product->description;
+                    $content     = $row[6] ?? $product->content;
 
                     Product::query()
                            ->where('code', $code)
