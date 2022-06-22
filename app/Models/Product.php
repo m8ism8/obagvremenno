@@ -36,7 +36,9 @@ class Product extends Model
         'is_constructor',
         'seo_title',
         'seo_description',
-        'seo_content'
+        'seo_content',
+	'is_new',
+	'is_popular'
     ];
 
     public static function boot()

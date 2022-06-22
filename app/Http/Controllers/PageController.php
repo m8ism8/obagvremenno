@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Sale;
 use App\Models\City;
+use App\Models\Banner;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -253,5 +254,10 @@ class PageController extends Controller
         return response()->json([
                                     'cities' => $cities,
                                 ]);
+    }
+
+    public function getBanners()
+    {
+        return response()->json(['banners' => Banner::all()]);
     }
 }

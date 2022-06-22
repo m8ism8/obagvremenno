@@ -34,6 +34,8 @@ class SubcategoriesResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+	    'seo_title' => $this->seo_title,
+            'description' => $this->description,
             'image' => $image,
             'slug'  => Str::slug($this->title),
             'preview_image' => $preview_image

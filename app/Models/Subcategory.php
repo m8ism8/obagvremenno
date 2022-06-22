@@ -14,7 +14,7 @@ class Subcategory extends Model
         'title',
     ];
 
-    protected $fillable = ['title', 'image', 'category_id'];
+    protected $fillable = ['title', 'image', 'category_id', 'is_top'];
 
     public function products()
     {

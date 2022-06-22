@@ -76,7 +76,7 @@ Route::get('/get-cities', [PageController::class, 'getCities']);
 Route::get('/page/history', [PageController::class, 'history']);
 Route::get('/page/mission', [PageController::class, 'mission']);
 Route::get('/page/brand-info', [PageController::class, 'brandInfo']);
-
+Route::get('/page/banners', [PageController::class, 'getBanners']);
 
 //Копмлектующие
 Route::get('subcategory/{id}/complete', [CompleteController::class, 'index']);

@@ -111,6 +111,7 @@ class ProductController extends Controller
 
         try {
             $randomCategories = Subcategory::query()
+					   ->where('is_top', true)
                                            ->take(2)
                                            ->skip(4)
                                            ->get()
@@ -130,16 +131,12 @@ class ProductController extends Controller
             $randomProducts2    = Product::whereIn('id', $randomProductsIds2)
                                          ->get()
             ;
-            $newestProducts     = Product::orderBy('created_at', 'desc')
-                                         ->take(4)
-                                         ->get()
+            $newestProducts     = Product::query()->where('is_new', true)->orderBy('created_at', 'desc')->get()
             ;
-            $popularProducts    = Product::inRandomOrder()
-                                         ->take(4)
-                                         ->get()
+            $popularProducts    = Product::query()->where('is_popular', true)->orderBy('created_at', 'desc')->get()
             ;
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
+            return $exception->getMessage();
         }
 
 
