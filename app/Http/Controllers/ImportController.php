@@ -55,13 +55,16 @@ class ImportController extends Controller
 
     public function importUpdate(Request $request)
     {
+        ini_set('memory_limit', '-1');
+
         if ($request->file) {
+
             Storage::deleteDirectory('/public/excel');
             $fileName = $request->file->getClientOriginalName();
             $request->file('file')
                     ->storeAs('/excel', $fileName, 'public')
             ;
-            Excel::import(new UpdateExcel, '/public/excel/' . $fileName);
+            Excel::import(new UpdateExcel,  public_path('/storage/excel/') . $fileName);
 
             return redirect('/admin/products')->with([
                                                          'message'    => 'Продукты были добавлены на сайт!',
@@ -122,7 +125,7 @@ class ImportController extends Controller
             $file     = $request->file('file')
                                 ->storeAs('/excel', $fileName, 'public')
             ;
-            Excel::import(new BagsImport(), '/public/excel/' . $fileName);
+            Excel::import(new BagsImport(), '/excel/' . $fileName);
 
             return redirect('/admin/products')->with([
                                                          'message'    => 'Продукты были добавлены на сайт!',
