@@ -108,61 +108,94 @@ class ProductController extends Controller
 
     public function getRecomended()
     {
-
-        try {
+        $data = [];
             $randomCategories = Subcategory::query()
 					   ->where('is_top', true)
-                                           ->take(2)
-                                           ->skip(4)
                                            ->get()
             ;
 
-            $randomProductsIds1 = $randomCategories[0]->products->pluck('id')
-                                                                ->random(4)
-            ;
+            if (count($randomCategories) > 0) {
+		$count = count($randomCategories[0]->products());
+		if ($count) {
+			if ($count > 4) {
+                                $count = 4;
+			}
+			$randomProductsIds1 = $randomCategories[0]->products->pluck('id')
+	                    ->random($count)
+        	        ;
+	                $randomProducts1 = Product::whereIn('id', $randomProductsIds1)
+        	            ->get()
+	                ;
+	                $data[] = [
+	                    'title'    => $randomCategories[0]->title,
+        	            'products' => $this->addImageLink($randomProducts1),
+	                ];
+		}
+            }
+            else {
+                $randomProducts1 = null;
+            }
 
-            $randomProducts1 = Product::whereIn('id', $randomProductsIds1)
-                                      ->get()
-            ;
+            if (count($randomCategories) > 1) {
+		$count = count($randomCategories[1]->products());
+		if ($count > 0) {
+			if ($count > 4){
+				$count = 4;
+			}
+			$randomProductsIds2 = $randomCategories[1]->products->pluck('id')
+	                    ->random(count($count))
+        	        ;
+                	$randomProducts2    = Product::whereIn('id', $randomProductsIds2)
+	                    ->get()
+	                ;
+	                $data[] = [
+	                    'title'    => $randomCategories[1]->title,
+	                    'products' => $this->addImageLink($randomProducts2),
+	                ];
+		}
+            }
+            else {
+                $randomProducts2 = null;
+            }
 
-            $randomProductsIds2 = $randomCategories[1]->products->pluck('id')
-                                                                ->random(4)
-            ;
-            $randomProducts2    = Product::whereIn('id', $randomProductsIds2)
-                                         ->get()
-            ;
             $newestProducts     = Product::query()->where('is_new', true)->orderBy('created_at', 'desc')->get()
             ;
             $popularProducts    = Product::query()->where('is_popular', true)->orderBy('created_at', 'desc')->get()
             ;
-        } catch (\Exception $exception) {
-            return $exception->getMessage();
-        }
 
+        $data[] = [
+            'title'    => 'Новинки',
+            'products' => $this->addImageLink($newestProducts),
+        ];
+        $data[] = [
+            'title'    => 'Популярное',
+            'products' => $this->addImageLink($popularProducts),
+        ];
 
-        $recomendedProducts = collect([
-                                          [
-                                              'title'    => $randomCategories[0]->title,
-                                              'products' => $this->addImageLink($randomProducts1),
-                                          ],
-                                          [
-                                              'title'    => $randomCategories[1]->title,
-                                              'products' => $this->addImageLink($randomProducts2),
-                                          ],
-                                          [
-                                              'title'    => 'Новинки',
-                                              'products' => $this->addImageLink($newestProducts),
-                                          ],
-                                          [
-                                              'title'    => 'Популярное',
-                                              'products' => $this->addImageLink($popularProducts),
-                                          ],
-                                      ]);
+//        $recomendedProducts = collect([
+//                                          [
+//                                              'title'    => $randomCategories[0]->title,
+//                                              'products' => $this->addImageLink($randomProducts1),
+//                                          ],
+//                                          [
+//                                              'title'    => $randomCategories[1]->title,
+//                                              'products' => $this->addImageLink($randomProducts2),
+//                                          ],
+//                                          [
+//                                              'title'    => 'Новинки',
+//                                              'products' => $this->addImageLink($newestProducts),
+//                                          ],
+//                                          [
+//                                              'title'    => 'Популярное',
+//                                              'products' => $this->addImageLink($popularProducts),
+//                                          ],
+//                                      ]);
+
+        $recomendedProducts = collect($data);
 
 
         return response()->json(['recomendedProducts' => $recomendedProducts]);
     }
-
     public function addImageLink($collection)
     {
         foreach ($collection as $item) {
