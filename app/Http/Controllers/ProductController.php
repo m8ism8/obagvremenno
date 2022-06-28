@@ -115,7 +115,7 @@ class ProductController extends Controller
             ;
 
             if (count($randomCategories) > 0) {
-		$count = count($randomCategories[0]->products());
+		$count = count($randomCategories[0]->products);
 		if ($count) {
 			if ($count > 4) {
                                 $count = 4;
@@ -137,13 +137,13 @@ class ProductController extends Controller
             }
 
             if (count($randomCategories) > 1) {
-		$count = count($randomCategories[1]->products());
+		$count = count($randomCategories[1]->products);
 		if ($count > 0) {
 			if ($count > 4){
 				$count = 4;
 			}
 			$randomProductsIds2 = $randomCategories[1]->products->pluck('id')
-	                    ->random(count($count))
+	                    ->random($count)
         	        ;
                 	$randomProducts2    = Product::whereIn('id', $randomProductsIds2)
 	                    ->get()
@@ -406,11 +406,22 @@ class ProductController extends Controller
                                            ->toArray()
         ;
 
-        $products = Product::query()
-                           ->whereIn('id', $productsIds)
-                           ->get()
-                           ->translate(\request()->header('Accept-Language'))
-        ;
+        if(\request()->input('sales') == true) {
+                    $products = Product::query()
+                        ->whereNotNull('new_price')
+                        ->whereIn('id', $productsIds)
+                        ->get()
+                        ->translate(\request()->header('Accept-Language'))
+                    ;
+        }
+        else {
+                    $products = Product::query()
+                        ->whereIn('id', $productsIds)
+                        ->get()
+                        ->translate(\request()->header('Accept-Language'))
+                    ;
+        }
+
 
         foreach ($products as $product) {
             if ($product->translations->isEmpty()) {
