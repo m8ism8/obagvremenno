@@ -109,7 +109,7 @@ class ProductsExport implements FromArray
             $ids  = DB::table('complete_products')
                       ->where('product_id', $product->id)
                       ->get()
-                      ->pluck('complete_id')
+                      ->pluck('complete_category_id')
                       ->toArray()
             ;
             $prod = Product::query()

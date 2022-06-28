@@ -654,7 +654,7 @@ class ProductController extends Controller
 
         $complete = CompleteProduct::query()
                                    ->where('product_id', $product->id)
-                                   ->join('products', 'products.id', '=', 'complete_products.complete_id')
+                                   ->join('products', 'products.id', '=', 'complete_products.complete_category_id')
                                    ->select('products.*')
                                    ->get()
                                    ->translate(\request()->header('Accept-Language'))
