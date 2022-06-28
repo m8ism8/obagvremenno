@@ -11,6 +11,7 @@ class CompleteProduct extends Model
 
     protected $fillable = [
         'complete_id',
-        'product_id'
+        'product_id',
+        'img'
     ];
 }

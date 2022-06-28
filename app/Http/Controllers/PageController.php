@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CompleteCategory;
+use App\Models\CompleteProduct;
 use App\Models\NewSales;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -259,5 +261,21 @@ class PageController extends Controller
     public function getBanners()
     {
         return response()->json(['banners' => Banner::all()]);
+    }
+    public function getCompleteProducts()
+    {
+        $data = [];
+        $completeProducts = CompleteProduct::all();
+        foreach ($completeProducts as $completeProduct) {
+            $category = CompleteCategory::query()->find($completeProduct->complete_id);
+
+            $productIds = CompleteProduct::query()
+                ->where('complete_id', $completeProduct->complete_id)
+                ->pluck('product_id');
+
+            $category->products = Product::query()->whereIn('id', $productIds)->get();
+            $data[] = $category;
+        }
+        return $data;
     }
 }
