@@ -13,6 +13,7 @@ use App\Models\City;
 use App\Models\Banner;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use function PHPUnit\Framework\isEmpty;
 
 class PageController extends Controller
 {
@@ -30,6 +31,7 @@ class PageController extends Controller
                                   'created_at'
                               )
                               ->orderBy('created_at', 'desc')
+                              ->where('show', 1)
                               ->get()
                               ->translate(\request()->header('Accept-Language'))
         ;
@@ -147,9 +149,11 @@ class PageController extends Controller
                               'badge',
                               'image',
                               'text',
-                              'created_at'
+                              'created_at',
+                              'preview_image'
                           )
                           ->orderBy('created_at', 'desc')
+                          ->where('show', 1)
                           ->get()
                           ->translate(\request()->header('Accept-Language'))
         ;
@@ -160,6 +164,11 @@ class PageController extends Controller
                 $news = $news->translate('ru');
             }
             $news->image = env('APP_URL') . '/storage/' . $news->image;
+
+
+            if ($news->preview_image != null) {
+                $news->preview_image = env('APP_URL') . '/storage/' . $news->preview_image;
+            }
         }
 
         return response()->json([
@@ -171,14 +180,16 @@ class PageController extends Controller
     {
         $article = Sale::query()
                        ->find($id)
-                       ->translate(\request()->header('Accept-Language'))
         ;
-
+        if ($article->preview_image != null) {
+            $article->preview_image = env('APP_URL') . '/storage/' . $article->preview_image;
+        }
         if ($article == null) {
             return response()->json([
                                         'message' => 'Страница не найдена',
                                     ], 404);
         }
+        $article = $article->translate(\request()->header('Accept-Language'));
         if ($article->translations->isEmpty()) {
             $article = $article->translate('ru');
         }
@@ -262,20 +273,28 @@ class PageController extends Controller
     {
         return response()->json(['banners' => Banner::all()]);
     }
+
     public function getCompleteProducts()
     {
-        $data = [];
+        $data             = [];
         $completeProducts = CompleteProduct::all();
         foreach ($completeProducts as $completeProduct) {
-            $category = CompleteCategory::query()->find($completeProduct->complete_id);
+            $category = CompleteCategory::query()
+                                        ->find($completeProduct->complete_id)
+            ;
 
             $productIds = CompleteProduct::query()
-                ->where('complete_id', $completeProduct->complete_id)
-                ->pluck('product_id');
+                                         ->where('complete_id', $completeProduct->complete_id)
+                                         ->pluck('product_id')
+            ;
 
-            $category->products = Product::query()->whereIn('id', $productIds)->get();
-            $data[] = $category;
+            $category->products = Product::query()
+                                         ->whereIn('id', $productIds)
+                                         ->get()
+            ;
+            $data[]             = $category;
         }
+
         return $data;
     }
 }

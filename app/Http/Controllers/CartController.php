@@ -123,18 +123,7 @@ class CartController extends Controller
 //                          ]);
 
 
-            try {
-                $mail = SendMail::query()
-                                ->first()->order;
-                \Illuminate\Support\Facades\Mail::to($mail)
-                                                ->send(new OrderMail($cart))
-                ;
 
-                \Illuminate\Support\Facades\Mail::to($email)
-                                                ->send(new DeliveryMail($cart))
-                ;
-            } catch (\Throwable $e) {
-            }
 
 
             return [
@@ -146,6 +135,19 @@ class CartController extends Controller
                 ],
                 'cart'    => $cart,
             ];
+        }
+
+        try {
+            $mail = SendMail::query()
+                            ->first()->order;
+            \Illuminate\Support\Facades\Mail::to($mail)
+                                            ->send(new OrderMail($cart))
+            ;
+
+            \Illuminate\Support\Facades\Mail::to($email)
+                                            ->send(new DeliveryMail($cart))
+            ;
+        } catch (\Throwable $e) {
         }
 
         $cart->update([
