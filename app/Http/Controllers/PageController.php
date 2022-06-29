@@ -17,7 +17,6 @@ use function PHPUnit\Framework\isEmpty;
 
 class PageController extends Controller
 {
-
     public function sales()
     {
         $news_items = NewSales::query()

@@ -14,6 +14,7 @@ use App\Http\Controllers\{
     ContactController,
     CompleteController
 };
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -25,7 +26,7 @@ use App\Http\Controllers\{
 |
 */
 
-Route::group(['middleware' => ['auth:sanctum']], function() {
+Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/product/{id}/favourite', [ProductController::class, 'favourite']);
     Route::delete('/product/{id}/favourite', [ProductController::class, 'favouriteDelete']);
     Route::get('/user/favourites', [AuthController::class, 'favourites']);
@@ -38,18 +39,19 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/user/subscribe', [AuthController::class, 'subscribe']);
 });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::middleware('auth:sanctum')
+     ->get('/user', function (Request $request) {
+         return $request->user();
+     })
+;
 //google register
 Route::get('google-register', [AuthController::class, 'googleRegister']);
-Route::get('google-callback',[AuthController::class,'googleCallback']);
+Route::get('google-callback', [AuthController::class, 'googleCallback']);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/callback/send', [CallBackController::class, 'callback']);
-
 
 
 Route::get('category/promotional', [ProductController::class, 'promotional']);
@@ -84,25 +86,25 @@ Route::get('subcategory/{id}/complete', [CompleteController::class, 'index']);
 Route::get('complete/{id}', [CompleteController::class, 'show']);
 
 //Вакансии
-Route::post('vacancies',[CallBackController::class, 'vacancies']);
+Route::post('vacancies', [CallBackController::class, 'vacancies']);
 
 //Контакты
-Route::get('contact',[ContactController::class, 'index']);
-Route::post('contact',[ContactController::class, 'create']);
+Route::get('contact', [ContactController::class, 'index']);
+Route::post('contact', [ContactController::class, 'create']);
 
 
 //Information Pages
-Route::get('save-your-obag',[InformationPageController::class, 'saveYourObag']);
-Route::get('history-and-mission',[InformationPageController::class, 'historyMission']);
-Route::get('social-mission',[InformationPageController::class, 'socialMission']);
-Route::get('brand-information',[InformationPageController::class, 'brandInformation']);
-Route::get('product-information',[InformationPageController::class, 'productInformation']);
-Route::get('all-about-products',[InformationPageController::class, 'allAboutProducts']);
-Route::get('research-and-innovation',[InformationPageController::class, 'researchInnovation']);
+Route::get('save-your-obag', [InformationPageController::class, 'saveYourObag']);
+Route::get('history-and-mission', [InformationPageController::class, 'historyMission']);
+Route::get('social-mission', [InformationPageController::class, 'socialMission']);
+Route::get('brand-information', [InformationPageController::class, 'brandInformation']);
+Route::get('product-information', [InformationPageController::class, 'productInformation']);
+Route::get('all-about-products', [InformationPageController::class, 'allAboutProducts']);
+Route::get('research-and-innovation', [InformationPageController::class, 'researchInnovation']);
 
-Route::get('shipping-and-payment',[InformationPageController::class, 'shippingPayment']);
-Route::get('return-information',[InformationPageController::class, 'returnInformation']);
-Route::get('loyalty-system',[InformationPageController::class, 'loyaltySystem']);
+Route::get('shipping-and-payment', [InformationPageController::class, 'shippingPayment']);
+Route::get('return-information', [InformationPageController::class, 'returnInformation']);
+Route::get('loyalty-system', [InformationPageController::class, 'loyaltySystem']);
 Route::get('information_for_corporate_clients', [InformationPageController::class, 'corporateInformation']);
 Route::get('gift-rules', [InformationPageController::class, 'giftRule']);
 Route::get('guarantee', [InformationPageController::class, 'guarantee']);
@@ -113,7 +115,7 @@ Route::get('shops', [InformationPageController::class, 'shops']);
 
 //Подписка
 Route::post('subscription', [AuthController::class, 'subscription']);
-Route::delete('subscription',[AuthController::class, 'deleteSubscription']);
+Route::delete('subscription', [AuthController::class, 'deleteSubscription']);
 
 //Заказ в один клик
 Route::post('order-callback', [CallBackController::class, 'order']);
@@ -138,3 +140,4 @@ Route::get('page/exploitation-accessories/{id}', [InformationPageController::cla
 
 Route::get('page/gift-certificates', [InformationPageController::class, 'giftCertificates']);
 
+Route::get('xml', [ProductController::class, 'xml']);

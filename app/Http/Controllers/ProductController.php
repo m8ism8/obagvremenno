@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use App\Models\{CompleteCategory,
     CompleteProduct,
+    ElementProduct,
     NewSales,
     Product,
     Category,
@@ -39,6 +40,164 @@ class ProductController extends Controller
     public function export()
     {
         return Excel::download(new ProductsExport(), 'products.xlsx');
+    }
+
+    /** @noinspection HtmlUnknownTag */
+    public function xml()
+    {
+        $xml = '<?xml version="1.0" encoding="windows-1251"?>';
+        $xml .= 'DOCTYPE yml_catalog SYSTEM "shops.dtd">';
+        $xml .= 'DOCTYPE yml_catalog SYSTEM "shops.dtd">';
+        $xml .= '<yml_catalog date="2016-11-21 11:01">';
+        $xml .= '<shop>';
+        $xml .= '<name>CompanyName</name>';
+        $xml .= '<company>CompanyName</company>';
+        $xml .= '<url>http://yourweb.ru</url>';
+
+
+        $categories    = Category::query()
+                                 ->select(
+                                     'id',
+                                     'title',
+                                 )
+                                 ->get()
+                                 ->where('id', '!=', 1000000)
+                                 ->toArray()
+        ;
+        $categoriesXML = '';
+        foreach ($categories as $category) {
+            $categoriesXML .= '<category id="' . $category['id'] . '">' . $category['title'] . '</category>' . "\n";
+        }
+
+        $xml .= '<categories>';
+        $xml .= $categoriesXML;
+        $xml .= '</categories>';
+
+        $xml         .= '<offers>';
+        $productsXML = '';
+
+        $products = Product::query()
+                           ->select(
+                               'price',
+                               'new_price',
+                               'image',
+                               'title',
+                               'id',
+                               'remainder',
+                               'code',
+                               'description'
+                           )
+                           ->get()
+                           ->take(5)
+                           ->toArray()
+        ;
+        foreach ($products as $product) {
+            $categoryId = SubcategoriesProduct::query()
+                                              ->select(
+                                                  'subcategory_id'
+                                              )
+                                              ->where('product_id', $product['id'])
+                                              ->first()
+                ->subcategory_id;
+            $categoryId = Subcategory::query()
+                                     ->where('id', $categoryId)
+                                     ->first()->category_id;
+
+            $productsXML .= '<offer id="' . $product['id'] . '" available="true">';
+            $productsXML .= '<url>http://yourweb.ru/product/' . $product['id'] . '</url>';
+
+            if (json_decode($product['image'])) {
+                $product['image'] = json_decode($product['image'], true)[0];
+            } else {
+            }
+
+            if ($product['price'] == null) {
+                $productsXML .= '<price>' . $product['price'] . '</price>';
+            } else {
+                $productsXML .= '<price>' . $product['new_price'] . '</price>';
+            }
+            $productsXML .= '<oldprice>' . $product['price'] . '</oldprice>';
+
+            $stored = ($product['remainder'] > 1) ? 'true' : 'false';
+
+            $elemets = ElementProduct::query()
+                                     ->where('product_id', $product['id'])
+                                     ->select('element_id')
+                                     ->pluck('element_id')
+            ;
+
+            $filters = FilterElement::query()
+                                    ->whereIn('id', $elemets)
+                                    ->get()
+                                    ->toArray()
+            ;
+
+            for ($i = 0; $i < count($filters); $i++) {
+                $filters[$i]['category_name'] = FilterCategory::query()
+                                                              ->where('id', $filters[$i]['category_id'])
+                                                              ->first()
+                    ->title;
+            }
+
+
+            $productsXML .= '<currencyId>KZT</currencyId>';
+            $productsXML .= '<categoryId>' . $categoryId . '</categoryId>';
+            $productsXML .= '<picture>' . env('APP_URL') . '/storage/' . $product['image'] . '</picture>';
+            $productsXML .= '<store>' . $product['title'] . '</store>';
+            $productsXML .= '<pickup>' . $stored . '</pickup>';
+            $productsXML .= '<delivery>' . $stored . '</delivery>';
+            $productsXML .= '<local_delivery_cost>' . 0 . '</local_delivery_cost>';
+            $productsXML .= '<name>' . $product['title'] . '</name>';
+            $productsXML .= '<model>' . $product['title'] . '</model>';
+            $productsXML .= '<vendor>' . 'Obag' . '</vendor>';
+            $productsXML .= '<vendorCode>' . $product['code'] . '</vendorCode>';
+            $productsXML .= '<typePrefix>' . $categoryId . '</typePrefix>';
+            $productsXML .= '<sales_notes>' . 1000 . '</sales_notes>';
+            $productsXML .= '<description>' . $product['description'] . '</description>';
+
+            foreach ($filters as $filter) {
+                $productsXML .= '<param name="' . $filter['category_name'] . '">' . $filter['title'] . '</param>';
+            }
+            $productsXML .= '<param>' . $product['title'] . '</param>';
+
+            $productsXML .= '</offer>';
+            $xml         .= $productsXML;
+        }
+        $xml .= '</offers>';
+        $xml .= '</shop>';
+        $xml .= '</yml_catalog>';
+
+        return response($xml);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function arrayToXml($array, $rootElement = null, $xml = null)
+    {
+        $_xml = $xml;
+
+        // If there is no Root Element then insert root
+        if ($_xml === null) {
+            $_xml = new \SimpleXMLElement($rootElement !== null ? $rootElement : '<root/>');
+        }
+
+        // Visit all key value pair
+        foreach ($array as $k => $v) {
+
+            // If there is nested array then
+            if (is_array($v)) {
+
+                // Call function for nested array
+                $this->arrayToXml($v, $k, $_xml->addChild($k));
+            } else {
+
+                // Simply add child element.
+                $_xml->addChild($k, $v);
+            }
+        }
+
+        return $_xml->asXML();
     }
 
     public function promotional($sort = null)
@@ -108,60 +267,64 @@ class ProductController extends Controller
 
     public function getRecomended()
     {
-        $data = [];
-            $randomCategories = Subcategory::query()
-					   ->where('is_top', true)
-                                           ->get()
-            ;
+        $data             = [];
+        $randomCategories = Subcategory::query()
+                                       ->where('is_top', true)
+                                       ->get()
+        ;
 
-            if (count($randomCategories) > 0) {
-		$count = count($randomCategories[0]->products);
-		if ($count) {
-			if ($count > 4) {
-                                $count = 4;
-			}
-			$randomProductsIds1 = $randomCategories[0]->products->pluck('id')
-	                    ->random($count)
-        	        ;
-	                $randomProducts1 = Product::whereIn('id', $randomProductsIds1)
-        	            ->get()
-	                ;
-	                $data[] = [
-	                    'title'    => $randomCategories[0]->title,
-        	            'products' => $this->addImageLink($randomProducts1),
-	                ];
-		}
+        if (count($randomCategories) > 0) {
+            $count = count($randomCategories[0]->products);
+            if ($count) {
+                if ($count > 4) {
+                    $count = 4;
+                }
+                $randomProductsIds1 = $randomCategories[0]->products->pluck('id')
+                                                                    ->random($count)
+                ;
+                $randomProducts1    = Product::whereIn('id', $randomProductsIds1)
+                                             ->get()
+                ;
+                $data[]             = [
+                    'title'    => $randomCategories[0]->title,
+                    'products' => $this->addImageLink($randomProducts1),
+                ];
             }
-            else {
-                $randomProducts1 = null;
-            }
+        } else {
+            $randomProducts1 = null;
+        }
 
-            if (count($randomCategories) > 1) {
-		$count = count($randomCategories[1]->products);
-		if ($count > 0) {
-			if ($count > 4){
-				$count = 4;
-			}
-			$randomProductsIds2 = $randomCategories[1]->products->pluck('id')
-	                    ->random($count)
-        	        ;
-                	$randomProducts2    = Product::whereIn('id', $randomProductsIds2)
-	                    ->get()
-	                ;
-	                $data[] = [
-	                    'title'    => $randomCategories[1]->title,
-	                    'products' => $this->addImageLink($randomProducts2),
-	                ];
-		}
+        if (count($randomCategories) > 1) {
+            $count = count($randomCategories[1]->products);
+            if ($count > 0) {
+                if ($count > 4) {
+                    $count = 4;
+                }
+                $randomProductsIds2 = $randomCategories[1]->products->pluck('id')
+                                                                    ->random($count)
+                ;
+                $randomProducts2    = Product::whereIn('id', $randomProductsIds2)
+                                             ->get()
+                ;
+                $data[]             = [
+                    'title'    => $randomCategories[1]->title,
+                    'products' => $this->addImageLink($randomProducts2),
+                ];
             }
-            else {
-                $randomProducts2 = null;
-            }
+        } else {
+            $randomProducts2 = null;
+        }
 
-            $newestProducts     = Product::query()->where('is_new', true)->orderBy('created_at', 'desc')->get()
-            ;
-            $popularProducts    = Product::query()->where('is_popular', true)->orderBy('created_at', 'desc')->get()
-            ;
+        $newestProducts  = Product::query()
+                                  ->where('is_new', true)
+                                  ->orderBy('created_at', 'desc')
+                                  ->get()
+        ;
+        $popularProducts = Product::query()
+                                  ->where('is_popular', true)
+                                  ->orderBy('created_at', 'desc')
+                                  ->get()
+        ;
 
         $data[] = [
             'title'    => 'Новинки',
@@ -196,6 +359,7 @@ class ProductController extends Controller
 
         return response()->json(['recomendedProducts' => $recomendedProducts]);
     }
+
     public function addImageLink($collection)
     {
         foreach ($collection as $item) {
@@ -406,20 +570,19 @@ class ProductController extends Controller
                                            ->toArray()
         ;
 
-        if(\request()->input('sales') == true) {
-                    $products = Product::query()
-                        ->whereNotNull('new_price')
-                        ->whereIn('id', $productsIds)
-                        ->get()
-                        ->translate(\request()->header('Accept-Language'))
-                    ;
-        }
-        else {
-                    $products = Product::query()
-                        ->whereIn('id', $productsIds)
-                        ->get()
-                        ->translate(\request()->header('Accept-Language'))
-                    ;
+        if (\request()->input('sales') == true) {
+            $products = Product::query()
+                               ->whereNotNull('new_price')
+                               ->whereIn('id', $productsIds)
+                               ->get()
+                               ->translate(\request()->header('Accept-Language'))
+            ;
+        } else {
+            $products = Product::query()
+                               ->whereIn('id', $productsIds)
+                               ->get()
+                               ->translate(\request()->header('Accept-Language'))
+            ;
         }
 
 
@@ -432,9 +595,10 @@ class ProductController extends Controller
         $category->products = $products;
         $filters            = $this->getFilters($category->products);
         $category->subcategories;
-            //->translate(\request()->header('Accept-Language'));
+        //->translate(\request()->header('Accept-Language'));
         $category->constructor;
-            //->translate(\request()->header('Accept-Language'));
+
+        //->translate(\request()->header('Accept-Language'));
 
         return response()->json([
                                     'filters'  => $filters,
