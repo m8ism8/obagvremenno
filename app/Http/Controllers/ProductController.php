@@ -453,7 +453,8 @@ class ProductController extends Controller
                              'badge',
                              'image',
                              'text',
-                             'created_at'
+                             'created_at',
+                             'preview_image'
                          )
                          ->orderBy('created_at', 'desc')
                          ->take(4)
@@ -482,6 +483,9 @@ class ProductController extends Controller
         foreach ($salesMore as $salesMoreproduct) {
             if ($salesMoreproduct->translations->isEmpty()) {
                 $salesMoreproduct->translate('ru');
+            }
+            if ($salesMoreproduct->preview_image != null) {
+                $salesMoreproduct->preview_image = env('APP_URL') . '/storage/' . $salesMoreproduct->preview_image;
             }
             $salesMoreproduct->image = env('APP_URL') . '/storage/' . $salesMoreproduct->image;
         }
