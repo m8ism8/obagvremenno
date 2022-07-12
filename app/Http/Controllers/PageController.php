@@ -299,7 +299,7 @@ class PageController extends Controller
         return $data;
     }
 
-    public function salesCreate(NewsCreationRequest $request) {
+    public function salesCreate(SalesCreationRequest $request) {
         $data = $request->validated();
         $product_ids = Product::all()->whereIn('id', array_column($data['products'], 'id'))->pluck('id');
 
