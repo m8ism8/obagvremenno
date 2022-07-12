@@ -113,6 +113,16 @@ Route::get('rule-operation', [InformationPageController::class, 'ruleOperation']
 Route::get('mobile-shopping', [InformationPageController::class, 'mobileShopping']);
 Route::get('shops', [InformationPageController::class, 'shops']);
 
+Route::post('sales-create', [PageController::class, 'salesCreate']);
+Route::post('news-create', [PageController::class, 'newsCreate']);
+
+Route::delete('sales-delete/{id}', [PageController::class, 'salesDelete']);
+Route::delete('news-delete/{id}', [PageController::class, 'newsDelete']);
+
+Route::put('sales-change/{id}', [PageController::class, 'salesChange']);
+Route::put('news-change/{id}', [PageController::class, 'newsChange']);
+
+
 //Подписка
 Route::post('subscription', [AuthController::class, 'subscription']);
 Route::delete('subscription', [AuthController::class, 'deleteSubscription']);

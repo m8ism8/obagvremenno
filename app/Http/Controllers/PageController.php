@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\NewsCreationRequest;
+use App\Http\Requests\SalesCreationRequest;
 use App\Models\CompleteCategory;
 use App\Models\CompleteProduct;
 use App\Models\NewSales;
@@ -295,5 +297,66 @@ class PageController extends Controller
         }
 
         return $data;
+    }
+
+    public function salesCreate(NewsCreationRequest $request) {
+        $data = $request->validated();
+        $product_ids = Product::all()->whereIn('id', array_column($data['products'], 'id'))->pluck('id');
+
+        foreach ($data['sales'] as $sale) {
+            $created_sale = Sale::create([
+                'title' => $sale['title'],
+                'show' => $sale['show'],
+                'is_main' => $sale['is_main'],
+                'preview_image' => $sale['preview_image'],
+                'text' => $sale['text'],
+                'image' => $sale['image'],
+            ]);
+            $created_sale->products()->sync($product_ids);
+        }
+
+        return response()->json(['message' => 'Акции созданы!']);
+    }
+
+    public function newsCreate(NewsCreationRequest $request) {
+        $data = $request->validated();
+
+        foreach ($data['news'] as $new) {
+            NewSales::create([
+                'title' => $new['title'],
+                'show' => $new['show'],
+                'subtitle' => $new['subtitle'],
+                'text' => $new['text'],
+                'image' => $new['image'],
+            ]);
+        }
+
+        return response()->json(['message' => 'Новости созданы!']);
+    }
+
+    public function salesDelete($id) {
+        $sale = Sale::find($id);
+        $sale->delete();
+        return response()->json(['message' => 'Акция удалена!']);
+    }
+
+    public function newsDelete($id) {
+        $news = NewSales::find($id);
+        $news->delete();
+        return response()->json(['message' => 'Новость удалена!']);
+    }
+
+    public function salesChange(SalesCreationRequest $request, $id) {
+        $data = $request->validated();
+        $sale = Sale::find($id);
+        $sale->update($data);
+        return response()->json(['message' => 'Акция изменена!']);
+    }
+
+    public function newsChange(NewsCreationRequest $request, $id) {
+        $data = $request->validated();
+        $news = NewSales::find($id);
+        $news->update($data);
+        return response()->json(['message' => 'Новость изменена!']);
     }
 }

@@ -13,13 +13,10 @@ class Sale extends Model
     protected $translatable = [
         'title',
         'text',
-        'subtitle',
-        'second_title',
-        'second_subtitle',
-        'second_text',
-        'third_title',
-        'third_subtitle',
-        'third_text',
+        'image',
+        'is_main',
+        'preview_image',
+        'show'
     ];
 
     public function products()

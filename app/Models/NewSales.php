@@ -14,11 +14,7 @@ class NewSales extends Model
         'title',
         'text',
         'subtitle',
-        'second_title',
-        'second_subtitle',
-        'second_text',
-        'third_title',
-        'third_subtitle',
-        'third_text'
+        'image',
+        'show'
     ];
 }

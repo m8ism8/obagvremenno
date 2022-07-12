@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 class OrderOneClickMail extends Mailable
 {
     use Queueable, SerializesModels;
-
+    public $data, $product;
     /**
      * Create a new message instance.
      *

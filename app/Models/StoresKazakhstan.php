@@ -10,6 +10,14 @@ class StoresKazakhstan extends Model
 {
     use HasFactory, Translatable;
 
+    protected $fillable = [
+        'title',
+        'image',
+        'address',
+        'number',
+        'time'
+    ];
+
     protected $translatable = [
         'title',
     ];
