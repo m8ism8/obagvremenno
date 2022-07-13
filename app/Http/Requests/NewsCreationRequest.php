@@ -24,12 +24,12 @@ class NewsCreationRequest extends FormRequest
     public function rules()
     {
         return [
-            'news' => 'present|array',
+            'news' => 'array',
             'news.*.title' => 'string',
             'news.*.subtitle' => 'string',
             'news.*.show' => 'boolean',
             'news.*.text' => 'string',
-            'news.*.image' => 'image',
+            'news.*.image' => 'string',
         ];
     }
 }

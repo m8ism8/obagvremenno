@@ -10,13 +10,18 @@ class Sale extends Model
 {
     use HasFactory, Translatable;
 
-    protected $translatable = [
+    protected $fillable = [
         'title',
         'text',
         'image',
         'is_main',
         'preview_image',
         'show'
+    ];
+
+    protected $translatable = [
+        'title',
+        'text'
     ];
 
     public function products()

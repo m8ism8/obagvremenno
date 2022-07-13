@@ -29,6 +29,7 @@ class SaleResource extends JsonResource
         return [
             'id'         => $this->id,
             'title'      => $this->title,
+            'items' => ,
             'text'       => $this->text,
             'image'      => $image,
             'is_main'    => $this->is_main,

@@ -10,11 +10,18 @@ class NewSales extends Model
 {
     use HasFactory, Translatable;
 
-    protected $translatable = [
+    protected $fillable = [
         'title',
         'text',
         'subtitle',
         'image',
+        'is_main',
         'show'
+    ];
+
+    protected $translatable = [
+        'title',
+        'text',
+        'subtitle'
     ];
 }

@@ -7,7 +7,7 @@
             <div class="checkboxes">
                 <div class="checkboxes-checkbox">
                     <p> Показывать</p>
-                    <input  type="checkbox" name="is_constructor"  v-model="show">
+                    <input  type="checkbox" name="is_constructor"   v-model="show">
                 </div>
                 <div class="checkboxes-checkbox">
                     <p> На главной </p>
@@ -15,16 +15,16 @@
                 </div>
             </div> 
                 <p> Картинка на главной </p>
-                <input type="file" @change="uploadMin" ref="mainTitle">
+                <input type="file" @change="uploadMin" required ref="mainTitle">
                 
                 <p> Название </p>
-                <input type="text" v-model="title" >
+                <textarea type="text" id="mytextarea" v-model="title">   
 =
                 <div class="multiple__item" v-for="(item, index) in items" :key="index">
                     <p>Фотография</p>
-                    <input type="file"  :ref="'uploadFile' + index" >
+                    <input type="file"  required  :ref="'uploadFile' + index" >
                     <p>текст</p>
-                    <input type="text" id="mytextarea" v-model="item.text">
+                    <input type="text"  required id="mytextarea" v-model="item.text">
                 </div>
                 <p></p>
                 <button @click.prevent="items.push({file:null,text:'',})">Добавить новые поля</button>
@@ -64,6 +64,9 @@
                             file = this.$refs.mainTitle.files[0]
                             reader.onload = (e) => {
                                 this.mainImage =  reader.result
+                                if(this.itemImages.length === Object.keys(this.$refs).length){
+                                    this.mainMethod();
+                                }
                             }
                             reader.readAsDataURL(file);
                             break;
@@ -73,27 +76,61 @@
                             file = itemss[index]
                             reader.onload = (e) => {
                                 this.itemImages.push(reader.result)
+                                if(this.itemImages.length === Object.keys(this.$refs).length-1){
+                                    this.mainMethod();
+                                }
                             }
                             reader.readAsDataURL(file);
                             break;
                     }
                 });
+            },
+            mainMethod(){
                 this.items.forEach((element, index) => {
                 	element.file = this.itemImages[index]
                     this.wholeArray.push({
                         title: this.title,
                         show: this.show,
-                        isMain: this.isMain,
+                        is_main: this.isMain,
                         preview_image: this.mainImage,
                         text: element.text,
                         image: element.file,
                     })
                 });
-                
+                let url = window.location.pathname.split("/").pop()
+                if(url === 'create'){
                 axios.post('https://api.obagofficial.kz/api/sales-create', {
-                    image: this.wholeArray
+                    sales: this.wholeArray,
+                    products: [
+                        {
+                            id: 1
+                        },
+                        {
+                            id: 22
+                        }
+                    ]
                 })
+                }
+                else{
+                let fulladress = window.location.pathname.split("/")
+                fulladress.pop()
+                let urlId = fulladress.pop()
+                let sendUrl = 'https://api.obagofficial.kz/api/sales-change/' + urlId
+                 axios.put(sendUrl, {
+                 	sales: this.wholeArray,
+                 	products: [
+                 	{
+                 	    id: 1
+                 	},
+                 	{
+                 	    id: 22
+                 	},
+                 	],
+                 	id: Number(urlId)
+                 })
+		}
                 this.wholeArray = []
+            
             },
         },
         data(){

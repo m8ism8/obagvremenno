@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\NewsCreationRequest;
 use App\Http\Requests\SalesCreationRequest;
+use App\Http\Resources\SaleResource;
 use App\Models\CompleteCategory;
 use App\Models\CompleteProduct;
 use App\Models\NewSales;
@@ -14,6 +15,7 @@ use App\Models\Sale;
 use App\Models\City;
 use App\Models\Banner;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use function PHPUnit\Framework\isEmpty;
 
@@ -24,28 +26,66 @@ class PageController extends Controller
         $news_items = NewSales::query()
                               ->select(
                                   'id',
-                                  'title',
-                                  'subtitle',
-                                  'badge',
                                   'image',
-                                  'text',
-                                  'created_at'
+                                  'text'
                               )
                               ->orderBy('created_at', 'desc')
                               ->where('show', 1)
                               ->get()
                               ->translate(\request()->header('Accept-Language'))
         ;
+
+        $news_ = NewSales::query()
+            ->select(
+                'title',
+                'subtitle',
+                'badge',
+                'created_at'
+            )
+            ->orderBy('created_at', 'desc')
+            ->where('show', 1)
+            ->get()
+            ->translate(\request()->header('Accept-Language'))
+        ;
+
         foreach ($news_items as $news) {
             if ($news->translations->isEmpty()) {
                 $news = $news->translate('ru');
             }
             $news->slug  = Str::slug($news->title);
+
+            $image = $news->image; //your base64 encoded data
+
+            $ext = explode(';base64',$image);
+            $ext = explode('/',$ext[0]);
+            $ext = $ext[1];						// This will hold the value of the extension.
+
+            if ($ext == 'png') {
+                $image = str_replace('data:image/png;base64,', '', $image);
+                $image = str_replace(' ', '+', $image);
+                $imageName = Str::random(10) . '.' . 'png';
+
+                Storage::disk('public')->put($imageName, base64_decode($image));
+
+
+                $news->image = env('APP_URL') . '/storage/' . $imageName;
+            } else if ($ext == 'jpg') {
+                $image = str_replace('data:image/jpeg;base64,', '', $image);
+                $image = str_replace(' ', '+', $image);
+                $imageName = Str::random(10) . '.' . 'jpg';
+
+                Storage::disk('public')->put($imageName, base64_decode($image));
+
+
+                $news->image = env('APP_URL') . '/storage/' . $imageName;
+            }
+
             $news->image = env('APP_URL') . '/storage/' . $news->image;
         }
 
         return response()->json([
-                                    'news' => $news_items,
+            'news' => $news_,
+            'items' => $news_items,
                                 ]);
     }
 
@@ -143,37 +183,88 @@ class PageController extends Controller
     public function getNews()
     {
         $news_items = Sale::query()
-                          ->select(
-                              'id',
-                              'title',
-                              'subtitle',
-                              'badge',
-                              'image',
-                              'text',
-                              'created_at',
-                              'preview_image'
-                          )
-                          ->orderBy('created_at', 'desc')
-                          ->where('show', 1)
-                          ->get()
-                          ->translate(\request()->header('Accept-Language'))
+            ->select(
+                'id',
+                'is_main',
+                'show',
+                'title',
+                'image',
+                'text',
+                'preview_image',
+                'created_at'
+            )
+            ->orderBy('created_at', 'desc')
+            ->where('show', 1)
+            ->get()
+            ->translate(\request()->header('Accept-Language'))
         ;
-
 
         foreach ($news_items as $news) {
             if ($news->translations->isEmpty()) {
                 $news = $news->translate('ru');
             }
-            $news->image = env('APP_URL') . '/storage/' . $news->image;
+
+
+
+            $image = $news->image; //your base64 encoded data
+
+            $ext = explode(';base64',$image);
+            $ext = explode('/',$ext[0]);
+            $ext = $ext[1];						// This will hold the value of the extension.
+
+            if ($ext == 'png') {
+                $image = str_replace('data:image/png;base64,', '', $image);
+                $image = str_replace(' ', '+', $image);
+                $imageName = Str::random(10) . '.' . 'png';
+
+                Storage::disk('public')->put($imageName, base64_decode($image));
+
+
+                $news->image = env('APP_URL') . '/storage/' . $imageName;
+            } else if ($ext == 'jpg') {
+                $image = str_replace('data:image/jpeg;base64,', '', $image);
+                $image = str_replace(' ', '+', $image);
+                $imageName = Str::random(10) . '.' . 'jpg';
+
+                Storage::disk('public')->put($imageName, base64_decode($image));
+
+
+                $news->image = env('APP_URL') . '/storage/' . $imageName;
+            }
 
 
             if ($news->preview_image != null) {
-                $news->preview_image = env('APP_URL') . '/storage/' . $news->preview_image;
+
+                $image = $news->preview_image;
+                $ext = explode(';base64',$image);
+                $ext = explode('/',$ext[0]);
+                $ext = $ext[1];						// This will hold the value of the extension.
+
+                if ($ext == 'png') {
+                    $image = str_replace('data:image/png;base64,', '', $image);
+                    $image = str_replace(' ', '+', $image);
+                    $imageName = Str::random(10) . '.' . 'png';
+
+                    Storage::disk('public')->put($imageName, base64_decode($image));
+
+
+                    $news->image = env('APP_URL') . '/storage/' . $imageName;
+                } else if ($ext == 'jpg') {
+                    $image = str_replace('data:image/jpeg;base64,', '', $image);
+                    $image = str_replace(' ', '+', $image);
+                    $imageName = Str::random(10) . '.' . 'jpg';
+
+                    Storage::disk('public')->put($imageName, base64_decode($image));
+
+
+                    $news->image = env('APP_URL') . '/storage/' . $imageName;
+                }
+                $news->preview_image = env('APP_URL') . '/storage/' . $imageName;
             }
         }
 
         return response()->json([
-                                    'news' => $news_items,
+            'sales' => SaleResource::collection($news_items)
                                 ]);
     }
 
@@ -182,7 +273,7 @@ class PageController extends Controller
         $article = Sale::query()
                        ->find($id)
         ;
-        if ($article->preview_image != null) {
+        if ($article->preview_image) {
             $article->preview_image = env('APP_URL') . '/storage/' . $article->preview_image;
         }
         if ($article == null) {
@@ -304,6 +395,7 @@ class PageController extends Controller
         $product_ids = Product::all()->whereIn('id', array_column($data['products'], 'id'))->pluck('id');
 
         foreach ($data['sales'] as $sale) {
+            if (Sale::where('text', ))
             $created_sale = Sale::create([
                 'title' => $sale['title'],
                 'show' => $sale['show'],

@@ -12,16 +12,16 @@
             </div> 
                 
                 <p> Название </p>
-                <input type="text" v-model="title">
+                <input type="text" required v-model="title">
 
                 <p> Второй текст </p> 
-                <input type="text" v-model="subtitle">
+                <input type="text" required v-model="subtitle">
 
                 <div class="multiple__item" v-for="(item, index) in items" :key="index">
                     <p>Фотография</p>
-                    <input type="file"  :ref="'uploadFile' + index" >
+                    <input type="file" required :ref="'uploadFile' + index" >
                     <p>текст</p>
-                    <input type="text" v-model="item.text">
+                    <input type="text" required v-model="item.text">
                 </div>
                 <p></p>
                 <button @click.prevent="items.push({file:null,text:'',})">Добавить новые поля</button>
@@ -30,6 +30,7 @@
         </div>
         `,
         methods:{
+        	
             uploadMin(event){
                 var file = this.$refs.mainTitle.files[0]
                 var reader = new FileReader();
@@ -40,10 +41,9 @@
                 
             },
             sendFormData(){
-                console.log(this.$refs);
+                this.wholeArray = []
                 var itemss = []
                 Object.values(this.$refs).forEach((element,index)=>{
-                console.log(element)
                 	if(element.length === 1){
                         itemss.push(element[0].files[0])
                     }
@@ -61,26 +61,45 @@
                             file = itemss[index]
                             reader.onload = (e) => {
                                 this.itemImages.push(reader.result)
+                                if(this.itemImages.length === Object.keys(this.$refs).length){
+                                    this.mainMethod();
+                                }
                             }
                             reader.readAsDataURL(file);
-                    
                 });
-                this.items.forEach((element, index) => {
-                	element.file = this.itemImages[index]
-                    this.wholeArray.push({
-                        title: this.title,
-                        show: this.show,
-                        isMain: this.isMain,
-                        preview_image: this.mainImage,
-                        text: element.text,
-                        image: element.file,
-                    })
-                });
-                
-                axios.post('https://api.obagofficial.kz/api/sales-create', {
-                    image: this.wholeArray
+
+
+
+            },
+            mainMethod(){
+            this.items.forEach((element, index) => {
+                element.file = this.itemImages[index]
+                console.log(this.itemImages)
+                this.wholeArray.push({
+                    title: this.title,
+                    show: this.show,
+                    subtitle: this.subtitle,
+                    text: element.text,
+                    image: this.itemImages[index],
                 })
-                this.wholeArray = []
+            });
+            let url = window.location.pathname.split("/").pop()
+            if(url === 'create'){
+                axios.post('https://api.obagofficial.kz/api/news-create', {
+                    news: this.wholeArray
+                })
+            }
+            else{
+                let fulladress = window.location.pathname.split("/")
+                fulladress.pop()
+                let urlId = fulladress.pop()
+                let sendUrl = 'https://api.obagofficial.kz/api/news-change/' + urlId
+                axios.put(sendUrl, {
+                    news: this.wholeArray,
+                    id: Number(urlId)
+                })
+                
+            }
             },
         },
         data(){

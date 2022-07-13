@@ -28,10 +28,10 @@ class SalesCreationRequest extends FormRequest
             'sales.*.title' => 'string',
             'sales.*.show' => 'boolean',
             'sales.*.is_main' => 'boolean' ,
-            'sales.*.preview_image' => 'image',
+            'sales.*.preview_image' => 'string',
             'sales.*.text' => 'string',
-            'sales.*.image' => 'image',
-            'products' => 'present|array',
+            'sales.*.image' => 'string',
+            'products' => 'array',
             'products.*.id' => 'numeric'
         ];
     }

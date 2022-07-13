@@ -62,6 +62,14 @@
         justify-content: center;
         text-align: left
     }
+    .create-form form input{
+    
+        width: 100%;
+    }
+    .create-form form button{
+    	margin-top: 20px;
+    	width: 100%;
+    }
 
     .btn-add-question {
         position: fixed;
