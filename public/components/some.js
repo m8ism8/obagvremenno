@@ -18,7 +18,7 @@
                 <input type="file" @change="uploadMin" required ref="mainTitle">
                 
                 <p> Название </p>
-                <textarea type="text" id="mytextarea" v-model="title">   
+                <input type="text" id="mytextarea" v-model="title">   
 =
                 <div class="multiple__item" v-for="(item, index) in items" :key="index">
                     <p>Фотография</p>

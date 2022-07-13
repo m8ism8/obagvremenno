@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Sale;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 use App\Http\Resources\ProductResource;
@@ -17,21 +18,16 @@ class SaleResource extends JsonResource
      */
     public function toArray($request)
     {
-        $image = $this->image;
-        if ($image && str_split($image, 4)[0] != 'http') {
-            $image = env('APP_URL') . '/storage/' . $this->image;
-        }
 
-        if ($this->preview_image != null) {
-            $this->preview_image = env('APP_URL') . '/storage/' . $this->preview_image;
-        }
+
+//        if ($this->preview_image != null) {
+//            $this->preview_image = env('APP_URL') . '/storage/' . $this->preview_image;
+//        }
 
         return [
             'id'         => $this->id,
             'title'      => $this->title,
-            'items' => ,
-            'text'       => $this->text,
-            'image'      => $image,
+            'items' => ItemsResource::collection(Sale::all()->where('title', $this->title)),
             'is_main'    => $this->is_main,
             'created_at' => $this->created_at,
             'preview_image' => $this->preview_image,

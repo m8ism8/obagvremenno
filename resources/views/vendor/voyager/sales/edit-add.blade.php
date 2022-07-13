@@ -13,18 +13,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/@tinymce/tinymce-webcomponent@1/dist/tinymce-webcomponent.min.js"></script>
-              <script>
-                setTimeout(() => {
-                    tinymce.init({
-
-selector: '#mytextarea',
-                    })
-                    
-                }, 1500);
-
-
-    </script>
     <script type="module">
 	import some from '/components/some.js'
         var app = new Vue({
@@ -48,17 +36,6 @@ selector: '#mytextarea',
 
     </script>
 @endsection
- <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
- <script src="editor.js"></script>
-
-    <script type="module">
-
-        setTimeout(() => {
-const editor = new EditorJS({
-    holderId: "mytextarea",
-});
-
-        }, 1000);
     </script>
 <style>
     .create-form{

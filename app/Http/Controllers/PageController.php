@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\NewsCreationRequest;
 use App\Http\Requests\SalesCreationRequest;
+use App\Http\Resources\NewsResource;
 use App\Http\Resources\SaleResource;
 use App\Models\CompleteCategory;
 use App\Models\CompleteProduct;
@@ -27,7 +28,11 @@ class PageController extends Controller
                               ->select(
                                   'id',
                                   'image',
-                                  'text'
+                                  'text',
+                                  'title',
+                                  'subtitle',
+                                  'badge',
+                                  'created_at'
                               )
                               ->orderBy('created_at', 'desc')
                               ->where('show', 1)
@@ -35,18 +40,6 @@ class PageController extends Controller
                               ->translate(\request()->header('Accept-Language'))
         ;
 
-        $news_ = NewSales::query()
-            ->select(
-                'title',
-                'subtitle',
-                'badge',
-                'created_at'
-            )
-            ->orderBy('created_at', 'desc')
-            ->where('show', 1)
-            ->get()
-            ->translate(\request()->header('Accept-Language'))
-        ;
 
         foreach ($news_items as $news) {
             if ($news->translations->isEmpty()) {
@@ -81,11 +74,11 @@ class PageController extends Controller
             }
 
             $news->image = env('APP_URL') . '/storage/' . $news->image;
+            $news->save();
         }
 
         return response()->json([
-            'news' => $news_,
-            'items' => $news_items,
+            'news' => NewsResource::collection($news_items),
                                 ]);
     }
 
@@ -138,8 +131,9 @@ class PageController extends Controller
             }
             $article->third_images = $newImages;
         }
+        $article->save();
 
-        return response()->json($article);
+        return new NewsResource($article);
     }
 
     public function history()
@@ -198,7 +192,6 @@ class PageController extends Controller
             ->get()
             ->translate(\request()->header('Accept-Language'))
         ;
-
         foreach ($news_items as $news) {
             if ($news->translations->isEmpty()) {
                 $news = $news->translate('ru');
@@ -260,6 +253,7 @@ class PageController extends Controller
                     $news->image = env('APP_URL') . '/storage/' . $imageName;
                 }
                 $news->preview_image = env('APP_URL') . '/storage/' . $imageName;
+                $news->save();
             }
         }
 
@@ -346,8 +340,9 @@ class PageController extends Controller
             }
         }
         $article->products = $products;
+        $article->save();
 
-        return response()->json($article);
+        return new SaleResource($article);
     }
 
     public function getCities()
