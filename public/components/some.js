@@ -1,9 +1,13 @@
 
-
+	
+	import * as {Editor} from './tinymce-vue.js'
     export default{
         template: `
         <div> 
             <form @submit.prevent="sendFormData()">
+            <tinymce-editor
+  api-key="hfcfgp0vufrmoiwj7oo4j5nrk8jw0e9wqkmj0qwl0dro5hfy"
+></tinymce-editor>
             <div class="checkboxes">
                 <div class="checkboxes-checkbox">
                     <p> Показывать</p>
@@ -18,7 +22,7 @@
                 <input type="file" @change="uploadMin" required ref="mainTitle">
                 
                 <p> Название </p>
-                <input type="text" id="mytextarea" v-model="title">   
+                <editor type="text" id="mytextarea" v-model="title"/>    
 =
                 <div class="multiple__item" v-for="(item, index) in items" :key="index">
                     <p>Фотография</p>
@@ -109,6 +113,8 @@
                             id: 22
                         }
                     ]
+                }).then(res=>{
+                    window.location.href="/admin/sales"
                 })
                 }
                 else{
@@ -127,7 +133,9 @@
                  	},
                  	],
                  	id: Number(urlId)
-                 })
+                 }).then(res=>{
+                    window.location.href="/admin/sales"
+                })
 		}
                 this.wholeArray = []
             

@@ -87,6 +87,8 @@
             if(url === 'create'){
                 axios.post('https://api.obagofficial.kz/api/news-create', {
                     news: this.wholeArray
+                }).then(res=>{
+                    window.location.href="/admin/new-sales"
                 })
             }
             else{
@@ -97,6 +99,8 @@
                 axios.put(sendUrl, {
                     news: this.wholeArray,
                     id: Number(urlId)
+                }).then(res=>{
+                    window.location.href="/admin/new-sales"
                 })
                 
             }

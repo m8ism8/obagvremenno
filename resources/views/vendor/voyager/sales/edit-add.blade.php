@@ -1,5 +1,4 @@
 @extends('voyager::master')
-          <script src="https://cdn.tiny.cloud/1/hfcfgp0vufrmoiwj7oo4j5nrk8jw0e9wqkmj0qwl0dro5hfy/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 @section('content')
     <div id="app">
 
@@ -10,7 +9,7 @@
 
         </div>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/@tinymce/tinymce-webcomponent@2/dist/tinymce-webcomponent.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
     <script type="module">
@@ -36,7 +35,6 @@
 
     </script>
 @endsection
-    </script>
 <style>
     .create-form{
        max-width: 500px;
