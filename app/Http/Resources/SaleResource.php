@@ -18,12 +18,6 @@ class SaleResource extends JsonResource
      */
     public function toArray($request)
     {
-
-
-//        if ($this->preview_image != null) {
-//            $this->preview_image = env('APP_URL') . '/storage/' . $this->preview_image;
-//        }
-
         return [
             'id'         => $this->id,
             'title'      => $this->title,

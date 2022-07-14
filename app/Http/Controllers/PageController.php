@@ -37,44 +37,29 @@ class PageController extends Controller
                               ->orderBy('created_at', 'desc')
                               ->where('show', 1)
                               ->get()
-                              ->translate(\request()->header('Accept-Language'))
+//                              ->translate(\request()->header('Accept-Language'))
         ;
 
 
         foreach ($news_items as $news) {
-            if ($news->translations->isEmpty()) {
-                $news = $news->translate('ru');
-            }
-            $news->slug  = Str::slug($news->title);
+//            if ($news->translations->isEmpty()) {
+//                $news = $news->translate('ru');
+//            }
+            //$news->slug  = Str::slug($news->title);
 
             $image = $news->image; //your base64 encoded data
-
             $ext = explode(';base64',$image);
             $ext = explode('/',$ext[0]);
-            $ext = $ext[1];						// This will hold the value of the extension.
+            $ext = $ext[1];
+            $replace = substr($image, 0, strpos($image, ',')+1);
 
-            if ($ext == 'png') {
-                $image = str_replace('data:image/png;base64,', '', $image);
-                $image = str_replace(' ', '+', $image);
-                $imageName = Str::random(10) . '.' . 'png';
+            $image = str_replace($replace, '', $image);
 
-                Storage::disk('public')->put($imageName, base64_decode($image));
+            $image = str_replace(' ', '+', $image);
 
-
-                $news->image = env('APP_URL') . '/storage/' . $imageName;
-            } else if ($ext == 'jpg') {
-                $image = str_replace('data:image/jpeg;base64,', '', $image);
-                $image = str_replace(' ', '+', $image);
-                $imageName = Str::random(10) . '.' . 'jpg';
-
-                Storage::disk('public')->put($imageName, base64_decode($image));
-
-
-                $news->image = env('APP_URL') . '/storage/' . $imageName;
-            }
-
-            $news->image = env('APP_URL') . '/storage/' . $news->image;
-            $news->save();
+            $imageName = Str::random(10).'.'.$ext;
+            Storage::disk('public')->put($imageName, base64_decode($image));
+            $news->image = Storage::disk(config('voyager.storage.disk'))->url($imageName);
         }
 
         return response()->json([
@@ -86,51 +71,16 @@ class PageController extends Controller
     {
         $article = NewSales::query()
                            ->find($id)
-                           ->translate(\request()->header('Accept-Language'))
+//                           ->translate(\request()->header('Accept-Language'))
         ;
-
-        if ($article->translations->isEmpty()) {
-            $article = $article->translate('ru');
-        }
 
         if ($article == null) {
             return response()->json([
                                         'message' => 'Страница не найдена',
                                     ], 404);
         }
-        $article->image = env('APP_URL') . '/storage/' . $article->image;
+        //$article->image = env('APP_URL') . '/storage/' . $article->image;
 
-        $images = json_decode($article->images);
-        if ($images != null) {
-            $newImages = [];
-
-            foreach ($images as $image) {
-                $image       = env('APP_URL') . '/storage/' . $image;
-                $newImages[] = $image;
-            }
-            $article->images = $newImages;
-        }
-
-        $images = json_decode($article->second_images);
-        if ($images != null) {
-            $newImages = [];
-            foreach ($images as $image) {
-                $image       = env('APP_URL') . '/storage/' . $image;
-                $newImages[] = $image;
-            }
-            $article->second_images = $newImages;
-        }
-
-
-        $images = json_decode($article->third_images);
-        if ($images != null) {
-            $newImages = [];
-            foreach ($images as $image) {
-                $image       = env('APP_URL') . '/storage/' . $image;
-                $newImages[] = $image;
-            }
-            $article->third_images = $newImages;
-        }
         $article->save();
 
         return new NewsResource($article);
@@ -190,70 +140,43 @@ class PageController extends Controller
             ->orderBy('created_at', 'desc')
             ->where('show', 1)
             ->get()
-            ->translate(\request()->header('Accept-Language'))
+//            ->translate(\request()->header('Accept-Language'))
         ;
         foreach ($news_items as $news) {
-            if ($news->translations->isEmpty()) {
-                $news = $news->translate('ru');
-            }
-
-
+//            if ($news->translations->isEmpty()) {
+//                $news = $news->translate('ru');
+//            }
 
             $image = $news->image; //your base64 encoded data
-
             $ext = explode(';base64',$image);
             $ext = explode('/',$ext[0]);
-            $ext = $ext[1];						// This will hold the value of the extension.
+            $ext = $ext[1];
+            $replace = substr($image, 0, strpos($image, ',')+1);
 
-            if ($ext == 'png') {
-                $image = str_replace('data:image/png;base64,', '', $image);
-                $image = str_replace(' ', '+', $image);
-                $imageName = Str::random(10) . '.' . 'png';
+            $image = str_replace($replace, '', $image);
 
-                Storage::disk('public')->put($imageName, base64_decode($image));
+            $image = str_replace(' ', '+', $image);
 
-
-                $news->image = env('APP_URL') . '/storage/' . $imageName;
-            } else if ($ext == 'jpg') {
-                $image = str_replace('data:image/jpeg;base64,', '', $image);
-                $image = str_replace(' ', '+', $image);
-                $imageName = Str::random(10) . '.' . 'jpg';
-
-                Storage::disk('public')->put($imageName, base64_decode($image));
-
-
-                $news->image = env('APP_URL') . '/storage/' . $imageName;
-            }
-
+            $imageName = Str::random(10).'.'.$ext;
+            Storage::disk('public')->put($imageName, base64_decode($image));
+            $news->image = Storage::disk(config('voyager.storage.disk'))->url($imageName);
 
             if ($news->preview_image != null) {
 
-                $image = $news->preview_image;
-                $ext = explode(';base64',$image);
+                $image_pre = $news->preview_image;
+                $ext = explode(';base64',$image_pre);
                 $ext = explode('/',$ext[0]);
                 $ext = $ext[1];						// This will hold the value of the extension.
 
-                if ($ext == 'png') {
-                    $image = str_replace('data:image/png;base64,', '', $image);
-                    $image = str_replace(' ', '+', $image);
-                    $imageName = Str::random(10) . '.' . 'png';
+                $replace = substr($image_pre, 0, strpos($image_pre, ',')+1);
 
-                    Storage::disk('public')->put($imageName, base64_decode($image));
+                $image_pre = str_replace($replace, '', $image_pre);
 
+                $image_pre = str_replace(' ', '+', $image_pre);
 
-                    $news->image = env('APP_URL') . '/storage/' . $imageName;
-                } else if ($ext == 'jpg') {
-                    $image = str_replace('data:image/jpeg;base64,', '', $image);
-                    $image = str_replace(' ', '+', $image);
-                    $imageName = Str::random(10) . '.' . 'jpg';
-
-                    Storage::disk('public')->put($imageName, base64_decode($image));
-
-
-                    $news->image = env('APP_URL') . '/storage/' . $imageName;
-                }
-                $news->preview_image = env('APP_URL') . '/storage/' . $imageName;
-                $news->save();
+                $imageName = Str::random(10).'.'.$ext;
+                Storage::disk('public')->put($imageName, base64_decode($image_pre));
+                $news->preview_image = Storage::disk(config('voyager.storage.disk'))->url($imageName);
             }
         }
 
@@ -267,51 +190,18 @@ class PageController extends Controller
         $article = Sale::query()
                        ->find($id)
         ;
-        if ($article->preview_image) {
-            $article->preview_image = env('APP_URL') . '/storage/' . $article->preview_image;
-        }
+//        if (!empty($article->preview_image)) {
+//            $article->preview_image = env('APP_URL') . '/storage/' . $article->preview_image;
+//        }
         if ($article == null) {
             return response()->json([
                                         'message' => 'Страница не найдена',
                                     ], 404);
         }
-        $article = $article->translate(\request()->header('Accept-Language'));
-        if ($article->translations->isEmpty()) {
-            $article = $article->translate('ru');
-        }
-        $article->image = env('APP_URL') . '/storage/' . $article->image;
 
-        $images = json_decode($article->images);
-        if ($images != null) {
-            $newImages = [];
-
-            foreach ($images as $image) {
-                $image       = env('APP_URL') . '/storage/' . $image;
-                $newImages[] = $image;
-            }
-            $article->images = $newImages;
-        }
-
-        $images = json_decode($article->second_images);
-        if ($images != null) {
-            $newImages = [];
-            foreach ($images as $image) {
-                $image       = env('APP_URL') . '/storage/' . $image;
-                $newImages[] = $image;
-            }
-            $article->second_images = $newImages;
-        }
+        //$article->image = env('APP_URL') . '/storage/' . $article->image;
 
 
-        $images = json_decode($article->third_images);
-        if ($images != null) {
-            $newImages = [];
-            foreach ($images as $image) {
-                $image       = env('APP_URL') . '/storage/' . $image;
-                $newImages[] = $image;
-            }
-            $article->third_images = $newImages;
-        }
         $productIds = DB::table('sale_products')
                         ->where('sale_id', $id)
                         ->pluck('product_id')
@@ -327,19 +217,16 @@ class PageController extends Controller
                            )
                            ->whereIn('id', $productIds)
                            ->get()
-                           ->translate(\request()->header('Accept-Language'))
         ;
         foreach ($products as $product) {
             if (json_decode($product->image) != null) {
-                $product->image = env('APP_URL') . '/storage/' . json_decode($product->image)[0];
+                $product->image = Storage::disk(config('voyager.storage.disk'))->url(json_decode($product->image)[0]);
             } else {
-                $product->image = env('APP_URL') . '/storage/' . $product->image;
+                $product->image = Storage::disk(config('voyager.storage.disk'))->url($product->image);
             }
-            if ($product->translations->isEmpty()) {
-                $product = $product->translate('ru');
-            }
+            $product->save();
         }
-        $article->products = $products;
+        $article->products()->sync($products);
         $article->save();
 
         return new SaleResource($article);
